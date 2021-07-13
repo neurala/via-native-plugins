@@ -1,6 +1,13 @@
 #pragma once
 
+#include <string>
+
+#include <neurala/image/views/ImageView.h>
+#include <neurala/plugin/detail/PluginArguments.h>
+#include <neurala/plugin/detail/PluginManager.h>
 #include <neurala/utils/ResultsOutput.h>
+
+#include "client.hpp"
 
 namespace neurala
 {

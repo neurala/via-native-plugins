@@ -14,7 +14,7 @@ conan_cmake_run(
     OUTPUT_QUIET
     KEEP_RPATHS)
 
-add_executable(stream src/initme.cpp src/main.cpp)
+add_executable(stream src/client.cpp src/initme.cpp src/input.cpp src/main.cpp)
 
 target_link_libraries(stream PUBLIC CONAN_PKG::boost)
 
@@ -23,9 +23,9 @@ target_include_directories(
     PUBLIC
     include
     PRIVATE
-    ../../../include
     ../../../build/include
-    ../../../external/jsoncpp/include
     ../../../external/cereal/include
-    ../../../../../include
-    ../../../../../build/include)
+    ../../../external/jsoncpp/include
+    ../../../include
+    ../../../../../build/include
+    ../../../../../include)
