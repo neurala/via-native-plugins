@@ -46,7 +46,7 @@ do_session(tcp::socket socket)
 			{
 				ws.binary(true);
 				ws.text(false);
-				std::vector<std::uint8_t> frameData(2560 * 1440 * 4);
+				std::vector<std::uint8_t> frameData(800 * 600 * 3);
 				std::iota(begin(frameData), end(frameData), 0);
 				ws.write(net::buffer(frameData));
 			}
