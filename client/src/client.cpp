@@ -12,7 +12,7 @@ atoz(const char* const str)
 	return static_cast<std::size_t>(std::atoll(str));
 }
 
-static const std::unordered_map<std::string_view, EColorSpace> colorSpaces{
+const std::unordered_map<std::string_view, EColorSpace> Client::colorSpaces{
  {"grayscale", EColorSpace::grayscale},
  {"bayerRG", EColorSpace::bayerRG},
  {"bayerGR", EColorSpace::bayerGR},
@@ -28,12 +28,12 @@ static const std::unordered_map<std::string_view, EColorSpace> colorSpaces{
  {"NV12", EColorSpace::NV12},
  {"NV21", EColorSpace::NV21}};
 
-static const std::unordered_map<std::string_view, EImageDataLayout> imageDataLayouts{
+const std::unordered_map<std::string_view, EImageDataLayout> Client::imageDataLayouts{
  {"planar", EImageDataLayout::planar},
  {"interleaved", EImageDataLayout::interleaved},
  {"semiplanar", EImageDataLayout::semiplanar}};
 
-static const std::unordered_map<std::string_view, EDatatype> imageDataTypes{
+const std::unordered_map<std::string_view, EDatatype> Client::imageDataTypes{
  {"boolean", EDatatype::boolean},
  {"uint8", EDatatype::uint8},
  {"uint16", EDatatype::uint16},

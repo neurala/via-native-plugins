@@ -33,9 +33,6 @@ public:
 	void sendResult(const std::string& result) { response(result); }
 
 private:
-	static constexpr std::string_view ip_address{"127.0.0.1"};
-	static constexpr std::uint16_t port{54321};
-
 	static const char* parseMetadata(const char* const begin, const char* const end)
 	{
 		return std::find(begin, end, ';') + 1;
@@ -45,6 +42,13 @@ private:
 	{
 		return std::find(begin, end, ';') - begin;
 	}
+
+	static constexpr std::string_view ip_address{"127.0.0.1"};
+	static constexpr std::uint16_t port{54321};
+
+	static const std::unordered_map<std::string_view, EColorSpace> colorSpaces;
+	static const std::unordered_map<std::string_view, EImageDataLayout> imageDataLayouts;
+	static const std::unordered_map<std::string_view, EDatatype> imageDataTypes;
 
 	Client();
 
