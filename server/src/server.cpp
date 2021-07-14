@@ -1,0 +1,111 @@
+#include "server.hpp"
+
+#include <iostream>
+#include <numeric>
+#include <stdexcept>
+#include <thread>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
+namespace neurala
+{
+Server::Server(const std::string_view address, const std::uint16_t port)
+ : m_ioContext{1},
+   m_acceptor{m_ioContext, tcp::endpoint{net::ip::make_address(address), port}},
+   m_metadata{800, 600, "RGB", "planar", "uint8"}
+{
+	try
+	{
+		run();
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+}
+
+void
+Server::run()
+{
+	while (true)
+	{
+		tcp::socket socket{m_ioContext};
+		m_acceptor.accept(socket);
+		std::thread([&](tcp::socket&& socket) { session(std::move(socket)); }, std::move(socket)).detach();
+	}
+}
+
+void
+Server::session(tcp::socket&& socket)
+{
+	try
+	{
+		beast::websocket::stream<tcp::socket> stream{std::move(socket)};
+		stream.binary(true);
+		stream.set_option(beast::websocket::stream_base::decorator([](beast::websocket::response_type& res) {
+			res.set(beast::http::field::server,
+			        std::string(BOOST_BEAST_VERSION_STRING) + " websocket-server-sync");
+		}));
+		stream.accept();
+		while (true)
+			handleRequest(stream);
+	}
+	catch (const beast::system_error& se)
+	{
+		if (se.code() != beast::websocket::error::closed)
+			std::cerr << "Error: " << se.code().message() << std::endl;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Error: " << e.what() << std::endl;
+	}
+}
+
+void
+Server::handleRequest(beast::websocket::stream<tcp::socket>& stream)
+{
+	beast::flat_buffer buffer;
+	stream.read(buffer);
+	using ws_stream = beast::websocket::stream<tcp::socket>;
+	static const std::unordered_map<std::string_view, std::function<void(ws_stream&)>> handlers{
+	 {"metadata", [&](ws_stream& stream) { handleMetadata(stream); }},
+	 {"frame", [&](ws_stream& stream) { handleFrame(stream); }},
+	 {"{ \"result\": \"success\" }", [&](ws_stream& stream) { handleResult(stream); }},
+	};
+	const net::const_buffer key{buffer.cdata()};
+	handlers.at(std::string_view(reinterpret_cast<const char*>(key.data()), key.size()))(stream);
+}
+
+void
+Server::handleMetadata(beast::websocket::stream<tcp::socket>& stream)
+{
+	std::string metadata;
+	const auto add{[&](const std::string_view element) {
+		metadata += element;
+		metadata += ';';
+	}};
+	add(std::to_string(m_metadata.width));
+	add(std::to_string(m_metadata.height));
+	add(m_metadata.colorSpace);
+	add(m_metadata.layout);
+	add(m_metadata.dataType);
+	stream.write(net::buffer(metadata));
+}
+
+void
+Server::handleFrame(beast::websocket::stream<tcp::socket>& stream)
+{
+	std::vector<std::uint8_t> frameData(m_metadata.width * m_metadata.height
+	                                    * m_metadata.colorSpace.size());
+	std::iota(begin(frameData), end(frameData), 0);
+	stream.write(net::buffer(frameData));
+}
+
+void
+Server::handleResult(beast::websocket::stream<tcp::socket>& stream)
+{
+	stream.write(net::buffer("DONE"));
+}
+
+} // namespace neurala

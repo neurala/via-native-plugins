@@ -14,17 +14,8 @@ conan_cmake_run(
     OUTPUT_QUIET
     KEEP_RPATHS)
 
-add_executable(server src/main.cpp)
+add_executable(server src/main.cpp src/server.cpp)
 
 target_link_libraries(server PUBLIC CONAN_PKG::boost)
 
-target_include_directories(
-    server
-    PUBLIC
-    include
-    PRIVATE
-    ../../include
-    ../../build/include
-    ../../external/jsoncpp/include
-    ../../../../include
-    ../../../../build/include)
+target_include_directories(server PUBLIC include)
