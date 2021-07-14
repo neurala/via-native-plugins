@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17.0)
 
-project(stream)
+project(client)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -14,12 +14,12 @@ conan_cmake_run(
     OUTPUT_QUIET
     KEEP_RPATHS)
 
-add_executable(stream src/client.cpp src/initme.cpp src/input.cpp src/main.cpp)
+add_executable(client src/client.cpp src/initme.cpp src/input.cpp src/main.cpp)
 
-target_link_libraries(stream PUBLIC CONAN_PKG::boost)
+target_link_libraries(client PUBLIC CONAN_PKG::boost)
 
 target_include_directories(
-    stream
+    client
     PUBLIC
     include
     PRIVATE
