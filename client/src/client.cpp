@@ -6,6 +6,7 @@
 
 namespace neurala
 {
+/// Interpret an std::size_t value in a byte string starting at the given address.
 static std::size_t
 atoz(const char* const str)
 {

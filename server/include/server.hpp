@@ -15,19 +15,29 @@ namespace net = boost::asio;
 namespace beast = boost::beast;
 using tcp = net::ip::tcp;
 
+/**
+ * @brief Websocket server that offers mock image data.
+ */
 class Server final
 {
 public:
 	Server(const std::string_view address, const std::uint16_t port);
 
 private:
+	/// Deploy the server.
 	void run();
 
+	/// Handle communication with a particular client.
 	void session(tcp::socket&& socket);
+
+	/// Handle a particular request made by a client.
 	void handleRequest(beast::websocket::stream<tcp::socket>& stream);
 
+	/// Handle an image metadata request.
 	void handleMetadata(beast::websocket::stream<tcp::socket>& stream);
+	/// Handle a frame request.
 	void handleFrame(beast::websocket::stream<tcp::socket>& stream);
+	/// Handle a result JSON.
 	void handleResult(beast::websocket::stream<tcp::socket>& stream);
 
 	net::io_context m_ioContext;
