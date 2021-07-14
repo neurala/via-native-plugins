@@ -8,6 +8,7 @@ main()
 	Input input;
 	Output output;
 	const ImageMetadata metadata = input.metadata();
-	const ImageView view = input.frame();
+	if (input.nextFrame() == NextFrameResult::Status::success)
+		const ImageView view = input.frame();
 	output("{ \"result\": \"success\" }", nullptr);
 }

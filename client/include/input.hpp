@@ -22,9 +22,9 @@ public:
 
 	[[nodiscard]] ImageMetadata metadata() const final { return cachedMetadata(); }
 
-	[[nodiscard]] NextFrameResult nextFrame() final { return NextFrameResult::Status::success; }
+	[[nodiscard]] NextFrameResult nextFrame() final;
 
-	[[nodiscard]] ImageView frame() final;
+	[[nodiscard]] ImageView frame() final { return {cachedMetadata(), m_frames.back().data()}; }
 
 	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) final;
 
