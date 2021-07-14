@@ -21,7 +21,7 @@ Server::Server(const std::string_view address, const std::uint16_t port)
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cerr << "Error: " << e.what() << '\n';
 	}
 }
 
@@ -54,11 +54,11 @@ Server::session(tcp::socket&& socket)
 	catch (const beast::system_error& se)
 	{
 		if (se.code() != beast::websocket::error::closed)
-			std::cerr << "Error: " << se.code().message() << std::endl;
+			std::cerr << "Error: " << se.code().message() << '\n';
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << "Error: " << e.what() << std::endl;
+		std::cerr << "Error: " << e.what() << '\n';
 	}
 }
 
