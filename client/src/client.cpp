@@ -24,7 +24,8 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <unordered_map>
+
+#include <neurala/meta/enum.h>
 
 namespace neurala
 {
@@ -34,35 +35,6 @@ atoz(const char* const str)
 {
 	return static_cast<std::size_t>(std::atoll(str));
 }
-
-const std::unordered_map<std::string_view, EColorSpace> Client::colorSpaces{
- {"grayscale", EColorSpace::grayscale},
- {"bayerRG", EColorSpace::bayerRG},
- {"bayerGR", EColorSpace::bayerGR},
- {"bayerBG", EColorSpace::bayerBG},
- {"bayerGB", EColorSpace::bayerGB},
- {"RGB", EColorSpace::RGB},
- {"RGBA", EColorSpace::RGBA},
- {"BGR", EColorSpace::BGR},
- {"BGRA", EColorSpace::BGRA},
- {"RGB565", EColorSpace::RGB565},
- {"HSV", EColorSpace::HSV},
- {"YUV420", EColorSpace::YUV420},
- {"NV12", EColorSpace::NV12},
- {"NV21", EColorSpace::NV21}};
-
-const std::unordered_map<std::string_view, EImageDataLayout> Client::imageDataLayouts{
- {"planar", EImageDataLayout::planar},
- {"interleaved", EImageDataLayout::interleaved},
- {"semiplanar", EImageDataLayout::semiplanar}};
-
-const std::unordered_map<std::string_view, EDatatype> Client::imageDataTypes{
- {"boolean", EDatatype::boolean},
- {"uint8", EDatatype::uint8},
- {"uint16", EDatatype::uint16},
- {"binary16", EDatatype::binary16},
- {"binary32", EDatatype::binary32},
- {"binary64", EDatatype::binary64}};
 
 ImageMetadata
 Client::metadata()
@@ -74,13 +46,14 @@ Client::metadata()
 	begin = parseMetadata(begin, end);
 	const std::size_t height{atoz(begin)};
 	begin = parseMetadata(begin, end);
-	const EColorSpace colorSpace{colorSpaces.at(std::string_view{begin, metadataLength(begin, end)})};
+	const EColorSpace colorSpace{
+	 stringToEnum<EColorSpace>(std::string{begin, metadataLength(begin, end)})};
 	begin = parseMetadata(begin, end);
 	const EImageDataLayout imageDataLayout{
-	 imageDataLayouts.at(std::string_view{begin, metadataLength(begin, end)})};
+	 stringToEnum<EImageDataLayout>(std::string{begin, metadataLength(begin, end)})};
 	begin = parseMetadata(begin, end);
-	const EDatatype dataType{imageDataTypes.at(std::string_view{begin, metadataLength(begin, end)})};
-	return {width, height, colorSpace, imageDataLayout, dataType};
+	const EDatatype datatype{stringToEnum<EDatatype>(std::string{begin, metadataLength(begin, end)})};
+	return {width, height, colorSpace, imageDataLayout, datatype};
 }
 
 void
