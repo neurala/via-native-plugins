@@ -79,7 +79,7 @@ Client::Client() : m_context{}, m_socket{m_context}, m_stream{m_socket}
 		std::exit(1);
 	}
 	std::cout << "Client connected.\n";
-	m_stream.handshake(ip_address.data(), "/");
+	m_stream.handshake(kIpAddress.data(), "/");
 }
 
 net::const_buffer

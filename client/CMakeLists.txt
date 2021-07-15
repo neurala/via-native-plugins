@@ -18,14 +18,13 @@ add_executable(client src/client.cpp src/initme.cpp src/input.cpp src/main.cpp)
 
 target_link_libraries(client PUBLIC CONAN_PKG::boost)
 
-target_include_directories(
-    client
+target_include_directories(client
     PUBLIC
-    include
+        include
     PRIVATE
-    ../../../build/include
-    ../../../external/cereal/include
-    ../../../external/jsoncpp/include
-    ../../../include
-    ../../../../../build/include
-    ../../../../../include)
+        ../../../build/include
+        ../../../external/cereal/include
+        ../../../external/jsoncpp/include
+        ../../../include
+        ../../../../../build/include
+        ../../../../../include)
