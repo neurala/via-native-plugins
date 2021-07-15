@@ -7,7 +7,7 @@
 #include <neurala/plugin/detail/PluginManager.h>
 #include <neurala/utils/ResultsOutput.h>
 
-#include "client.hpp"
+#include "client.h"
 
 namespace neurala
 {

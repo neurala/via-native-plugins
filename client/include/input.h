@@ -10,7 +10,7 @@
 #include <neurala/plugin/detail/PluginManager.h>
 #include <neurala/video/VideoSource.h>
 
-#include "client.hpp"
+#include "client.h"
 
 namespace neurala
 {

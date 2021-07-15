@@ -1,4 +1,4 @@
-#include "input.hpp"
+#include "input.h"
 
 namespace neurala
 {

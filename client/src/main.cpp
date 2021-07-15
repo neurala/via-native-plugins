@@ -1,5 +1,5 @@
-#include "input.hpp"
-#include "output.hpp"
+#include "input.h"
+#include "output.h"
 
 int
 main()
