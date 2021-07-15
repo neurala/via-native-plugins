@@ -37,14 +37,7 @@ Server::Server(const std::string_view address, const std::uint16_t port)
    m_acceptor{m_ioContext, tcp::endpoint{net::ip::make_address(address), port}},
    m_metadata{800, 600, "RGB", "planar", "uint8"}
 {
-	try
-	{
-		run();
-	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "Error: " << e.what() << '\n';
-	}
+	run();
 }
 
 void
