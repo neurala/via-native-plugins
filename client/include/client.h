@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <iterator>
 #include <string>
 #include <string_view>
 
@@ -66,13 +67,13 @@ private:
 	/// Return a pointer to the start of the next metadata element.
 	static const char* parseMetadata(const char* const begin, const char* const end)
 	{
-		return std::find(begin, end, ';') + 1;
+		return std::next(std::find(begin, end, ';'));
 	}
 
 	/// Return the length of the current metadata element.
 	static std::size_t metadataLength(const char* const begin, const char* const end)
 	{
-		return std::find(begin, end, ';') - begin;
+		return std::distance(begin, std::find(begin, end, ';'));
 	}
 
 	static constexpr std::string_view kIpAddress{"127.0.0.1"};
