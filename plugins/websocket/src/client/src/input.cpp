@@ -34,6 +34,10 @@ Input::nextFrame()
 		m_frames.emplace_back(std::move(frameBuffer));
 		return NextFrameResult::Status::success;
 	}
+	catch (const beast::system_error& se)
+	{
+		const std::error_code code = std::make_error_code(static_cast<std::errc>(se.code().value()));
+	}
 	catch (...)
 	{
 		std::cerr << "Failed retrieving frame from the server.\n";
