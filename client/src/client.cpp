@@ -90,7 +90,9 @@ Client::response(const std::string_view request)
 	m_stream.read(m_buffer);
 	const net::const_buffer data = m_buffer.cdata();
 	if (data.size() < 1024)
+	{
 		std::cout << beast::make_printable(data) << '\n';
+	}
 	return data;
 }
 

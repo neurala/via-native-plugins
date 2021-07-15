@@ -10,9 +10,13 @@
 // 	auto& pm = *static_cast<neurala::PluginManager*>(pluginManager);
 // 	*status = pm.registerPlugin<neurala::Input>("Input", neurala::Version(1, 0));
 // 	if (*status != NeuralaPluginStatus::success)
+// 	{
 // 		return nullptr;
+// 	}
 // 	*status = pm.registerPlugin<neurala::Output>("Output", neurala::Version(1, 0));
 // 	if (*status != NeuralaPluginStatus::success)
+// 	{
 // 		return nullptr;
+// 	}
 // 	return [] { return 0; };
 // }

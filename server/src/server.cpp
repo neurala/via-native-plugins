@@ -49,12 +49,16 @@ Server::session(tcp::socket&& socket)
 		}));
 		stream.accept();
 		while (true)
+		{
 			handleRequest(stream);
+		}
 	}
 	catch (const beast::system_error& se)
 	{
 		if (se.code() != beast::websocket::error::closed)
+		{
 			std::cerr << "Error: " << se.code().message() << '\n';
+		}
 	}
 	catch (const std::exception& e)
 	{

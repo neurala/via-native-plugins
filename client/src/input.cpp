@@ -39,7 +39,9 @@ const ImageMetadata&
 Input::cachedMetadata() const
 {
 	if (!m_metadata)
+	{
 		m_metadata = Client::get().metadata();
+	}
 	return *m_metadata;
 }
 
