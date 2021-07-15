@@ -67,11 +67,11 @@ Server::handleRequest(beast::websocket::stream<tcp::socket>& stream)
 {
 	beast::flat_buffer buffer;
 	stream.read(buffer);
-	using ws_stream = beast::websocket::stream<tcp::socket>;
-	static const std::unordered_map<std::string_view, std::function<void(ws_stream&)>> handlers{
-	 {"metadata", [&](ws_stream& stream) { handleMetadata(stream); }},
-	 {"frame", [&](ws_stream& stream) { handleFrame(stream); }},
-	 {"{ \"result\": \"success\" }", [&](ws_stream& stream) { handleResult(stream); }},
+	using WebSocketStream = beast::websocket::stream<tcp::socket>;
+	static const std::unordered_map<std::string_view, std::function<void(WebSocketStream&)>> handlers{
+	 {"metadata", [&](WebSocketStream& stream) { handleMetadata(stream); }},
+	 {"frame", [&](WebSocketStream& stream) { handleFrame(stream); }},
+	 {"{ \"result\": \"success\" }", [&](WebSocketStream& stream) { handleResult(stream); }},
 	};
 	const net::const_buffer key{buffer.cdata()};
 	handlers.at(std::string_view(reinterpret_cast<const char*>(key.data()), key.size()))(stream);
