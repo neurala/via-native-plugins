@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NEURALA_STREAM_PLUGIN_CLIENT_H
+#define NEURALA_STREAM_PLUGIN_CLIENT_H
 
 #include <algorithm>
 #include <cstddef>
@@ -76,3 +77,5 @@ private:
 };
 
 } // namespace neurala
+
+#endif // NEURALA_STREAM_PLUGIN_CLIENT_H

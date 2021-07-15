@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
+#define NEURALA_STREAM_PLUGIN_OUTPUT_H
 
 #include <string>
 
@@ -31,3 +32,5 @@ public:
 };
 
 } // namespace neurala
+
+#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H

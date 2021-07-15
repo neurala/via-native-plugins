@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NEURALA_STREAM_PLUGIN_INPUT_H
+#define NEURALA_STREAM_PLUGIN_INPUT_H
 
 #include <cstddef>
 #include <optional>
@@ -44,3 +45,5 @@ private:
 };
 
 } // namespace neurala
+
+#endif // NEURALA_STREAM_PLUGIN_INPUT_H

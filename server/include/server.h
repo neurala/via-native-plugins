@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NEURALA_STREAM_PLUGIN_SERVER_H
+#define NEURALA_STREAM_PLUGIN_SERVER_H
 
 #include <cstddef>
 #include <cstdint>
@@ -54,3 +55,5 @@ private:
 };
 
 } // namespace neurala
+
+#endif // NEURALA_STREAM_PLUGIN_SERVER_H
