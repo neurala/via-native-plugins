@@ -68,7 +68,7 @@ Client::Client() : m_context{}, m_socket{m_context}, m_stream{m_socket}
 	boost::system::error_code ec;
 	tcp::endpoint endpoint{net::ip::make_address(kIpAddress, ec), kPort};
 	m_socket.connect(endpoint, ec);
-	if (ec)
+	if (ec.failed())
 	{
 		std::cerr << "Failed to connect: " << ec.message() << ".\n";
 		std::exit(1);
