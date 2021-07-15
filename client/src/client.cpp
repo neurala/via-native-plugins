@@ -71,7 +71,7 @@ Client::frame(std::byte* const location)
 Client::Client() : m_context{}, m_socket{m_context}, m_stream{m_socket}
 {
 	boost::system::error_code ec;
-	tcp::endpoint endpoint{net::ip::make_address(ip_address, ec), port};
+	tcp::endpoint endpoint{net::ip::make_address(kIpAddress, ec), kPort};
 	m_socket.connect(endpoint, ec);
 	if (ec)
 	{

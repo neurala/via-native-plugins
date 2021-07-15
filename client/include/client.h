@@ -53,8 +53,8 @@ private:
 		return std::find(begin, end, ';') - begin;
 	}
 
-	static constexpr std::string_view ip_address{"127.0.0.1"};
-	static constexpr std::uint16_t port{54321};
+	static constexpr std::string_view kIpAddress{"127.0.0.1"};
+	static constexpr std::uint16_t kPort{54321};
 
 	static const std::unordered_map<std::string_view, EColorSpace> colorSpaces;
 	static const std::unordered_map<std::string_view, EImageDataLayout> imageDataLayouts;
