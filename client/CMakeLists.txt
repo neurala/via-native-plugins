@@ -6,10 +6,16 @@ set(CMAKE_CXX_STANDARD 17)
 
 include(conan.cmake)
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CONAN_BUILD_TYPE "Debug")
+else()
+    set(CONAN_BUILD_TYPE "Release")
+endif()
+
 conan_cmake_run(
     REQUIRES boost/1.76.0
     BASIC_SETUP CMAKE_TARGETS
-    BUILD_TYPE ${CMAKE_BUILD_TYPE}
+    BUILD_TYPE ${CONAN_BUILD_TYPE}
     BUILD missing
     OUTPUT_QUIET
     KEEP_RPATHS)
