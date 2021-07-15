@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.17.0)
 
-project(client)
-
 set(CMAKE_CXX_STANDARD 17)
 
-include(conan.cmake)
+include(conan)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CONAN_BUILD_TYPE "Debug")
@@ -28,9 +26,9 @@ target_include_directories(client
     PUBLIC
         include
     PRIVATE
-        ../../../build/include
-        ../../../external/cereal/include
-        ../../../external/jsoncpp/include
-        ../../../include
-        ../../../../../build/include
-        ../../../../../include)
+        ../../../../../../build/include
+        ../../../../../../external/cereal/include
+        ../../../../../../external/jsoncpp/include
+        ../../../../../../include
+        ../../../../../../../../build/include
+        ../../../../../../../../include)
