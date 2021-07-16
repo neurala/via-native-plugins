@@ -29,8 +29,6 @@
 #include <system_error>
 #include <vector>
 
-#include <neurala/plugin/detail/PluginBindings.h>
-#include <neurala/plugin/detail/PluginManager.h>
 #include <neurala/video/VideoSource.h>
 
 namespace neurala::plug
@@ -45,7 +43,7 @@ public:
 	[[nodiscard]] ImageMetadata metadata() const final { return {}; }
 
 	// Query new frames​
-	[[nodiscard]] NextFrameResult nextFrame() final { return {}; }
+	[[nodiscard]] std::error_code nextFrame() final { return {}; }
 
 	// Get a frame from host memory, data needs to be valid until the end of processing​
 	[[nodiscard]] ImageView frame() final { return {}; }

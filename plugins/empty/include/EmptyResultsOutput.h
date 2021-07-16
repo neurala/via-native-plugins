@@ -23,8 +23,8 @@
 #ifndef NEURALA_EMPTY_RESULTS_OUTPUT_H
 #define NEURALA_EMPTY_RESULTS_OUTPUT_H
 
-#include <neurala/plugin/detail/PluginArguments.h>
-#include <neurala/plugin/detail/PluginManager.h>
+#include <neurala/plugin/PluginArguments.h>
+#include <neurala/plugin/PluginErrorCallback.h>
 #include <neurala/utils/ResultsOutput.h>
 
 namespace neurala::plug
@@ -32,7 +32,7 @@ namespace neurala::plug
 class EmptyResultsOutput final : public ResultsOutput
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new EmptyResultsOutput; }
+	static void* create(PluginArguments&, PluginErrorCallback&) { return new EmptyResultsOutput(); }
 	static void destroy(void* p) { delete reinterpret_cast<EmptyResultsOutput*>(p); }
 
 	/**

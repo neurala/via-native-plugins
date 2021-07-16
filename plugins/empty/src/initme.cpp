@@ -20,26 +20,27 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#include <neurala/plugin/detail/PluginBindings.h>
-#include <neurala/plugin/detail/PluginManager.h>
+#include <neurala/utils/Version.h>
+#include <neurala/plugin/PluginBindings.h>
+#include <neurala/plugin/PluginRegistrar.h>
 
 #include "EmptyResultsOutput.h"
 #include "EmptyVideoSource.h"
 
-// extern "C" PLUGIN_API NeuralaPluginExitFunction
-// initMe(NeuralaPluginManager* pluginManager, NeuralaPluginStatus* status)
-// {
-// 	auto& pm = *static_cast<neurala::PluginManager*>(pluginManager);
-// 	*status = pm.registerPlugin<neurala::EmptyVideoSource>("EmptyVideoSource", neurala::Version(1,
-// 0)); 	if (*status != NeuralaPluginStatus::success)
-// 	{
-// 		return nullptr;
-// 	}
-// 	*status = pm.registerPlugin<neurala::EmptyResultsOutput>("EmptyResultsOutput",
-// 	                                                         neurala::Version(1, 0));
-// 	if (*status != NeuralaPluginStatus::success)
-// 	{
-// 		return nullptr;
-// 	}
-// 	return [] { return 0; };
-// }
+extern "C" PLUGIN_API NeuralaPluginExitFunction
+initMe(NeuralaPluginStatus* status)
+{
+	*status = neurala::registerPlugin<neurala::plug::EmptyVideoSource>("EmptyVideoSource",
+	                                                                   neurala::Version(1, 0));
+	if (*status != NeuralaPluginStatus::success)
+	{
+		return nullptr;
+	}
+	*status = neurala::registerPlugin<neurala::plug::EmptyResultsOutput>("EmptyResultsOutput",
+	                                                                     neurala::Version(1, 0));
+	if (*status != NeuralaPluginStatus::success)
+	{
+		return nullptr;
+	}
+	return [] { return 0; };
+}

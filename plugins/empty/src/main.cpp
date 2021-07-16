@@ -30,7 +30,7 @@ main()
 	plug::EmptyVideoSource emptyVideoSource;
 	plug::EmptyResultsOutput emptyResultsOutput;
 	const ImageMetadata metadata = emptyVideoSource.metadata();
-	if (emptyVideoSource.nextFrame() == NextFrameResult::Status::success)
+	if (emptyVideoSource.nextFrame() == B4BError::OK)
 	{
 		const ImageView view = emptyVideoSource.frame();
 	}

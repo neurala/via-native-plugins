@@ -14,3 +14,7 @@ target_include_directories(empty
         ../../../../include
         ../../../../../../build/include
         ../../../../../../include)
+
+target_compile_options(empty PRIVATE /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251)
+
+target_link_libraries(empty stub)
