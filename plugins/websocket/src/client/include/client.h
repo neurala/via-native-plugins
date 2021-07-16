@@ -35,7 +35,7 @@
 #include <boost/config.hpp>
 #include <neurala/image/ImageMetadata.h>
 
-namespace neurala
+namespace neurala::plug
 {
 namespace beast = boost::beast;
 namespace net = boost::asio;
@@ -95,6 +95,6 @@ private:
 	beast::flat_buffer m_buffer;
 };
 
-} // namespace neurala
+} // namespace neurala::plug
 
 #endif // NEURALA_STREAM_PLUGIN_CLIENT_H

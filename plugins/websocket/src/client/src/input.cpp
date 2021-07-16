@@ -22,7 +22,7 @@
 
 #include "input.h"
 
-namespace neurala
+namespace neurala::plug
 {
 NextFrameResult
 Input::nextFrame()
@@ -67,4 +67,4 @@ Input::cachedMetadata() const
 	return *m_metadata;
 }
 
-} // namespace neurala
+} // namespace neurala::plug

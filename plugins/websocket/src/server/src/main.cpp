@@ -25,5 +25,5 @@
 int
 main()
 {
-	neurala::Server server{"127.0.0.1", 54321};
+	neurala::plug::Server server{"127.0.0.1", 54321};
 }

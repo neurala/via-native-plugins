@@ -35,7 +35,7 @@
 
 #include "client.h"
 
-namespace neurala
+namespace neurala::plug
 {
 class Input final : public VideoSource
 {
@@ -66,6 +66,6 @@ private:
 	std::vector<std::vector<std::byte>> m_frames;
 };
 
-} // namespace neurala
+} // namespace neurala::plug
 
 #endif // NEURALA_STREAM_PLUGIN_INPUT_H

@@ -32,7 +32,7 @@
 #include <boost/beast.hpp>
 #include <boost/config.hpp>
 
-namespace neurala
+namespace neurala::plug
 {
 namespace net = boost::asio;
 namespace beast = boost::beast;
@@ -76,6 +76,6 @@ private:
 	} m_metadata;
 };
 
-} // namespace neurala
+} // namespace neurala::plug
 
 #endif // NEURALA_STREAM_PLUGIN_SERVER_H

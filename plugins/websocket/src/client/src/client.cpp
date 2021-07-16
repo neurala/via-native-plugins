@@ -27,7 +27,7 @@
 
 #include <neurala/meta/enum.h>
 
-namespace neurala
+namespace neurala::plug
 {
 /// Interpret an std::size_t value in a byte string starting at the given address.
 static std::size_t
@@ -91,4 +91,4 @@ Client::response(const std::string_view request)
 	return data;
 }
 
-} // namespace neurala
+} // namespace neurala::plug

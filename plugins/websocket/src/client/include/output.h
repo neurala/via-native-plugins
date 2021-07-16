@@ -32,7 +32,7 @@
 
 #include "client.h"
 
-namespace neurala
+namespace neurala::plug
 {
 class Output final : public ResultsOutput
 {
@@ -53,6 +53,6 @@ public:
 	}
 };
 
-} // namespace neurala
+} // namespace neurala::plug
 
 #endif // NEURALA_STREAM_PLUGIN_OUTPUT_H

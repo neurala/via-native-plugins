@@ -27,8 +27,8 @@ int
 main()
 {
 	using namespace neurala;
-	Input input;
-	Output output;
+	plug::Input input;
+	plug::Output output;
 	const ImageMetadata metadata = input.metadata();
 	if (input.nextFrame() == NextFrameResult::Status::success)
 	{
