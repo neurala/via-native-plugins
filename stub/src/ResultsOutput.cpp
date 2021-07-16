@@ -1,5 +1,6 @@
 /*
- * Copyright Neurala Inc. 2013-2021. All rights reserved.
+ * This file is part of Neurala SDK.
+ *  Copyright Neurala Inc. 2013-2020. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
  * not license, sell, rent, lease, transfer, assign, distribute, display, host, outsource, disclose
@@ -20,31 +21,15 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_EMPTY_RESULTS_OUTPUT_H
-#define NEURALA_EMPTY_RESULTS_OUTPUT_H
+#include "neurala/utils/ResultsOutput.h"
 
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginErrorCallback.h>
-#include <neurala/utils/ResultsOutput.h>
-
-namespace neurala::plug
+namespace neurala
 {
-class EmptyResultsOutput final : public ResultsOutput
-{
-public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new EmptyResultsOutput; }
-	static void destroy(void* p) { delete reinterpret_cast<EmptyResultsOutput*>(p); }
+void
+ResultsOutputBase::onStart(std::string_view)
+{}
 
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string&, const ImageView*) final { }
-};
-
-} // namespace neurala::plug
-
-#endif // NEURALA_EMPTY_RESULTS_OUTPUT_H
+void
+ResultsOutputBase::onStop(std::string_view, EResultsOutputStatus)
+{}
+} // namespace neurala
