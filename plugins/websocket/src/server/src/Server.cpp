@@ -22,6 +22,7 @@
 
 #include "Server.h"
 
+#include <chrono>
 #include <iostream>
 #include <numeric>
 #include <stdexcept>
@@ -29,6 +30,8 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
+#include <boost/thread.hpp>
 
 namespace neurala::plug
 {
@@ -43,11 +46,22 @@ Server::Server(const std::string_view address, const std::uint16_t port)
 void
 Server::run()
 {
+	std::unique_ptr<tcp::socket> socket{std::make_unique<tcp::socket>(m_ioContext)};
+	bool detachingThread{};
 	while (true)
 	{
-		tcp::socket socket{m_ioContext};
-		m_acceptor.accept(socket);
-		std::thread([&](tcp::socket&& socket) { session(std::move(socket)); }, std::move(socket)).detach();
+		while (detachingThread)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
+		socket = std::make_unique<tcp::socket>(m_ioContext);
+		m_acceptor.accept(*socket);
+		detachingThread = true;
+		boost::thread([&]() {
+			detachingThread = false;
+			session(std::move(*socket));
+		})
+		 .detach();
 	}
 }
 
