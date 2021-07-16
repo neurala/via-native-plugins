@@ -47,12 +47,13 @@ Client::metadata()
 	const std::size_t height{atoz(begin)};
 	begin = parseMetadata(begin, end);
 	const EColorSpace colorSpace{
-	 stringToEnum<EColorSpace>(std::string{begin, metadataLength(begin, end)})};
+	 stringToEnum<EColorSpace>(std::string_view{begin, metadataLength(begin, end)})};
 	begin = parseMetadata(begin, end);
 	const EImageDataLayout imageDataLayout{
-	 stringToEnum<EImageDataLayout>(std::string{begin, metadataLength(begin, end)})};
+	 stringToEnum<EImageDataLayout>(std::string_view{begin, metadataLength(begin, end)})};
 	begin = parseMetadata(begin, end);
-	const EDatatype datatype{stringToEnum<EDatatype>(std::string{begin, metadataLength(begin, end)})};
+	const EDatatype datatype{
+	 stringToEnum<EDatatype>(std::string_view{begin, metadataLength(begin, end)})};
 	return {width, height, colorSpace, imageDataLayout, datatype};
 }
 
