@@ -54,7 +54,13 @@ public:
 		return instance;
 	}
 
-	/// Retrieve metadata regarding frames fed by the server.
+	/**
+	 * @brief Retrieve metadata regarding frames fed by the server.
+	 *
+	 * The client parses a sequence of five attributes (width, height, color space, layout, data type)
+	 * separated by semicolons. The width and height attributes must be represented as numbers. The
+	 * latter three are interpreted as the string encoding of an element from the corresponding enum.
+	 */
 	ImageMetadata metadata();
 
 	/// Retrieve the next frame and copy data to the specified location.
