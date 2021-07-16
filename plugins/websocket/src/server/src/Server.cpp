@@ -24,6 +24,7 @@
 
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <numeric>
 #include <stdexcept>
 #include <thread>
@@ -46,20 +47,20 @@ Server::Server(const std::string_view address, const std::uint16_t port)
 void
 Server::run()
 {
-	std::unique_ptr<tcp::socket> socket{std::make_unique<tcp::socket>(m_ioContext)};
-	bool detachingThread{};
+	std::unique_ptr<volatile tcp::socket> socket{std::make_unique<volatile tcp::socket>(m_ioContext)};
+	volatile bool detachingThread{};
 	while (true)
 	{
 		while (detachingThread)
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
-		socket = std::make_unique<tcp::socket>(m_ioContext);
-		m_acceptor.accept(*socket);
+		socket = std::make_unique<volatile tcp::socket>(m_ioContext);
+		m_acceptor.accept(const_cast<tcp::socket&>(*socket));
 		detachingThread = true;
 		boost::thread([&]() {
+			session(std::move(const_cast<tcp::socket&>(*socket)));
 			detachingThread = false;
-			session(std::move(*socket));
 		})
 		 .detach();
 	}
