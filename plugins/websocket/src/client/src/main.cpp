@@ -20,8 +20,8 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#include "input.h"
-#include "output.h"
+#include "Input.h"
+#include "Output.h"
 
 int
 main()

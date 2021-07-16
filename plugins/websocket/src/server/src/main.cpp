@@ -20,7 +20,7 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#include "server.h"
+#include "Server.h"
 
 int
 main()

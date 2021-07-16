@@ -22,7 +22,7 @@ conan_cmake_run(
     OUTPUT_QUIET
     KEEP_RPATHS)
 
-add_executable(client src/client.cpp src/initme.cpp src/input.cpp src/main.cpp)
+add_executable(client src/Client.cpp src/InitMe.cpp src/Input.cpp src/main.cpp)
 
 target_link_libraries(client PUBLIC CONAN_PKG::boost)
 

@@ -20,39 +20,52 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#ifndef NEURALA_STREAM_PLUGIN_INPUT_H
+#define NEURALA_STREAM_PLUGIN_INPUT_H
 
+#include <cstddef>
+#include <optional>
 #include <string>
+#include <system_error>
+#include <vector>
 
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/detail/PluginArguments.h>
+#include <neurala/plugin/detail/PluginBindings.h>
 #include <neurala/plugin/detail/PluginManager.h>
-#include <neurala/utils/ResultsOutput.h>
+#include <neurala/video/VideoSource.h>
 
-#include "client.h"
+#include "Client.h"
 
 namespace neurala::plug
 {
-class Output final : public ResultsOutput
+class Input final : public VideoSource
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
+	static void* create(PluginArguments&, PluginErrorCallback&) { return new Input; }
+	static void destroy(void* p) { delete reinterpret_cast<Input*>(p); }
 
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string& metadata, const ImageView*) final
-	{
-		Client::get().sendResult(metadata);
-	}
+	// Image dimension information
+	[[nodiscard]] ImageMetadata metadata() const final { return cachedMetadata(); }
+
+	// Query new frames​
+	[[nodiscard]] NextFrameResult nextFrame() final;
+
+	// Get a frame from host memory, data needs to be valid until the end of processing​
+	[[nodiscard]] ImageView frame() final { return {cachedMetadata(), m_frames.back().data()}; }
+
+	// Copy a frame into the buffer provided as argument
+	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) final;
+
+	// Executes an arbitrary action on the video source
+	[[nodiscard]] std::error_code execute(const std::string& action) final { return {}; }
+
+private:
+	// Access the image metadata. Only retrieve over the network if necessary.
+	const ImageMetadata& cachedMetadata() const;
+
+	mutable std::optional<ImageMetadata> m_metadata;
+	std::vector<std::vector<std::byte>> m_frames;
 };
 
 } // namespace neurala::plug
 
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+#endif // NEURALA_STREAM_PLUGIN_INPUT_H

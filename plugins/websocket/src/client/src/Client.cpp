@@ -20,7 +20,7 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#include "client.h"
+#include "Client.h"
 
 #include <cstdlib>
 #include <iostream>

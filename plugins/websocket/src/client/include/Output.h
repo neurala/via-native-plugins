@@ -20,51 +20,39 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#include "input.h"
+#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
+#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+
+#include <string>
+
+#include <neurala/image/views/ImageView.h>
+#include <neurala/plugin/detail/PluginArguments.h>
+#include <neurala/plugin/detail/PluginManager.h>
+#include <neurala/utils/ResultsOutput.h>
+
+#include "Client.h"
 
 namespace neurala::plug
 {
-NextFrameResult
-Input::nextFrame()
+class Output final : public ResultsOutput
 {
-	try
-	{
-		std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
-		Client::get().frame(frameBuffer.data());
-		m_frames.emplace_back(std::move(frameBuffer));
-		return NextFrameResult::Status::success;
-	}
-	catch (...)
-	{
-		std::cerr << "Failed retrieving frame from the server.\n";
-		return NextFrameResult::Status::error;
-	}
-}
+public:
+	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
+	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
 
-ImageView
-Input::frame(std::byte* data, std::size_t size)
-{
-	const ImageMetadata& md = cachedMetadata();
-	if (size < md.sizeBytes())
+	/**
+	 * @brief Function call operator for invoking the output action.
+	 *
+	 * @param metadata A JSON document containing information about the result.
+	 * @param image A pointer to an image view, which may be null if no frame
+	 *              is available or could be retrieved.
+	 */
+	void operator()(const std::string& metadata, const ImageView*) final
 	{
-		std::cerr << "Insufficient capacity in B4B buffer.\n";
+		Client::get().sendResult(metadata);
 	}
-	else
-	{
-		std::copy(cbegin(m_frames.back()), cend(m_frames.back()), data);
-		m_frames.pop_back();
-	}
-	return {md, data};
-}
-
-const ImageMetadata&
-Input::cachedMetadata() const
-{
-	if (!m_metadata)
-	{
-		m_metadata = Client::get().metadata();
-	}
-	return *m_metadata;
-}
+};
 
 } // namespace neurala::plug
+
+#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H

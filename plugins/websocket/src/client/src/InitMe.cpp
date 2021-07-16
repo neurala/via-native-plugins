@@ -23,8 +23,8 @@
 #include <neurala/plugin/detail/PluginBindings.h>
 #include <neurala/plugin/detail/PluginManager.h>
 
-#include "input.h"
-#include "output.h"
+#include "Input.h"
+#include "Output.h"
 
 // extern "C" PLUGIN_API NeuralaPluginExitFunction
 // initMe(NeuralaPluginManager* pluginManager, NeuralaPluginStatus* status)
