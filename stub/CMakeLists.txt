@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.17.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -9,14 +9,13 @@ add_library(stub SHARED
 	src/Option.cpp
 	src/PluginRegistrar.cpp)
 
-target_include_directories(pluginsStub PUBLIC include)
-	
 # TODO : copy only the required header files
-target_include_directories(pluginsStub SYSTEM PRIVATE
-	../../include
-	../../build/msvc-release/include)
+target_include_directories(stub SYSTEM PUBLIC
+	include
+	../../../include
+	../../../../../build/msvc-release/include)
 
-target_compile_options(pluginsStub PRIVATE /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251)
+target_compile_options(stub PRIVATE /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251)
 
 # TODO : use the correct define
-target_compile_definitions(pluginsStub PRIVATE NeuralaB4B_EXPORTS)
+target_compile_definitions(stub PRIVATE NeuralaB4B_EXPORTS)
