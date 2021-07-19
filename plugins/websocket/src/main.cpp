@@ -20,10 +20,23 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
+#include <boost/thread.hpp>
+
+#include "Input.h"
+#include "Output.h"
 #include "Server.h"
 
 int
 main()
 {
-	neurala::plug::Server server{"127.0.0.1", 54321};
+	using namespace neurala;
+	boost::thread([] { plug::Server server{"127.0.0.1", 54321}; }).detach();
+	plug::Input input;
+	plug::Output output;
+	const ImageMetadata metadata = input.metadata();
+	if (input.nextFrame() == NextFrameResult::Status::success)
+	{
+		const ImageView view = input.frame();
+	}
+	output("{ \"result\": \"success\" }", nullptr);
 }

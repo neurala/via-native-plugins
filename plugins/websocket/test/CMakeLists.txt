@@ -18,8 +18,6 @@ conan_cmake_run(
     OUTPUT_QUIET
     KEEP_RPATHS)
 
-add_executable(server src/main.cpp src/Server.cpp)
+add_executable(tests Client.cpp)
 
-target_link_libraries(server PUBLIC CONAN_PKG::boost)
-
-target_include_directories(server PUBLIC include)
+target_link_libraries(tests PUBLIC CONAN_PKG::boost)
