@@ -20,6 +20,7 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
+#include <numeric>
 #include <iostream>
 
 #include "dummy.h"
@@ -28,8 +29,22 @@ int
 main()
 {
 	using namespace neurala;
-	CameraInfo dummyCameraInfo;
-	DummyVideoSource dummyVideoSource(dummyCameraInfo);
-	DummyVideoSink dummyVideoSink(dummyCameraInfo);
 	CameraDiscovererDummy dummyDiscoverer;
+
+	// Discover the cameras exposed by this plugin
+	const auto connectedCameras = dummyDiscoverer();
+	CameraInfo dummyCameraInfo = connectedCameras[0];
+	DummyVideoSource dummyVideoSource(dummyCameraInfo);
+
+	// Retrieve dummy metadata
+	const ImageMetadata metadata = dummyVideoSource.metadata();
+	std::cout << "Source metadata: " << metadata << std::endl;
+
+	// Call dummy nextFrame
+	if (!dummyVideoSource.nextFrame())
+	{
+		// Retrieve and print the image view's metadata
+		const ImageView view = dummyVideoSource.frame();
+		std::cout << "Image view metadata: " << view.metadata() << std::endl;
+	}
 }

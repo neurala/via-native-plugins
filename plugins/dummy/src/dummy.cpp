@@ -47,13 +47,6 @@ exitHere()
 extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginStatus* status)
 {
-	*status = neurala::registerPlugin<neurala::DummyVideoSink>("neuralaDummyVideoSink",
-	                                                           neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
-	{
-		return nullptr;
-	}
-
 	*status = neurala::registerPlugin<neurala::DummyVideoSource>("neuralaDummyVideoSource",
 	                                                             neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
@@ -78,6 +71,7 @@ namespace neurala
 std::vector<CameraInfo>
 CameraDiscovererDummy::operator()() const
 {
+	std::cout << "Discovering available cameras...\n";
 	return {CameraInfo("DummyVideoSourceId", ECameraType::unknown, "Dummy Test Video Source", "")};
 }
 
@@ -104,56 +98,6 @@ CameraDiscovererDummy::destroy(void* p)
 	delete static_cast<CameraDiscovererDummy*>(p);
 }
 
-DummyVideoSink::DummyVideoSink(const CameraInfo& cameraInfo, const Option& options)
-{
-	std::cout << "Initiating VideoSink connection with " << cameraInfo << '\n';
-	std::cout << "With options: " << options << '\n';
-
-	const auto frameBufferSize = metadata().pixelComponentCount();
-	m_frame = std::make_unique<std::uint8_t[]>(frameBufferSize);
-	std::iota(&(m_frame[0]), &(m_frame[frameBufferSize]), 0);
-}
-
-void
-DummyVideoSink::load(const ImageView& image)
-{
-	std::cout << "Trying to load image from [" << image.data() << "]\n";
-
-	if (image.metadata() != metadata())
-	{
-		throw std::logic_error("Could not load image, incompatible metadata");
-	}
-
-	const auto frameBufferSize = metadata().pixelComponentCount();
-	std::copy_n(reinterpret_cast<const std::uint8_t*>(image.data()), image.sizeBytes(), m_frame.get());
-}
-
-void*
-DummyVideoSink::create(PluginArguments& arguments, PluginErrorCallback& error)
-{
-	VideoSink* p = nullptr;
-
-	try
-	{
-		const auto& cameraInfo = arguments.get<0, const CameraInfo>();
-		const auto& cameraOptions = arguments.get<1, const Option>();
-
-		p = new DummyVideoSink(cameraInfo, cameraOptions);
-	}
-	catch (const std::exception& e)
-	{
-		error(e.what());
-	}
-
-	return p;
-}
-
-void
-DummyVideoSink::destroy(void* p)
-{
-	delete static_cast<VideoSink*>(p);
-}
-
 DummyVideoSource::DummyVideoSource(const CameraInfo& cameraInfo, const Option& options)
 {
 	std::cout << "Initiating VideoSource connection with " << cameraInfo << '\n';
@@ -174,6 +118,7 @@ DummyVideoSource::frame(std::byte* data, std::size_t size)
 
 std::error_code DummyVideoSource::execute(const std::string& action)
 {
+	std::cout << "Executing action: " << action << '\n';
 	return std::error_code{};
 }
 
@@ -201,13 +146,6 @@ void
 DummyVideoSource::destroy(void* p)
 {
 	delete static_cast<VideoSource*>(p);
-}
-
-std::vector<CameraInfo>
-cameras()
-{
-	std::cout << "Discovering available cameras...\n";
-	return {CameraInfo("DummyVideoSourceId", ECameraType::unknown, "Dummy Test Video Source", "")};
 }
 
 } // namespace neurala

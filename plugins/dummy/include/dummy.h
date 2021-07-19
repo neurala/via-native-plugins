@@ -26,7 +26,6 @@
 
 #include "neurala/plugin/PluginBindings.h"
 
-#include "neurala/video/VideoSink.h"
 #include "neurala/video/VideoSource.h"
 #include "neurala/video/CameraDiscoverer.h"
 
@@ -43,25 +42,6 @@ public:
 
 	static void* create(PluginArguments&, PluginErrorCallback&);
 	static void destroy(void* p);
-};
-
-/**
- * @brief Dummy plugin video input that stores a single frame
- */
-class PLUGIN_API DummyVideoSink : public VideoSink
-{
-public:
-	explicit DummyVideoSink(const CameraInfo& cameraInfo, const Option& cameraOptions = {});
-
-	[[nodiscard]] ImageMetadata metadata() const override { return ImageMetadata(200, 200, EColorSpace::RGB, EImageDataLayout::planar, EDatatype::uint8); }
-
-	void load(const ImageView& image) override;
-
-	static void* create(PluginArguments&, PluginErrorCallback&);
-	static void destroy(void*);
-
-private:
-	std::unique_ptr<std::uint8_t[]> m_frame;
 };
 
 /**
@@ -84,8 +64,6 @@ public:
 
 	static void* create(PluginArguments&, PluginErrorCallback&);
 	static void destroy(void*);
-
-	static std::vector<CameraInfo> cameras();
 
 private:
 	std::unique_ptr<std::uint8_t[]> m_frame;
