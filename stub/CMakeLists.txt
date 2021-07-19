@@ -23,6 +23,7 @@ target_include_directories(stub SYSTEM PUBLIC include)
 # /permissive- :  disables permissive behaviors, and sets the /Zc compiler options for strict conformance.
 # /Zc:preprocessor : Use the new conforming preprocessor (off by default, except in C11/C17).
 # /Zc:__cplusplus : Enable the __cplusplus macro to report the supported standard (off by default).
+# /MP : Build with multiple processes
 #
 # Some of our classes with dll-interface inherit from STL classes that are not specified as such
 # This is not an issue as long as the same compiler version is used for building the dll.
