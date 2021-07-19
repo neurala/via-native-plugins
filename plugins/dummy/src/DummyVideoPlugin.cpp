@@ -23,8 +23,11 @@
 
 #include <iostream>
 
+#include "neurala/utils/Version.h"
 #include "neurala/video/CameraInfo.h"
+#include "neurala/plugin/PluginBindings.h"
 #include "neurala/plugin/PluginRegistrar.h"
+#include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginErrorCallback.h"
 
 #include "DummyVideoPlugin.h"
@@ -162,7 +165,7 @@ DummyVideoSource::frame(std::byte* data, std::size_t size)
 
 std::error_code DummyVideoSource::execute(const std::string& action)
 {
-	return make_error_code(B4BError::UNSUPPORTED_ACTION);
+	return std::error_code{};
 }
 
 void*

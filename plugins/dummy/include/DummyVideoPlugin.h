@@ -24,9 +24,6 @@
 #ifndef NEURALA_VIDEO_DETAIL_PLUGIN_DUMMY_VIDEO_PLUGIN_H
 #define NEURALA_VIDEO_DETAIL_PLUGIN_DUMMY_VIDEO_PLUGIN_H
 
-#include "neurala/plugin/detail/PluginManager.h"
-
-#include "neurala/image/ColorMatrix.h"
 #include "neurala/video/VideoSink.h"
 #include "neurala/video/VideoSource.h"
 #include "neurala/video/CameraDiscoverer.h"
@@ -72,7 +69,7 @@ public:
 
 	[[nodiscard]] ImageMetadata metadata() const override { return ImageMetadata(200, 200, EColorSpace::RGB, EImageDataLayout::planar, EDatatype::uint8); }
 
-	[[nodiscard]] std::error_code nextFrame() override { return make_error_code(B4BError::OK); }
+	[[nodiscard]] std::error_code nextFrame() override { return std::error_code{}; }
 
 	[[nodiscard]] ImageView frame() override { return ImageView(metadata(), m_frame.get()); }
 
