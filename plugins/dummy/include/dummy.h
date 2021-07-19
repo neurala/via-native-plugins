@@ -21,8 +21,8 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_VIDEO_DETAIL_PLUGIN_DUMMY_VIDEO_PLUGIN_H
-#define NEURALA_VIDEO_DETAIL_PLUGIN_DUMMY_VIDEO_PLUGIN_H
+#ifndef NEURALA_DUMMY_PLUGIN_H
+#define NEURALA_DUMMY_PLUGIN_H
 
 #include "neurala/video/VideoSink.h"
 #include "neurala/video/VideoSource.h"
@@ -31,12 +31,15 @@
 namespace neurala
 {
 
+class PluginArguments;
+class PluginErrorCallback;
+
 class CameraDiscovererDummy : public CameraDiscoverer
 {
 public:
 	[[nodiscard]] std::vector<CameraInfo> operator()() const override;
 
-	static void* create(PluginArguments& arguments, PluginErrorCallback& error);
+	static void* create(PluginArguments&, PluginErrorCallback&);
 	static void destroy(void* p);
 };
 
@@ -88,4 +91,4 @@ private:
 
 } // namespace neurala
 
-#endif // NEURALA_VIDEO_DETAIL_PLUGIN_DUMMY_VIDEO_PLUGIN_H
+#endif // NEURALA_DUMMY_PLUGIN_H

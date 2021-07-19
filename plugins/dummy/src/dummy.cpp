@@ -30,7 +30,7 @@
 #include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginErrorCallback.h"
 
-#include "DummyVideoPlugin.h"
+#include "dummy.h"
 
 namespace
 {

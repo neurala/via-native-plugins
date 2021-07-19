@@ -5,10 +5,12 @@ cmake_minimum_required(VERSION 3.17.0)
 set(CMAKE_CXX_STANDARD 17)
 
 # Build the plugin
-add_library(empty SHARED src/initme.cpp)
-target_include_directories(empty PUBLIC include)
-target_link_libraries(empty stub)
+set(plugin_target empty)
+add_library(${plugin_target} SHARED src/initme.cpp)
+target_include_directories(${plugin_target} PUBLIC include)
+target_link_libraries(${plugin_target} stub)
 
 # Build the tests
-add_executable(empty_tests test/main.cpp)
-target_link_libraries(empty_tests empty)
+set(test_target ${plugin_target}_tests)
+add_executable(${test_target} test/main.cpp)
+target_link_libraries(${test_target} ${plugin_target})
