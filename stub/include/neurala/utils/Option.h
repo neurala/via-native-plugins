@@ -181,12 +181,12 @@ public:
 	 *
 	 * @warning Options in @p other with the same key as in @p this will overwrite the latter.
 	 */
-	friend Option operator|(Option x, const Option& y);
+	friend NEURALA_PUBLIC Option operator|(Option x, const Option& y);
 
 	/// @copydoc operator|(Option,const Option&)
-	friend Option operator|(Option x, Option&& y);
+	friend NEURALA_PUBLIC Option operator|(Option x, Option&& y);
 
-	friend std::ostream& operator<<(std::ostream& os, const Option& option);
+	friend NEURALA_PUBLIC std::ostream& operator<<(std::ostream& os, const Option& option);
 };
 
 } // namespace neurala

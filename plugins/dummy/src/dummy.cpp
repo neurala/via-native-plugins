@@ -22,6 +22,7 @@
  */
 
 #include <iostream>
+#include <numeric>
 
 #include "neurala/utils/Version.h"
 #include "neurala/video/CameraInfo.h"
@@ -103,20 +104,28 @@ CameraDiscovererDummy::destroy(void* p)
 	delete static_cast<CameraDiscovererDummy*>(p);
 }
 
-DummyVideoSink::DummyVideoSink(const CameraInfo& cameraInfo, const Option&)
+DummyVideoSink::DummyVideoSink(const CameraInfo& cameraInfo, const Option& options)
 {
-	const auto& connection = cameraInfo.connection();
-	if (!connection.empty())
-	{
-		// TODO : m_frame = imageRead<std::uint8_t>(connection);
-	}
+	std::cout << "Initiating VideoSink connection with " << cameraInfo << '\n';
+	std::cout << "With options: " << options << '\n';
+
+	const auto frameBufferSize = metadata().pixelComponentCount();
+	m_frame = std::make_unique<std::uint8_t[]>(frameBufferSize);
+	std::iota(&(m_frame[0]), &(m_frame[frameBufferSize]), 0);
 }
 
 void
 DummyVideoSink::load(const ImageView& image)
 {
-	std::cout << image.data() << '\n';
-	// TODO : m_frame = makeColorMatrix<std::uint8_t>(image);
+	std::cout << "Trying to load image from [" << image.data() << "]\n";
+
+	if (image.metadata() != metadata())
+	{
+		throw std::logic_error("Could not load image, incompatible metadata");
+	}
+
+	const auto frameBufferSize = metadata().pixelComponentCount();
+	std::copy_n(reinterpret_cast<const std::uint8_t*>(image.data()), image.sizeBytes(), m_frame.get());
 }
 
 void*
@@ -145,20 +154,20 @@ DummyVideoSink::destroy(void* p)
 	delete static_cast<VideoSink*>(p);
 }
 
-DummyVideoSource::DummyVideoSource(const CameraInfo& cameraInfo, const Option& opt)
+DummyVideoSource::DummyVideoSource(const CameraInfo& cameraInfo, const Option& options)
 {
-	const auto& connection = cameraInfo.connection();
-	if (!connection.empty())
-	{
-		// TODO : m_frame = imageRead<std::uint8_t>(connection);
-	}
+	std::cout << "Initiating VideoSource connection with " << cameraInfo << '\n';
+	std::cout << "With options: " << options << '\n';
 
-	std::cout << opt.asBool("test");
+	const auto frameBufferSize = metadata().pixelComponentCount();
+	m_frame = std::make_unique<std::uint8_t[]>(frameBufferSize);
+	std::iota(&(m_frame[0]), &(m_frame[frameBufferSize]), 0);
 }
 
 ImageView
 DummyVideoSource::frame(std::byte* data, std::size_t size)
 {
+	std::cout << "Copying frame to [" << data << "]\n";
 	std::copy_n(reinterpret_cast<const std::byte*>(frame().data()), frame().sizeBytes(), data);
 	return ImageView{metadata(), data};
 }
@@ -197,6 +206,7 @@ DummyVideoSource::destroy(void* p)
 std::vector<CameraInfo>
 cameras()
 {
+	std::cout << "Discovering available cameras...\n";
 	return {CameraInfo("DummyVideoSourceId", ECameraType::unknown, "Dummy Test Video Source", "")};
 }
 
