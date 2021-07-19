@@ -20,25 +20,25 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#include <neurala/plugin/detail/PluginBindings.h>
-#include <neurala/plugin/detail/PluginManager.h>
+#include <neurala/plugin/PluginBindings.h>
+#include <neurala/plugin/PluginRegistrar.h>
+#include <neurala/utils/Version.h>
 
 #include "Input.h"
 #include "Output.h"
 
-// extern "C" PLUGIN_API NeuralaPluginExitFunction
-// initMe(NeuralaPluginManager* pluginManager, NeuralaPluginStatus* status)
-// {
-// 	auto& pm = *static_cast<neurala::PluginManager*>(pluginManager);
-// 	*status = pm.registerPlugin<neurala::Input>("Input", neurala::Version(1, 0));
-// 	if (*status != NeuralaPluginStatus::success)
-// 	{
-// 		return nullptr;
-// 	}
-// 	*status = pm.registerPlugin<neurala::Output>("Output", neurala::Version(1, 0));
-// 	if (*status != NeuralaPluginStatus::success)
-// 	{
-// 		return nullptr;
-// 	}
-// 	return [] { return 0; };
-// }
+extern "C" PLUGIN_API NeuralaPluginExitFunction
+initMe(NeuralaPluginStatus* status)
+{
+	*status = neurala::registerPlugin<neurala::plug::Input>("Input", neurala::Version(1, 0));
+	if (*status != NeuralaPluginStatus::success)
+	{
+		return nullptr;
+	}
+	*status = neurala::registerPlugin<neurala::plug::Output>("Output", neurala::Version(1, 0));
+	if (*status != NeuralaPluginStatus::success)
+	{
+		return nullptr;
+	}
+	return [] { return 0; };
+}

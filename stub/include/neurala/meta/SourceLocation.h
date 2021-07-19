@@ -1,4 +1,6 @@
+
 /*
+ * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -20,39 +22,52 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#ifndef NEURALA_META_SOURCE_LOCATION_H
+#define NEURALA_META_SOURCE_LOCATION_H
 
-#include <string>
+/**
+ * @def NEURALA_CURRENT_FUNCTION
+ * Returns a c-string of the current function.
+ */
+#if defined(__GNUC__)
+# define NEURALA_CURRENT_FUNCTION __PRETTY_FUNCTION__
+#elif defined(_MSC_VER)
+# define NEURALA_CURRENT_FUNCTION __FUNCSIG__
+#else
+# define NEURALA_CURRENT_FUNCTION __func__
+#endif
 
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginRegistrar.h>
-#include <neurala/utils/ResultsOutput.h>
-
-#include "Client.h"
-
-namespace neurala::plug
+namespace neurala
 {
-class Output final : public ResultsOutput
+/**
+ * @brief Container for function name, line, and file.
+ *
+ * This is modeled after
+ * https://en.cppreference.com/w/cpp/experimental/source_location/source_location
+ */
+class SourceLocation
 {
+	const char* m_function{};
+	int m_line{};
+
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
+	SourceLocation() = default;
 
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string& metadata, const ImageView*) final
-	{
-		Client::get().sendResult(metadata);
-	}
+	constexpr SourceLocation(const char* function, int line) noexcept
+	 : m_function{function}, m_line{line}
+	{}
+
+	constexpr const char* function() const noexcept { return m_function; }
+
+	constexpr int line() const noexcept { return m_line; }
 };
 
-} // namespace neurala::plug
+} // namespace neurala
 
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+/**
+ * @def NEURALA_CURRENT_SOURCE_LOCATION
+ * Returns the current @ref neurala::SourceLocation.
+ */
+#define NEURALA_CURRENT_SOURCE_LOCATION() neurala::SourceLocation(NEURALA_CURRENT_FUNCTION, __LINE__)
+
+#endif // NEURALA_META_SOURCE_LOCATION_H

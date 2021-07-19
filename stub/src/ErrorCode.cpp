@@ -1,4 +1,6 @@
+
 /*
+ * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -20,39 +22,48 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#include "neurala/error/ErrorCode.h"
 
-#include <string>
-
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginRegistrar.h>
-#include <neurala/utils/ResultsOutput.h>
-
-#include "Client.h"
-
-namespace neurala::plug
+namespace neurala
 {
-class Output final : public ResultsOutput
+namespace
+{
+class B4BCategoryImpl final : public std::error_category
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
-
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string& metadata, const ImageView*) final
+	virtual const char* name() const noexcept { return "b4b_error"; }
+	virtual std::string message(int ev) const noexcept
 	{
-		Client::get().sendResult(metadata);
+		const auto code = static_cast<B4BError>(ev);
+		return enumToString(code);
+	}
+	virtual std::error_condition default_error_condition(int ev) const noexcept
+	{
+		switch (static_cast<B4BError>(ev))
+		{
+			default:
+				return std::error_condition{ev, *this};
+		}
 	}
 };
+} // namespace
 
-} // namespace neurala::plug
+const std::error_category&
+b4bCategory() noexcept
+{
+	static B4BCategoryImpl category;
+	return category;
+}
 
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+std::error_code
+make_error_code(B4BError error) noexcept // NOLINT
+{
+	return std::error_code{static_cast<int>(error), b4bCategory()};
+}
+
+std::error_condition
+make_error_condition(B4BError error) noexcept // NOLINT
+{
+	return std::error_condition{static_cast<int>(error), b4bCategory()};
+}
+} // namespace neurala

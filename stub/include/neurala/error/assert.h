@@ -1,4 +1,5 @@
 /*
+ * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -20,39 +21,55 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#ifndef NEURALA_ERROR_ASSERT_H
+#define NEURALA_ERROR_ASSERT_H
 
-#include <string>
+#ifdef NEURALA_ENABLE_ASSERTS
 
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginRegistrar.h>
-#include <neurala/utils/ResultsOutput.h>
+#include "neurala/config/os.h"
+#include "neurala/meta/SourceLocation.h"
+#include "neurala/exports.h"
 
-#include "Client.h"
-
-namespace neurala::plug
+namespace neurala
 {
-class Output final : public ResultsOutput
-{
-public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
 
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string& metadata, const ImageView*) final
-	{
-		Client::get().sendResult(metadata);
-	}
-};
+/**
+ * @brief Prints @p expr, @p file, function name, and source code line to standard error and calls
+ *        @c std::abort().
+ *
+ * @param msg            message
+ * @param file           file
+ * @param sourceLocation source location
+ */
+NEURALA_PUBLIC void
+assertionFailed(const char* msg, const char* file, const SourceLocation& sourceLocation);
 
-} // namespace neurala::plug
+} // namespace neurala
 
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+/**
+ * @def NEURALA_ASSERT(condition)
+ * If @c NDEBUG is not defined or @c NEURALA_ENABLE_ASSERTS is defined, it checks @p condition and
+ * if it is @c false, it outputs diagnostic information on the standard error output and calls
+ * @c std::abort().
+ */
+
+/**
+ * @def NEURALA_ASSERT_MSG(condition, msg)
+ * If @c NDEBUG is not defined or @c NEURALA_ENABLE_ASSERTS is defined, it checks @p expr and if it
+ * is @c false, it outputs @p msg and diagnostic information on the standard error output and calls
+ * @c std::abort().
+ */
+
+# define NEURALA_ASSERT_MSG(condition, msg) \
+ (!!(condition) ? ((void)0) : ::neurala::assertionFailed(msg, __FILE__, NEURALA_CURRENT_SOURCE_LOCATION()))
+
+# define NEURALA_ASSERT(condition) NEURALA_ASSERT_MSG((condition), #condition)
+
+#else // NEURALA_ENABLE_ASSERTS
+
+# define NEURALA_ASSERT(condition) ((void)0)
+# define NEURALA_ASSERT_MSG(condition, msg) ((void)0)
+
+#endif // NEURALA_ENABLE_ASSERTS
+
+#endif // NEURALA_ERROR_ASSERT_H

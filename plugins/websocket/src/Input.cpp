@@ -22,9 +22,11 @@
 
 #include "Input.h"
 
+#include <iostream>
+
 namespace neurala::plug
 {
-NextFrameResult
+std::error_code
 Input::nextFrame()
 {
 	try
@@ -32,12 +34,11 @@ Input::nextFrame()
 		std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
 		Client::get().frame(frameBuffer.data());
 		m_frames.emplace_back(std::move(frameBuffer));
-		return NextFrameResult::Status::success;
+		return {};
 	}
-	catch (...)
+	catch (const beast::system_error& se)
 	{
-		std::cerr << "Failed retrieving frame from the server.\n";
-		return NextFrameResult::Status::error;
+		return std::make_error_code(static_cast<std::errc>(se.code().value()));
 	}
 }
 

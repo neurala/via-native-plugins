@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.17.0)
 set(CMAKE_CXX_STANDARD 17)
 
 if(WIN32 AND MSVC)
-    add_compile_options(/Zc:__cplusplus)
+    add_compile_options(/Zc:__cplusplus /wd5104 /wd5105)
 endif()
 
 include(conan)
@@ -22,19 +22,10 @@ conan_cmake_run(
     OUTPUT_QUIET
     KEEP_RPATHS)
 
-add_executable(websocket src/Client.cpp src/InitMe.cpp src/Input.cpp src/Server.cpp src/main.cpp)
+add_executable(websocket src/Client.cpp src/Input.cpp src/Server.cpp src/main.cpp) #src/InitMe.cpp
 
-target_link_libraries(websocket PUBLIC CONAN_PKG::boost)
+target_include_directories(websocket PUBLIC include)
 
-target_include_directories(websocket
-    PUBLIC
-        include
-    PRIVATE
-        ../../../../build/include
-        ../../../../external/cereal/include
-        ../../../../external/jsoncpp/include
-        ../../../../include
-        ../../../../../../build/include
-        ../../../../../../include)
+target_link_libraries(websocket PUBLIC stub CONAN_PKG::boost)
 
 # add_subdirectory(test)

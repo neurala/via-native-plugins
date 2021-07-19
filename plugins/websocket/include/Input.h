@@ -29,8 +29,8 @@
 #include <system_error>
 #include <vector>
 
-#include <neurala/plugin/detail/PluginBindings.h>
-#include <neurala/plugin/detail/PluginManager.h>
+#include <neurala/plugin/PluginBindings.h>
+#include <neurala/plugin/PluginRegistrar.h>
 #include <neurala/video/VideoSource.h>
 
 #include "Client.h"
@@ -47,7 +47,7 @@ public:
 	[[nodiscard]] ImageMetadata metadata() const final { return cachedMetadata(); }
 
 	// Query new frames​
-	[[nodiscard]] NextFrameResult nextFrame() final;
+	[[nodiscard]] std::error_code nextFrame() final;
 
 	// Get a frame from host memory, data needs to be valid until the end of processing​
 	[[nodiscard]] ImageView frame() final { return {cachedMetadata(), m_frames.back().data()}; }

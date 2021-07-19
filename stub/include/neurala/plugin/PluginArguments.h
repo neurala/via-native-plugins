@@ -1,4 +1,5 @@
 /*
+ * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -20,39 +21,66 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#ifndef NEURALA_PLUGIN_PLUGIN_ARGUMENTS_H
+#define NEURALA_PLUGIN_PLUGIN_ARGUMENTS_H
 
-#include <string>
+#include <utility>
+#include <vector>
 
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginRegistrar.h>
-#include <neurala/utils/ResultsOutput.h>
+#include "neurala/error/Exception.h"
+#include "neurala/utils/detail/AnyRef.h"
 
-#include "Client.h"
-
-namespace neurala::plug
+namespace neurala
 {
-class Output final : public ResultsOutput
+/**
+ * @brief Arguments for plugin instance creation.
+ *
+ * It type erases all arguments passed to it, but performs type checking at retrieval to avoid
+ * incorrect casts.
+ */
+class PluginArguments
 {
+	std::vector<AnyRef> m_args;
+
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
+	/**
+	 * @brief Creates a new @ref PluginArguments object that type-erases @p t.
+	 */
+	template<class... T>
+	explicit PluginArguments(T&... t) : m_args({t...})
+	{}
 
 	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
+	 * @brief Returns if this object has no arguments.
 	 */
-	void operator()(const std::string& metadata, const ImageView*) final
+	bool empty() const noexcept { return m_args.empty(); }
+
+	/**
+	 * @brief Returns the number of arguments stored in this object.
+	 */
+	std::size_t size() const noexcept { return m_args.size(); }
+
+	/**
+	 * @brief Returns if the @p I -th argument is of type @p T.
+	 */
+	template<std::size_t I, class T>
+	bool isOfType() const
 	{
-		Client::get().sendResult(metadata);
+		NEURALA_GUARD(I < m_args.size(), "Argument index out-of-bounds");
+		return m_args[I].isOfType<T>();
+	}
+
+	/**
+	 * @brief Returns the @p I -th argument, cast to type @p T.
+	 */
+	template<std::size_t I, class T>
+	T& get() const
+	{
+		NEURALA_GUARD(I < m_args.size(), "Argument index out-of-bounds");
+		return m_args[I].get<T>();
 	}
 };
 
-} // namespace neurala::plug
+} // namespace neurala
 
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+#endif // NEURALA_PLUGIN_PLUGIN_ARGUMENTS_H

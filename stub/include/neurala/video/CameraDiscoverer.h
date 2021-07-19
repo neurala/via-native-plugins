@@ -1,4 +1,5 @@
-/*
+﻿/*
+ * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -20,39 +21,34 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#ifndef NEURALA_VIDEO_CAMERA_DISCOVERER_H
+#define NEURALA_VIDEO_CAMERA_DISCOVERER_H
 
-#include <string>
+#include "neurala/video/CameraInfo.h"
 
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginRegistrar.h>
-#include <neurala/utils/ResultsOutput.h>
-
-#include "Client.h"
-
-namespace neurala::plug
+namespace neurala
 {
-class Output final : public ResultsOutput
+
+/**
+ * @brief Base class for a video data source discoverer.
+ */
+class CameraDiscoverer
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
+	CameraDiscoverer() = default;
 
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string& metadata, const ImageView*) final
-	{
-		Client::get().sendResult(metadata);
-	}
+	CameraDiscoverer(const CameraDiscoverer&) = default;
+	CameraDiscoverer(CameraDiscoverer&&) = default;
+
+	CameraDiscoverer& operator=(const CameraDiscoverer&) = default;
+	CameraDiscoverer& operator=(CameraDiscoverer&&) = default;
+
+	virtual ~CameraDiscoverer() = default;
+
+	// Scan for all available cameras
+	[[nodiscard]] virtual std::vector<CameraInfo> operator()() const = 0;
 };
 
-} // namespace neurala::plug
+} // namespace neurala
 
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+#endif // NEURALA_VIDEO_CAMERA_DISCOVERER_H

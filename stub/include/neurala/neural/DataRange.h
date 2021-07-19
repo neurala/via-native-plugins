@@ -1,4 +1,5 @@
 /*
+ * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -20,39 +21,46 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#ifndef NEURALA_NEURAL_DATA_RANGE_H
+#define NEURALA_NEURAL_DATA_RANGE_H
 
-#include <string>
+#include "neurala/meta/enum.h"
 
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginRegistrar.h>
-#include <neurala/utils/ResultsOutput.h>
-
-#include "Client.h"
-
-namespace neurala::plug
+namespace neurala
 {
-class Output final : public ResultsOutput
+/**
+ * @brief Available data preprocessing for neural network input.
+ */
+enum class EDataRange
 {
-public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
-
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string& metadata, const ImageView*) final
-	{
-		Client::get().sendResult(metadata);
-	}
+	/// Unknown data range
+	unknown,
+	/// Normalized data range <tt>[0.0, 1.0]</tt>
+	normalized,
+	/// Normalized data range around zero <tt>[-0.5, 0.5]</tt>
+	normalizedAroundZero,
+	/// Scaled data range by 255 <tt>[0.0, 255.0]</tt>
+	normalizedScaled,
+	/// normalized rgb data based on COCO mean values: channel = (channel - channelMean)/channelStd
+	normalizedCOCO
 };
 
-} // namespace neurala::plug
+#ifndef SWIG
+template<>
+class MetaEnum<EDataRange> : public MetaEnumRegister<EDataRange>
+{
+public:
+	static constexpr const auto values = enumRegisterValues(
+	 NEURALA_META_ENUM_ENTRY(EDataRange, unknown),
+	 NEURALA_META_ENUM_ENTRY(EDataRange, normalized),
+	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedAroundZero),
+	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedScaled),
+	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedCOCO));
 
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+	static constexpr const auto fallbackValue = values[0];
+};
+#endif // SWIG
+
+} // namespace neurala
+
+#endif // NEURALA_NEURAL_DATA_RANGE_H

@@ -1,4 +1,5 @@
 /*
+ * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -20,39 +21,45 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#ifndef NEURALA_IMAGE_IMAGE_DATA_LAYOUT_H
+#define NEURALA_IMAGE_IMAGE_DATA_LAYOUT_H
 
-#include <string>
+#include <cstddef>
 
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginRegistrar.h>
-#include <neurala/utils/ResultsOutput.h>
+#include "neurala/meta/enum.h"
 
-#include "Client.h"
-
-namespace neurala::plug
+namespace neurala
 {
-class Output final : public ResultsOutput
+/**
+ * @brief Image data layout type.
+ */
+enum class EImageDataLayout : std::uint8_t
 {
-public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
-
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string& metadata, const ImageView*) final
-	{
-		Client::get().sendResult(metadata);
-	}
+	unknown = 0x0,
+	/// Planar (XXXYYYZZZ)
+	planar,
+	/// Interleaved (XYZXYZXYZ)
+	interleaved,
+	/// Semi-planar (XXXYZYZYZ)
+	semiplanar
 };
 
-} // namespace neurala::plug
 
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+#ifndef SWIG
+template<>
+class MetaEnum<EImageDataLayout> : public MetaEnumRegister<EImageDataLayout>
+{
+public:
+	static constexpr const auto values = enumRegisterValues(
+	 NEURALA_META_ENUM_ENTRY(EImageDataLayout, unknown),
+	 NEURALA_META_ENUM_ENTRY(EImageDataLayout, planar),
+	 NEURALA_META_ENUM_ENTRY(EImageDataLayout, interleaved),
+	 NEURALA_META_ENUM_ENTRY(EImageDataLayout, semiplanar));
+
+	static constexpr const auto fallbackValue = values[0];
+};
+#endif // SWIG
+
+} // namespace neurala
+
+#endif // NEURALA_IMAGE_IMAGE_DATA_LAYOUT_H

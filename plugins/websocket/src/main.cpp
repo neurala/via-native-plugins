@@ -21,6 +21,7 @@
  */
 
 #include <boost/thread.hpp>
+#include <iostream>
 
 #include "Input.h"
 #include "Output.h"
@@ -34,7 +35,7 @@ main()
 	plug::Input input;
 	plug::Output output;
 	const ImageMetadata metadata = input.metadata();
-	if (input.nextFrame() == NextFrameResult::Status::success)
+	if (input.nextFrame().value() == 0)
 	{
 		const ImageView view = input.frame();
 	}

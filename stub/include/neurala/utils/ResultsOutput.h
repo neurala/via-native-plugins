@@ -1,5 +1,6 @@
 /*
- * Copyright Neurala Inc. 2013-2021. All rights reserved.
+ * This file is part of Neurala SDK.
+ *  Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
  * not license, sell, rent, lease, transfer, assign, distribute, display, host, outsource, disclose
@@ -20,26 +21,62 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#ifndef NEURALA_UTILS_RESULTS_OUTPUT_H
+#define NEURALA_UTILS_RESULTS_OUTPUT_H
 
+#include <functional>
 #include <string>
+#include <string_view>
 
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginRegistrar.h>
-#include <neurala/utils/ResultsOutput.h>
+#include "neurala/exports.h"
+#include "neurala/utils/Option.h"
+#include "neurala/image/views/ImageView.h"
 
-#include "Client.h"
-
-namespace neurala::plug
+namespace neurala
 {
-class Output final : public ResultsOutput
+/**
+ * @brief An enumeration type representing the status of a pipeline job upon
+ *        stopping.
+ */
+enum class EResultsOutputStatus
+{
+	stopped, ///< Indicates that the pipeline job has terminated normally.
+	faulted  ///< Indicates that the pipeline job has terminated abnormally.
+};
+
+/**
+ * @brief Base type for output actions implemented as plugins.
+ */
+class ResultsOutputBase {
+public:
+	/// @brief Virtual destructor.
+	virtual ~ResultsOutputBase() = default;
+
+	/**
+	 * @brief Called at the start of a pipeline job.
+	 *
+	 * @param id The ID of the pipeline job that is starting. This value can be
+	 *           used as a discriminator to track which job is starting.
+	 */
+	virtual void onStart(std::string_view id) { }
+
+	/**
+	 * @brief Called at the end of a pipeline job.
+	 *
+	 * @param id The ID of the pipeline job that is starting. This value can be
+	 *           used as a discriminator to track which job is stopping.
+	 * @param status The reason for stopping.
+	 */
+	virtual void onStop(std::string_view id, EResultsOutputStatus status) { }
+};
+
+/**
+ * @brief Base type for public plugin output actions. Plugin implementers
+ *        should inherit from this type.
+ */
+class ResultsOutput : public ResultsOutputBase
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
-
 	/**
 	 * @brief Function call operator for invoking the output action.
 	 *
@@ -47,12 +84,9 @@ public:
 	 * @param image A pointer to an image view, which may be null if no frame
 	 *              is available or could be retrieved.
 	 */
-	void operator()(const std::string& metadata, const ImageView*) final
-	{
-		Client::get().sendResult(metadata);
-	}
+	virtual void operator()(const std::string& metadata, const ImageView* image) = 0;
 };
 
-} // namespace neurala::plug
+} // namespace neurala
 
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+#endif // NEURALA_UTILS_RESULTS_OUTPUT_H

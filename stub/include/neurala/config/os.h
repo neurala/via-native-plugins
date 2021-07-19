@@ -1,4 +1,5 @@
 /*
+ * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -20,39 +21,20 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#ifndef NEURALA_CONFIG_OS_H
+#define NEURALA_CONFIG_OS_H
 
-#include <string>
+#if !defined(NEURALA_OS_WINDOWS) \
+    && (defined(WIN32) /* Defined by CMake if OS is Windows (any arch) */ \
+        || defined(_WINDOWS) /* Defined for NVCC invocations by CMake */ \
+        || defined(_WIN32) /* All 32bits and 64bits Windows builds */ \
+        || defined(_WIN64)) /* All 64bits Windows builds */
+# define NEURALA_OS_WINDOWS
+#endif
 
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginRegistrar.h>
-#include <neurala/utils/ResultsOutput.h>
+#if !defined(NEURALA_OS_APPLE) \
+    && defined(__APPLE__) /* Defined by Apple Clang for iOS and macOS both */
+# define NEURALA_OS_APPLE
+#endif
 
-#include "Client.h"
-
-namespace neurala::plug
-{
-class Output final : public ResultsOutput
-{
-public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
-
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string& metadata, const ImageView*) final
-	{
-		Client::get().sendResult(metadata);
-	}
-};
-
-} // namespace neurala::plug
-
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+#endif // NEURALA_CONFIG_OS_H

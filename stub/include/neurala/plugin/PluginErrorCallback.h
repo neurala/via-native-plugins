@@ -1,4 +1,5 @@
 /*
+ * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -20,39 +21,44 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#ifndef NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H
+#define NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H
 
 #include <string>
 
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginRegistrar.h>
-#include <neurala/utils/ResultsOutput.h>
-
-#include "Client.h"
-
-namespace neurala::plug
+namespace neurala
 {
-class Output final : public ResultsOutput
+
+/**
+ * @brief Utility class to transport exception messages between @ref PluginManager and plugins.
+ */
+class PluginErrorCallback
 {
+	std::string m_exception;
+
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
-
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string& metadata, const ImageView*) final
+	void operator()(const char* s) noexcept
 	{
-		Client::get().sendResult(metadata);
+		try
+		{
+			m_exception = s;
+		}
+		catch (...)
+		{
+			// ignore all exceptions due to string creation
+		}
+	}
+
+	const char* what() const noexcept
+	{
+		if (m_exception.empty())
+		{
+			return "failed to propagate error message";
+		}
+		return m_exception.c_str();
 	}
 };
 
-} // namespace neurala::plug
+} // namespace neurala
 
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+#endif // NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H

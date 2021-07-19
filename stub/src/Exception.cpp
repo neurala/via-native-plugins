@@ -1,4 +1,5 @@
 /*
+ * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -20,39 +21,59 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_OUTPUT_H
-#define NEURALA_STREAM_PLUGIN_OUTPUT_H
+#include <iostream>
 
-#include <string>
+#include "neurala/error/Exception.h"
 
-#include <neurala/image/views/ImageView.h>
-#include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginRegistrar.h>
-#include <neurala/utils/ResultsOutput.h>
 
-#include "Client.h"
-
-namespace neurala::plug
+namespace neurala
 {
-class Output final : public ResultsOutput
+Exception::Exception(const SourceLocation& sourceLocation, const std::error_code& errorCode) noexcept
+ : m_sourceLocation{sourceLocation},
+   m_errorCode{errorCode}
 {
-public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
+	logException();
+}
 
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string& metadata, const ImageView*) final
+void
+Exception::logException() noexcept
+{
+	std::cout << '\n' << what() << " [" << m_errorCode.message() << "]\n";
+}
+
+const char*
+Exception::what() const noexcept
+{
+	return m_errorMessage.c_str();
+}
+
+const std::error_code&
+Exception::code() const noexcept
+{
+	return m_errorCode;
+}
+
+void
+catastrophicError(const SourceLocation& sourceLocation,
+                  const char* errorName,
+                  const char* errorDescription) noexcept
+{
+	if (errorName == nullptr)
 	{
-		Client::get().sendResult(metadata);
+		const char* msgFormat = "Error in: %s:%d, %s\n";
+		std::fprintf(stderr, msgFormat, sourceLocation.function(), sourceLocation.line(), errorDescription);
 	}
-};
+	else
+	{
+		const char* msgFormat = "Error in: %s:%d, %s (%s)\n";
+		std::fprintf(stderr,
+		             msgFormat,
+		             sourceLocation.function(),
+		             sourceLocation.line(),
+		             errorDescription,
+		             errorName);
+	}
+	std::abort();
+}
 
-} // namespace neurala::plug
-
-#endif // NEURALA_STREAM_PLUGIN_OUTPUT_H
+} // namespace neurala
