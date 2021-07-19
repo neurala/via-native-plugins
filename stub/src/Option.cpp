@@ -21,47 +21,13 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#include "neurala/cppcompat/iomanip.h"
 #include <unordered_map>
 #include <variant>
-
-#include "neurala/error/Exception.h"
 
 #include "neurala/utils/Option.h"
 
 namespace neurala
 {
-/// @brief Returns a name for @p T.
-template<class T>
-struct OptionTypeName;
-
-template<>
-struct OptionTypeName<bool>
-{
-	static constexpr const char* name = "bool";
-};
-constexpr const char* OptionTypeName<bool>::name;
-
-template<>
-struct OptionTypeName<std::int64_t>
-{
-	static constexpr const char* name = "integral";
-};
-constexpr const char* OptionTypeName<std::int64_t>::name;
-
-template<>
-struct OptionTypeName<double>
-{
-	static constexpr const char* name = "floating point";
-};
-constexpr const char* OptionTypeName<double>::name;
-
-template<>
-struct OptionTypeName<std::string>
-{
-	static constexpr const char* name = "string";
-};
-constexpr const char* OptionTypeName<std::string>::name;
 
 /// @brief Implementation of @ref Option.
 class Option::Impl
@@ -84,20 +50,7 @@ public:
 	template<class T>
 	const T& as(const std::string& name) const
 	{
-		auto it = m_options.find(name);
-		NEURALA_GUARD(it != m_options.cend(), "Option not found: ", std17::quoted(name));
-		try
-		{
-			return std::get<T>(it->second);
-		}
-		catch (const std::bad_variant_access&)
-		{
-			NEURALA_THROW_EXCEPTION("Option ",
-			                        std17::quoted(name),
-			                        " does not have a ",
-			                        OptionTypeName<T>::name,
-			                        " value");
-		}
+		return std::get<T>(m_options.at(name));
 	}
 
 	template<class T>
