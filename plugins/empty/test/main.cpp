@@ -20,6 +20,8 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
+#include <iostream>
+
 #include "EmptyResultsOutput.h"
 #include "EmptyVideoSource.h"
 
@@ -29,10 +31,20 @@ main()
 	using namespace neurala;
 	plug::EmptyVideoSource emptyVideoSource;
 	plug::EmptyResultsOutput emptyResultsOutput;
+
+	// Retrieve empty metadata
 	const ImageMetadata metadata = emptyVideoSource.metadata();
+	std::cout << "Metadata: " << metadata << std::endl;
+
+	// Call empty nextFrame
 	if (!emptyVideoSource.nextFrame())
 	{
+		// Retrieve and print the image view's metadata
 		const ImageView view = emptyVideoSource.frame();
+		std::cout << "Image view metadata: " << view.metadata() << std::endl;
+
 	}
+
+	// Trigger a fake output action
 	emptyResultsOutput("{}", nullptr);
 }
