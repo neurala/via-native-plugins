@@ -24,6 +24,8 @@
 #ifndef NEURALA_DUMMY_PLUGIN_H
 #define NEURALA_DUMMY_PLUGIN_H
 
+#include "neurala/plugin/PluginBindings.h"
+
 #include "neurala/video/VideoSink.h"
 #include "neurala/video/VideoSource.h"
 #include "neurala/video/CameraDiscoverer.h"
@@ -34,7 +36,7 @@ namespace neurala
 class PluginArguments;
 class PluginErrorCallback;
 
-class CameraDiscovererDummy : public CameraDiscoverer
+class PLUGIN_API CameraDiscovererDummy : public CameraDiscoverer
 {
 public:
 	[[nodiscard]] std::vector<CameraInfo> operator()() const override;
@@ -46,7 +48,7 @@ public:
 /**
  * @brief Dummy plugin video input that stores a single frame
  */
-class DummyVideoSink : public VideoSink
+class PLUGIN_API DummyVideoSink : public VideoSink
 {
 public:
 	explicit DummyVideoSink(const CameraInfo& cameraInfo, const Option& cameraOptions = {});
@@ -65,7 +67,7 @@ private:
 /**
  * @brief Dummy plugin video input based on VideoInputOCV
  */
-class DummyVideoSource : public VideoSource
+class PLUGIN_API DummyVideoSource : public VideoSource
 {
 public:
 	explicit DummyVideoSource(const CameraInfo& cameraInfo, const Option& cameraOptions = {});
