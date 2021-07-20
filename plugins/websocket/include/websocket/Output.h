@@ -20,62 +20,39 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_SERVER_H
-#define NEURALA_STREAM_PLUGIN_SERVER_H
+#ifndef NEURALA_PLUG_WS_OUTPUT_H
+#define NEURALA_PLUG_WS_OUTPUT_H
 
-#include <cstddef>
-#include <cstdint>
 #include <string>
-#include <string_view>
 
-#include <boost/asio.hpp>
-#include <boost/beast.hpp>
-#include <boost/config.hpp>
+#include <neurala/image/views/ImageView.h>
+#include <neurala/plugin/PluginArguments.h>
+#include <neurala/plugin/PluginRegistrar.h>
+#include <neurala/utils/ResultsOutput.h>
 
-namespace neurala::plug
+#include "Client.h"
+
+namespace neurala::plug::ws
 {
-namespace net = boost::asio;
-namespace beast = boost::beast;
-using tcp = net::ip::tcp;
-
-/**
- * @brief Websocket server that offers mock image data.
- */
-class Server final
+class Output final : public ResultsOutput
 {
 public:
-	Server(const std::string_view address, const std::uint16_t port);
+	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
+	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
 
-private:
-	/// Deploy the server.
-	void run();
-
-	/// Handle communication with a particular client.
-	void session(tcp::socket&& socket);
-
-	/// Handle a particular request made by a client.
-	void handleRequest(beast::websocket::stream<tcp::socket>& stream);
-
-	/// Handle an image metadata request.
-	void handleMetadata(beast::websocket::stream<tcp::socket>& stream);
-	/// Handle a frame request.
-	void handleFrame(beast::websocket::stream<tcp::socket>& stream);
-	/// Handle a result JSON.
-	void handleResult(beast::websocket::stream<tcp::socket>& stream);
-
-	net::io_context m_ioContext;
-	tcp::acceptor m_acceptor;
-
-	struct Metadata final
+	/**
+	 * @brief Function call operator for invoking the output action.
+	 *
+	 * @param metadata A JSON document containing information about the result.
+	 * @param image A pointer to an image view, which may be null if no frame
+	 *              is available or could be retrieved.
+	 */
+	void operator()(const std::string& metadata, const ImageView*) final
 	{
-		std::size_t width;
-		std::size_t height;
-		std::string colorSpace;
-		std::string layout;
-		std::string dataType;
-	} m_metadata;
+		Client::get().sendResult(metadata);
+	}
 };
 
-} // namespace neurala::plug
+} // namespace neurala::plug::ws
 
-#endif // NEURALA_STREAM_PLUGIN_SERVER_H
+#endif // NEURALA_PLUG_WS_OUTPUT_H

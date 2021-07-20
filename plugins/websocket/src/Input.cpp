@@ -24,7 +24,7 @@
 
 #include <iostream>
 
-namespace neurala::plug
+namespace neurala::plug::ws
 {
 std::error_code
 Input::nextFrame()
@@ -32,7 +32,7 @@ Input::nextFrame()
 	try
 	{
 		std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
-		Client::get().frame(frameBuffer.data());
+		Client::get().frame(frameBuffer.data(), frameBuffer.size());
 		m_frames.emplace_back(std::move(frameBuffer));
 		return {};
 	}
@@ -68,4 +68,4 @@ Input::cachedMetadata() const
 	return *m_metadata;
 }
 
-} // namespace neurala::plug
+} // namespace neurala::plug::ws

@@ -27,7 +27,7 @@
 
 #include <neurala/meta/enum.h>
 
-namespace neurala::plug
+namespace neurala::plug::ws
 {
 /// Interpret an std::size_t value in a byte string starting at the given address.
 static std::size_t
@@ -57,11 +57,16 @@ Client::metadata()
 	return {width, height, colorSpace, imageDataLayout, datatype};
 }
 
-void
-Client::frame(std::byte* const location)
+bool
+Client::frame(std::byte* const location, const std::size_t capacity)
 {
 	net::const_buffer buffer = response("frame");
-	std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), location);
+	const bool sufficientCapacity{buffer.size() <= capacity};
+	if (sufficientCapacity)
+	{
+		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), location);
+	}
+	return sufficientCapacity;
 }
 
 Client::Client() : m_context{}, m_socket{m_context}, m_stream{m_socket}
@@ -92,4 +97,4 @@ Client::response(const std::string_view request)
 	return data;
 }
 
-} // namespace neurala::plug
+} // namespace neurala::plug::ws

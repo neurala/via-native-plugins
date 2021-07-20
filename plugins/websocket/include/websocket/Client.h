@@ -20,8 +20,8 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_CLIENT_H
-#define NEURALA_STREAM_PLUGIN_CLIENT_H
+#ifndef NEURALA_PLUG_WS_CLIENT_H
+#define NEURALA_PLUG_WS_CLIENT_H
 
 #include <algorithm>
 #include <cstddef>
@@ -35,7 +35,7 @@
 #include <boost/config.hpp>
 #include <neurala/image/ImageMetadata.h>
 
-namespace neurala::plug
+namespace neurala::plug::ws
 {
 namespace beast = boost::beast;
 namespace net = boost::asio;
@@ -64,7 +64,7 @@ public:
 	ImageMetadata metadata();
 
 	/// Retrieve the next frame and copy data to the specified location.
-	void frame(std::byte* const location);
+	bool frame(std::byte* const location, const std::size_t capacity);
 
 	/// Send the result of processing a frame back to the server.
 	void sendResult(const std::string& result) { response(result); }
@@ -101,6 +101,6 @@ private:
 	beast::flat_buffer m_buffer;
 };
 
-} // namespace neurala::plug
+} // namespace neurala::plug::ws
 
-#endif // NEURALA_STREAM_PLUGIN_CLIENT_H
+#endif // NEURALA_PLUG_WS_CLIENT_H

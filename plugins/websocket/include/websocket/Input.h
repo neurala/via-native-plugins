@@ -20,8 +20,8 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_STREAM_PLUGIN_INPUT_H
-#define NEURALA_STREAM_PLUGIN_INPUT_H
+#ifndef NEURALA_PLUG_WS_INPUT_H
+#define NEURALA_PLUG_WS_INPUT_H
 
 #include <cstddef>
 #include <optional>
@@ -29,19 +29,28 @@
 #include <system_error>
 #include <vector>
 
+#include <neurala/plugin/PluginArguments.h>
 #include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginRegistrar.h>
 #include <neurala/video/VideoSource.h>
 
 #include "Client.h"
 
-namespace neurala::plug
+namespace neurala::plug::ws
 {
 class Input final : public VideoSource
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Input; }
+	static void* create(PluginArguments& args, PluginErrorCallback&)
+	{
+		const std::string& connection{args.get<0, const CameraInfo>().connection()};
+		const std::size_t delimiterIndex = connection.find(':');
+		return new Input{std::string_view{connection.data(), delimiterIndex},
+		                 static_cast<std::uint16_t>(std::atoi(connection.data() + delimiterIndex + 1))};
+	}
 	static void destroy(void* p) { delete reinterpret_cast<Input*>(p); }
+
+	Input(const std::string_view ip, const std::uint16_t port) { }
 
 	// Image dimension information
 	[[nodiscard]] ImageMetadata metadata() const final { return cachedMetadata(); }
@@ -66,6 +75,6 @@ private:
 	std::vector<std::vector<std::byte>> m_frames;
 };
 
-} // namespace neurala::plug
+} // namespace neurala::plug::ws
 
-#endif // NEURALA_STREAM_PLUGIN_INPUT_H
+#endif // NEURALA_PLUG_WS_INPUT_H

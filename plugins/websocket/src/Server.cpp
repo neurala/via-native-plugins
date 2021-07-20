@@ -34,7 +34,7 @@
 
 #include <boost/thread.hpp>
 
-namespace neurala::plug
+namespace neurala::plug::ws
 {
 Server::Server(const std::string_view address, const std::uint16_t port)
  : m_ioContext{1},
@@ -142,4 +142,4 @@ Server::handleResult(beast::websocket::stream<tcp::socket>& stream)
 	stream.write(net::buffer("DONE"));
 }
 
-} // namespace neurala::plug
+} // namespace neurala::plug::ws
