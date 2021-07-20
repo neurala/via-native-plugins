@@ -35,7 +35,10 @@ namespace neurala
 class PluginArguments;
 class PluginErrorCallback;
 
-class PLUGIN_API CameraDiscovererDummy : public CameraDiscoverer
+namespace plug::dummy
+{
+
+class PLUGIN_API Discoverer : public CameraDiscoverer
 {
 public:
 	[[nodiscard]] std::vector<CameraInfo> operator()() const override;
@@ -47,12 +50,15 @@ public:
 /**
  * @brief Dummy plugin video input based on VideoInputOCV
  */
-class PLUGIN_API DummyVideoSource : public VideoSource
+class PLUGIN_API Source : public VideoSource
 {
 public:
-	explicit DummyVideoSource(const CameraInfo& cameraInfo, const Option& cameraOptions = {});
+	explicit Source(const CameraInfo& cameraInfo, const Option& cameraOptions = {});
 
-	[[nodiscard]] ImageMetadata metadata() const override { return ImageMetadata(200, 200, EColorSpace::RGB, EImageDataLayout::planar, EDatatype::uint8); }
+	[[nodiscard]] ImageMetadata metadata() const override
+	{
+		return ImageMetadata(200, 200, EColorSpace::RGB, EImageDataLayout::planar, EDatatype::uint8);
+	}
 
 	[[nodiscard]] std::error_code nextFrame() override { return std::error_code{}; }
 
@@ -68,6 +74,8 @@ public:
 private:
 	std::unique_ptr<std::uint8_t[]> m_frame;
 };
+
+} // namespace plug::dummy
 
 } // namespace neurala
 

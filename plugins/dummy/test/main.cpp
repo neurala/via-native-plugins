@@ -29,12 +29,12 @@ int
 main()
 {
 	using namespace neurala;
-	CameraDiscovererDummy dummyDiscoverer;
+	plug::dummy::Discoverer dummyDiscoverer;
 
 	// Discover the cameras exposed by this plugin
 	const auto connectedCameras = dummyDiscoverer();
 	CameraInfo dummyCameraInfo = connectedCameras[0];
-	DummyVideoSource dummyVideoSource(dummyCameraInfo);
+	plug::dummy::Source dummyVideoSource(dummyCameraInfo);
 
 	// Retrieve dummy metadata
 	const ImageMetadata metadata = dummyVideoSource.metadata();

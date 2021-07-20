@@ -47,14 +47,14 @@ exitHere()
 extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginStatus* status)
 {
-	*status = neurala::registerPlugin<neurala::DummyVideoSource>("neuralaDummyVideoSource",
+	*status = neurala::registerPlugin<neurala::plug::dummy::Source>("neuralaDummyVideoSource",
 	                                                             neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
 		return nullptr;
 	}
 
-	*status = neurala::registerPlugin<neurala::CameraDiscovererDummy>(
+	*status = neurala::registerPlugin<neurala::plug::dummy::Discoverer>(
 	 "neuralaVideoPluginDummyDiscoverer",
 	 neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
@@ -65,24 +65,24 @@ initMe(NeuralaPluginStatus* status)
 	return exitHere;
 }
 
-namespace neurala
+namespace neurala::plug::dummy
 {
 
 std::vector<CameraInfo>
-CameraDiscovererDummy::operator()() const
+Discoverer::operator()() const
 {
 	std::cout << "Discovering available cameras...\n";
 	return {CameraInfo("DummyVideoSourceId", ECameraType::unknown, "Dummy Test Video Source", "")};
 }
 
 void*
-CameraDiscovererDummy::create(PluginArguments&, PluginErrorCallback& error)
+Discoverer::create(PluginArguments&, PluginErrorCallback& error)
 {
-	CameraDiscovererDummy* p = nullptr;
+	Discoverer* p = nullptr;
 
 	try
 	{
-		p = new CameraDiscovererDummy();
+		p = new Discoverer();
 	}
 	catch (const std::exception& e)
 	{
@@ -93,12 +93,12 @@ CameraDiscovererDummy::create(PluginArguments&, PluginErrorCallback& error)
 }
 
 void
-CameraDiscovererDummy::destroy(void* p)
+Discoverer::destroy(void* p)
 {
-	delete static_cast<CameraDiscovererDummy*>(p);
+	delete static_cast<Discoverer*>(p);
 }
 
-DummyVideoSource::DummyVideoSource(const CameraInfo& cameraInfo, const Option& options)
+Source::Source(const CameraInfo& cameraInfo, const Option& options)
 {
 	std::cout << "Initiating VideoSource connection with " << cameraInfo << '\n';
 	std::cout << "With options: " << options << '\n';
@@ -109,21 +109,22 @@ DummyVideoSource::DummyVideoSource(const CameraInfo& cameraInfo, const Option& o
 }
 
 ImageView
-DummyVideoSource::frame(std::byte* data, std::size_t size)
+Source::frame(std::byte* data, std::size_t size)
 {
 	std::cout << "Copying frame to [" << data << "]\n";
 	std::copy_n(reinterpret_cast<const std::byte*>(frame().data()), frame().sizeBytes(), data);
 	return ImageView{metadata(), data};
 }
 
-std::error_code DummyVideoSource::execute(const std::string& action)
+std::error_code
+Source::execute(const std::string& action)
 {
 	std::cout << "Executing action: " << action << '\n';
 	return std::error_code{};
 }
 
 void*
-DummyVideoSource::create(PluginArguments& arguments, PluginErrorCallback& error)
+Source::create(PluginArguments& arguments, PluginErrorCallback& error)
 {
 	VideoSource* p = nullptr;
 
@@ -132,7 +133,7 @@ DummyVideoSource::create(PluginArguments& arguments, PluginErrorCallback& error)
 		const auto& cameraInfo = arguments.get<0, const CameraInfo>();
 		const auto& cameraOptions = arguments.get<1, const Option>();
 
-		p = new DummyVideoSource(cameraInfo, cameraOptions);
+		p = new Source(cameraInfo, cameraOptions);
 	}
 	catch (const std::exception& e)
 	{
@@ -143,9 +144,9 @@ DummyVideoSource::create(PluginArguments& arguments, PluginErrorCallback& error)
 }
 
 void
-DummyVideoSource::destroy(void* p)
+Source::destroy(void* p)
 {
 	delete static_cast<VideoSource*>(p);
 }
 
-} // namespace neurala
+} // namespace neurala::plug::dummy
