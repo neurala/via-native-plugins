@@ -27,13 +27,13 @@
 #include <neurala/plugin/PluginErrorCallback.h>
 #include <neurala/utils/ResultsOutput.h>
 
-namespace neurala::plug
+namespace neurala::plug::empty
 {
-class EmptyResultsOutput final : public ResultsOutput
+class ResultsOutput final : public neurala::ResultsOutput
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new EmptyResultsOutput; }
-	static void destroy(void* p) { delete reinterpret_cast<EmptyResultsOutput*>(p); }
+	static void* create(PluginArguments&, PluginErrorCallback&) { return new ResultsOutput; }
+	static void destroy(void* p) { delete reinterpret_cast<ResultsOutput*>(p); }
 
 	/**
 	 * @brief Function call operator for invoking the output action.

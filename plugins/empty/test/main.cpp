@@ -29,8 +29,8 @@ int
 main()
 {
 	using namespace neurala;
-	plug::EmptyVideoSource emptyVideoSource;
-	plug::EmptyResultsOutput emptyResultsOutput;
+	plug::empty::VideoSource emptyVideoSource;
+	plug::empty::ResultsOutput emptyResultsOutput;
 
 	// Retrieve empty metadata
 	const ImageMetadata metadata = emptyVideoSource.metadata();

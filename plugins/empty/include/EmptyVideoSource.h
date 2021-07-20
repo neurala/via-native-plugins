@@ -31,13 +31,13 @@
 
 #include <neurala/video/VideoSource.h>
 
-namespace neurala::plug
+namespace neurala::plug::empty
 {
-class EmptyVideoSource final : public VideoSource
+class VideoSource final : public neurala::VideoSource
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new EmptyVideoSource; }
-	static void destroy(void* p) { delete reinterpret_cast<EmptyVideoSource*>(p); }
+	static void* create(PluginArguments&, PluginErrorCallback&) { return new VideoSource; }
+	static void destroy(void* p) { delete reinterpret_cast<VideoSource*>(p); }
 
 	// Image dimension information
 	[[nodiscard]] ImageMetadata metadata() const final { return {}; }
@@ -55,6 +55,6 @@ public:
 	[[nodiscard]] std::error_code execute(const std::string&) final { return {}; }
 };
 
-} // namespace neurala::plug
+} // namespace neurala::plug::empty
 
 #endif // NEURALA_STREAM_PLUGIN_INPUT_H

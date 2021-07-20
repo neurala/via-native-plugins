@@ -30,14 +30,14 @@
 extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginStatus* status)
 {
-	*status = neurala::registerPlugin<neurala::plug::EmptyVideoSource>("EmptyVideoSource",
-	                                                                   neurala::Version(1, 0));
+	*status = neurala::registerPlugin<neurala::plug::empty::VideoSource>("EmptyVideoSource",
+	                                                                     neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
 		return nullptr;
 	}
-	*status = neurala::registerPlugin<neurala::plug::EmptyResultsOutput>("EmptyResultsOutput",
-	                                                                     neurala::Version(1, 0));
+	*status = neurala::registerPlugin<neurala::plug::empty::ResultsOutput>("EmptyResultsOutput",
+	                                                                       neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
 		return nullptr;
