@@ -22,46 +22,17 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "websocket/Client.h"
+#include "websocket/Output.h"
 
 using namespace neurala;
 
-BOOST_AUTO_TEST_SUITE(Client)
+BOOST_AUTO_TEST_SUITE(Output)
 
-BOOST_AUTO_TEST_CASE(Metadata)
-{
-	const ImageMetadata metadata{plug::ws::Client::get().metadata()};
-	BOOST_TEST(metadata.width() == 800);
-	BOOST_TEST(metadata.height() == 600);
-	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
-	BOOST_TEST(metadata.layout() == EImageDataLayout::planar);
-	BOOST_TEST(metadata.datatype() == EDatatype::uint8);
-}
-
-BOOST_AUTO_TEST_CASE(InsufficientBufferFrame)
-{
-	const ImageMetadata metadata{plug::ws::Client::get().metadata()};
-	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
-	std::vector<std::byte> frameBuffer(metadata.width() * metadata.height() * 3 - 1);
-	BOOST_TEST(!plug::ws::Client::get().frame(frameBuffer.data(), frameBuffer.size()));
-	BOOST_TEST(std::all_of(cbegin(frameBuffer), cend(frameBuffer), [](std::byte b) {
-		return static_cast<char>(b) == 0;
-	}));
-}
-
-BOOST_AUTO_TEST_CASE(SufficientBufferFrame)
-{
-	const ImageMetadata metadata{plug::ws::Client::get().metadata()};
-	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
-	std::vector<std::byte> frameBuffer(metadata.width() * metadata.height() * 3);
-	BOOST_TEST(plug::ws::Client::get().frame(frameBuffer.data(), frameBuffer.size()));
-}
-
-BOOST_AUTO_TEST_CASE(Response)
+BOOST_AUTO_TEST_CASE(SendResult)
 {
 	try
 	{
-		plug::ws::Client::get().sendResult("{ \"result\": \"success\" }");
+		plug::ws::Output{}("{ \"result\": \"success\" }", nullptr);
 	}
 	catch (...)
 	{

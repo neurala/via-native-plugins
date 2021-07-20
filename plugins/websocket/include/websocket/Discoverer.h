@@ -3,6 +3,9 @@
 
 #include <vector>
 
+#include <neurala/plugin/PluginArguments.h>
+#include <neurala/plugin/PluginBindings.h>
+#include <neurala/plugin/PluginRegistrar.h>
 #include <neurala/video/CameraDiscoverer.h>
 #include <neurala/video/CameraInfo.h>
 
@@ -11,13 +14,13 @@ namespace neurala::plug::ws
 class Discoverer final : public CameraDiscoverer
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback& error) { return new Discoverer; }
+	static void* create(PluginArguments&, PluginErrorCallback&) { return new Discoverer; }
 	static void destroy(void* p) { delete reinterpret_cast<Discoverer*>(p); }
 
 	// Scan for all available cameras
 	[[nodiscard]] std::vector<CameraInfo> operator()() const final
 	{
-		return {{"", ECameraType::eBUS, "websocket", "127.0.0.1:54321"}};
+		return {{"0", ECameraType::eBUS, "websocket", "127.0.0.1:54321"}};
 	}
 };
 
