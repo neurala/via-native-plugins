@@ -27,16 +27,15 @@
 #include <unordered_map>
 
 #include "neurala/utils/Version.h"
+#include "neurala/plugin/PluginManager.h"
 #include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginErrorCallback.h"
-
-#include "neurala/plugin/PluginRegistrar.h"
 
 namespace neurala
 {
 
 // Classes registered by plugins and available for instantiation
-std::unordered_map<std::string, ClassMetadata> m_classes;
+std::unordered_map<std::string, PluginRegistrar::ClassMetadata> m_classes;
 
 // Protects class registry (m_classes)
 std::mutex m_classesMutex;
@@ -44,10 +43,11 @@ std::mutex m_classesMutex;
 // Manager version.
 constexpr Version m_version{1, 0};
 
-NeuralaPluginStatus registerClass(const char* name,
-                                  const Version& version,
-                                  ClassConstructorPtr classConstructor,
-                                  ClassDestructorPtr classDestructor)
+NeuralaPluginStatus
+registerClass(const char* name,
+              const Version& version,
+              PluginRegistrar::ClassConstructorPtr classConstructor,
+              PluginRegistrar::ClassDestructorPtr classDestructor)
 {
 	try
 	{
@@ -68,7 +68,8 @@ NeuralaPluginStatus registerClass(const char* name,
 		}
 
 		std::lock_guard<std::mutex> lock{m_classesMutex};
-		auto it = m_classes.emplace(className, ClassMetadata{classConstructor, classDestructor});
+		auto it = m_classes.emplace(className,
+		                            PluginRegistrar::ClassMetadata{classConstructor, classDestructor});
 		if (!it.second)
 		{
 			// class already registered

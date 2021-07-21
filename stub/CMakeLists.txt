@@ -10,7 +10,7 @@ add_library(stub SHARED
 	src/Option.cpp
 	src/ErrorCode.cpp
 	src/Exception.cpp
-	src/PluginRegistrar.cpp)
+	src/PluginManager.cpp)
 	
 target_compile_definitions(stub PRIVATE NeuralaB4B_EXPORTS)
 

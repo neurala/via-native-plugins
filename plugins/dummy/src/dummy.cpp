@@ -26,8 +26,8 @@
 
 #include "neurala/utils/Version.h"
 #include "neurala/video/CameraInfo.h"
+#include "neurala/plugin/PluginManager.h"
 #include "neurala/plugin/PluginBindings.h"
-#include "neurala/plugin/PluginRegistrar.h"
 #include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginErrorCallback.h"
 
@@ -45,18 +45,18 @@ exitHere()
 } // namespace
 
 extern "C" PLUGIN_API NeuralaPluginExitFunction
-initMe(NeuralaPluginStatus* status)
+initMe(NeuralaPluginManager* pluginManager, NeuralaPluginStatus* status)
 {
-	*status = neurala::registerPlugin<neurala::plug::dummy::Source>("neuralaDummyVideoSource",
-	                                                             neurala::Version(1, 0));
+	auto& pm = *static_cast<neurala::PluginRegistrar*>(pluginManager);
+	*status = pm.registerPlugin<neurala::plug::dummy::Source>("neuralaDummyVideoSource",
+	                                                          neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
 		return nullptr;
 	}
 
-	*status = neurala::registerPlugin<neurala::plug::dummy::Discoverer>(
-	 "neuralaVideoPluginDummyDiscoverer",
-	 neurala::Version(1, 0));
+	*status = pm.registerPlugin<neurala::plug::dummy::Discoverer>("neuralaVideoPluginDummyDiscoverer",
+	                                                              neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
 		return nullptr;
