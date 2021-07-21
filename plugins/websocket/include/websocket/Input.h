@@ -50,7 +50,7 @@ public:
 	}
 	static void destroy(void* p) { delete reinterpret_cast<Input*>(p); }
 
-	Input(const std::string_view ip, const std::uint16_t port) { }
+	Input(const std::string_view ip, const std::uint16_t port);
 
 	// Image dimension information
 	[[nodiscard]] ImageMetadata metadata() const final { return cachedMetadata(); }
@@ -71,6 +71,7 @@ private:
 	// Access the image metadata. Only retrieve over the network if necessary.
 	const ImageMetadata& cachedMetadata() const;
 
+	mutable Client m_client;
 	mutable std::optional<ImageMetadata> m_metadata;
 	std::vector<std::vector<std::byte>> m_frames;
 };

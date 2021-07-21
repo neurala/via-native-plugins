@@ -26,13 +26,17 @@
 
 namespace neurala::plug::ws
 {
+Input::Input(const std::string_view ip, const std::uint16_t port)
+ : VideoSource{}, m_client{ip, port}, m_metadata{}, m_frames{}
+{ }
+
 std::error_code
 Input::nextFrame()
 {
 	try
 	{
 		std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
-		Client::get().frame(frameBuffer.data(), frameBuffer.size());
+		m_client.frame(frameBuffer.data(), frameBuffer.size());
 		m_frames.emplace_back(std::move(frameBuffer));
 		return {};
 	}
@@ -63,7 +67,7 @@ Input::cachedMetadata() const
 {
 	if (!m_metadata)
 	{
-		m_metadata = Client::get().metadata();
+		m_metadata = m_client.metadata();
 	}
 	return *m_metadata;
 }

@@ -47,12 +47,7 @@ using tcp = net::ip::tcp;
 class Client final
 {
 public:
-	/// Return the client instance.
-	static Client& get()
-	{
-		static Client instance;
-		return instance;
-	}
+	Client(const std::string_view ipAddress, const std::uint16_t port);
 
 	/**
 	 * @brief Retrieve metadata regarding frames fed by the server.
@@ -81,16 +76,6 @@ private:
 	{
 		return std::distance(begin, std::find(begin, end, ';'));
 	}
-
-	static constexpr std::string_view kIpAddress{"127.0.0.1"};
-	static constexpr std::uint16_t kPort{54321};
-
-	Client();
-	Client(const Client&) = delete;
-	Client(Client&&) = delete;
-	Client& operator=(const Client&) = delete;
-	Client& operator=(Client&&) = delete;
-	~Client() { m_stream.close(beast::websocket::close_code::normal); }
 
 	/// Retrieve the response for a given request.
 	net::const_buffer response(const std::string_view request);

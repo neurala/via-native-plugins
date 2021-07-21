@@ -69,10 +69,11 @@ Client::frame(std::byte* const location, const std::size_t capacity)
 	return sufficientCapacity;
 }
 
-Client::Client() : m_context{}, m_socket{m_context}, m_stream{m_socket}
+Client::Client(const std::string_view ipAddress, const std::uint16_t port)
+ : m_context{}, m_socket{m_context}, m_stream{m_socket}
 {
 	boost::system::error_code ec;
-	tcp::endpoint endpoint{net::ip::make_address(kIpAddress, ec), kPort};
+	tcp::endpoint endpoint{net::ip::make_address(ipAddress, ec), port};
 	m_socket.connect(endpoint, ec);
 	if (ec.failed())
 	{
@@ -80,7 +81,7 @@ Client::Client() : m_context{}, m_socket{m_context}, m_stream{m_socket}
 		std::exit(1);
 	}
 	std::cout << "Client connected.\n";
-	m_stream.handshake(kIpAddress.data(), "/");
+	m_stream.handshake(ipAddress.data(), "/");
 }
 
 net::const_buffer

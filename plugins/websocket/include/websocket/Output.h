@@ -40,6 +40,8 @@ public:
 	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
 	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
 
+	Output() : ResultsOutput{}, m_client{"127.0.0.1", 54321} { }
+
 	/**
 	 * @brief Function call operator for invoking the output action.
 	 *
@@ -49,8 +51,11 @@ public:
 	 */
 	void operator()(const std::string& metadata, const ImageView*) final
 	{
-		Client::get().sendResult(metadata);
+		m_client.sendResult(metadata);
 	}
+
+private:
+	Client m_client;
 };
 
 } // namespace neurala::plug::ws
