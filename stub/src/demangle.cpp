@@ -21,15 +21,24 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
+#include <cstdlib>
+#if !defined(_MSC_VER)
+#include <cxxabi.h>
+#endif
+
 #include "neurala/meta/detail/demangle.h"
 
 namespace neurala
 {
-
 std::unique_ptr<char, void (*)(void*)>
 demangle(const char* name) noexcept
 {
+#ifndef _MSC_VER
+	return std::unique_ptr<char, void (*)(void*)>(abi::__cxa_demangle(name, nullptr, nullptr, nullptr),
+	                                              std::free);
+#else
 	return std::unique_ptr<char, void (*)(void*)>(nullptr, std::free);
+#endif
 }
 
 } // namespace neurala
