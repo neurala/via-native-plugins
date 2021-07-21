@@ -25,7 +25,6 @@
 #define NEURALA_IMAGE_VIEWS_IMAGE_VIEW_H
 
 #include "neurala/algorithms/math/utils.h"
-#include "neurala/error/assert.h"
 #include "neurala/image/ImageMetadata.h"
 
 namespace neurala
@@ -135,7 +134,6 @@ public:
 	template<class T>
 	constexpr const T* dataAs() const noexcept
 	{
-		NEURALA_ASSERT(datatype() == DatatypeTraits<T>::datatype);
 		return static_cast<const T*>(data());
 	}
 

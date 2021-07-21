@@ -8,8 +8,6 @@ set(CMAKE_CXX_STANDARD 17)
 add_library(stub SHARED
 	src/demangle.cpp
 	src/Option.cpp
-	src/ErrorCode.cpp
-	src/Exception.cpp
 	src/PluginManager.cpp)
 	
 target_compile_definitions(stub PRIVATE NeuralaB4B_EXPORTS)

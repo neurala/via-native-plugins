@@ -26,9 +26,6 @@
 
 #include "neurala/config/os.h"
 
-// NOTE:jraynal:11-09-16: ~Strongly~ inspired by
-// http://www.drdobbs.com/cpp/building-your-own-plugin-framework-part/206503957
-
 #ifdef __cplusplus
 extern "C" {
 #endif

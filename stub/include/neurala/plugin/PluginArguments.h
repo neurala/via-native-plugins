@@ -27,7 +27,6 @@
 #include <utility>
 #include <vector>
 
-#include "neurala/error/Exception.h"
 #include "neurala/utils/detail/AnyRef.h"
 
 namespace neurala
@@ -66,8 +65,7 @@ public:
 	template<std::size_t I, class T>
 	bool isOfType() const
 	{
-		NEURALA_GUARD(I < m_args.size(), "Argument index out-of-bounds");
-		return m_args[I].isOfType<T>();
+		return m_args.at(I).isOfType<T>();
 	}
 
 	/**
@@ -76,8 +74,7 @@ public:
 	template<std::size_t I, class T>
 	T& get() const
 	{
-		NEURALA_GUARD(I < m_args.size(), "Argument index out-of-bounds");
-		return m_args[I].get<T>();
+		return m_args.at(I).get<T>();
 	}
 };
 
