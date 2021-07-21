@@ -40,7 +40,7 @@ public:
 	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
 	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
 
-	Output() : ResultsOutput{}, m_client{"127.0.0.1", 54321} { }
+	Output() : ResultsOutput{}, m_client{"127.0.0.1", 43210} { }
 
 	/**
 	 * @brief Function call operator for invoking the output action.

@@ -29,7 +29,8 @@
 
 struct ServerFixture final
 {
-	boost::thread serverThread{[] { neurala::plug::ws::Server server{"127.0.0.1", 54321}; }};
+	boost::thread inputServer{[] { neurala::plug::ws::Server server{"127.0.0.1", 54321}; }};
+	boost::thread outputServer{[] { neurala::plug::ws::Server server{"127.0.0.1", 43210}; }};
 };
 
 BOOST_TEST_GLOBAL_FIXTURE(ServerFixture);

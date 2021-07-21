@@ -26,11 +26,16 @@
 
 using namespace neurala;
 
-BOOST_AUTO_TEST_SUITE(Client)
+struct ClientFixture
+{
+	plug::ws::Client client{"127.0.0.1", 54321};
+};
+
+BOOST_FIXTURE_TEST_SUITE(Client, ClientFixture)
 
 BOOST_AUTO_TEST_CASE(Metadata)
 {
-	const ImageMetadata metadata{plug::ws::Client::get().metadata()};
+	const ImageMetadata metadata{client.metadata()};
 	BOOST_TEST(metadata.width() == 800);
 	BOOST_TEST(metadata.height() == 600);
 	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
@@ -40,10 +45,10 @@ BOOST_AUTO_TEST_CASE(Metadata)
 
 BOOST_AUTO_TEST_CASE(InsufficientBufferFrame)
 {
-	const ImageMetadata metadata{plug::ws::Client::get().metadata()};
+	const ImageMetadata metadata{client.metadata()};
 	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
 	std::vector<std::byte> frameBuffer(metadata.width() * metadata.height() * 3 - 1);
-	BOOST_TEST(!plug::ws::Client::get().frame(frameBuffer.data(), frameBuffer.size()));
+	BOOST_TEST(!client.frame(frameBuffer.data(), frameBuffer.size()));
 	BOOST_TEST(std::all_of(cbegin(frameBuffer), cend(frameBuffer), [](std::byte b) {
 		return static_cast<char>(b) == 0;
 	}));
@@ -51,17 +56,17 @@ BOOST_AUTO_TEST_CASE(InsufficientBufferFrame)
 
 BOOST_AUTO_TEST_CASE(SufficientBufferFrame)
 {
-	const ImageMetadata metadata{plug::ws::Client::get().metadata()};
+	const ImageMetadata metadata{client.metadata()};
 	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
 	std::vector<std::byte> frameBuffer(metadata.width() * metadata.height() * 3);
-	BOOST_TEST(plug::ws::Client::get().frame(frameBuffer.data(), frameBuffer.size()));
+	BOOST_TEST(client.frame(frameBuffer.data(), frameBuffer.size()));
 }
 
 BOOST_AUTO_TEST_CASE(Response)
 {
 	try
 	{
-		plug::ws::Client::get().sendResult("{ \"result\": \"success\" }");
+		client.sendResult("{ \"result\": \"success\" }");
 	}
 	catch (...)
 	{
