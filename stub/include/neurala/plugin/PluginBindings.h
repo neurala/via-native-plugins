@@ -33,6 +33,11 @@
 extern "C" {
 #endif
 
+/**
+ * @brief Base class for @ref neurala::PluginManager.
+ */
+struct NeuralaPluginManager;
+
 /// @brief Plugin cleanup function pointer, returned by the initialisation if successful.
 typedef int (*NeuralaPluginExitFunction)();
 
@@ -58,7 +63,8 @@ enum NeuralaPluginStatus
  *
  * @return exit function of the plugin or @c nullptr if initialization failed.
  */
-typedef NeuralaPluginExitFunction (*NeuralaPluginEntryFunction)(NeuralaPluginStatus*);
+typedef NeuralaPluginExitFunction (*NeuralaPluginEntryFunction)(NeuralaPluginManager* pluginManager,
+                                                                NeuralaPluginStatus* status);
 
 #ifdef NEURALA_OS_WINDOWS
 # ifndef PLUGIN_API
@@ -80,7 +86,8 @@ typedef NeuralaPluginExitFunction (*NeuralaPluginEntryFunction)(NeuralaPluginSta
 #ifdef __cplusplus
 extern "C"
 #endif
-PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginStatus*);
+PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, NeuralaPluginStatus*);
+
 #ifdef __cplusplus
 }
 #endif
