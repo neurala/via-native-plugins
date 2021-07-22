@@ -31,6 +31,7 @@
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <boost/config.hpp>
+#include <boost/thread.hpp>
 
 namespace neurala::plug::ws
 {
@@ -74,6 +75,8 @@ private:
 		std::string layout;
 		std::string dataType;
 	} m_metadata;
+
+	std::vector<boost::thread> m_sessions;
 };
 
 } // namespace neurala::plug::ws

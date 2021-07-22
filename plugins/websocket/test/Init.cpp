@@ -27,7 +27,7 @@
 
 #include "websocket/Server.h"
 
-struct ServerFixture final
+struct ServerFixture
 {
 	boost::thread inputServer{[] { neurala::plug::ws::Server server{"127.0.0.1", 54321}; }};
 	boost::thread outputServer{[] { neurala::plug::ws::Server server{"127.0.0.1", 43210}; }};

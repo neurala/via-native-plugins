@@ -22,24 +22,23 @@
 
 #include "Server.h"
 
-#include <chrono>
 #include <iostream>
 #include <memory>
 #include <numeric>
 #include <stdexcept>
-#include <thread>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include <boost/thread.hpp>
+#include <boost/chrono.hpp>
 
 namespace neurala::plug::ws
 {
 Server::Server(const std::string_view address, const std::uint16_t port)
  : m_ioContext{1},
    m_acceptor{m_ioContext, tcp::endpoint{net::ip::make_address(address), port}},
-   m_metadata{800, 600, "RGB", "planar", "uint8"}
+   m_metadata{800, 600, "RGB", "planar", "uint8"},
+   m_sessions{}
 {
 	run();
 }
@@ -53,7 +52,7 @@ Server::run()
 	{
 		while (detachingThread)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			boost::this_thread::sleep(boost::chrono::milliseconds(1000));
 		}
 		socket = std::make_unique<volatile tcp::socket>(m_ioContext);
 		m_acceptor.accept(const_cast<tcp::socket&>(*socket));
