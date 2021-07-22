@@ -4,5 +4,5 @@ project(via-native-plugins)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
-add_subdirectory(plugins)
 add_subdirectory(stub)
+add_subdirectory(plugins)
