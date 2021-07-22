@@ -34,6 +34,7 @@
 #include <boost/beast.hpp>
 #include <boost/config.hpp>
 #include <neurala/image/ImageMetadata.h>
+#include <neurala/plugin/PluginBindings.h>
 
 namespace neurala::plug::ws
 {
@@ -44,7 +45,7 @@ using tcp = net::ip::tcp;
 /**
  * @brief Websocket client that receives input frames from a local server.
  */
-class Client final
+class PLUGIN_API Client final
 {
 public:
 	Client(const std::string_view ipAddress, const std::uint16_t port);

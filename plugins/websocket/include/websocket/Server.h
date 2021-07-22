@@ -32,6 +32,7 @@
 #include <boost/beast.hpp>
 #include <boost/config.hpp>
 #include <boost/thread.hpp>
+#include <neurala/plugin/PluginBindings.h>
 
 namespace neurala::plug::ws
 {
@@ -42,7 +43,7 @@ using tcp = net::ip::tcp;
 /**
  * @brief Websocket server that offers mock image data.
  */
-class Server final
+class PLUGIN_API Server final
 {
 public:
 	Server(const std::string_view address, const std::uint16_t port);

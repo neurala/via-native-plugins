@@ -11,3 +11,4 @@ add_executable(test
 	Output.cpp)
 
 target_link_libraries(test CONAN_PKG::boost websocket)
+target_compile_definitions(test PRIVATE NEURALA_IMPORT_PLUGIN)

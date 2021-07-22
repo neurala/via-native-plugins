@@ -27,6 +27,7 @@
 
 #include <neurala/image/views/ImageView.h>
 #include <neurala/plugin/PluginArguments.h>
+#include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginRegistrar.h>
 #include <neurala/utils/ResultsOutput.h>
 
@@ -34,7 +35,7 @@
 
 namespace neurala::plug::ws
 {
-class Output final : public ResultsOutput
+class PLUGIN_API Output final : public ResultsOutput
 {
 public:
 	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }

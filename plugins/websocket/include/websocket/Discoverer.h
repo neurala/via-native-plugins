@@ -11,7 +11,7 @@
 
 namespace neurala::plug::ws
 {
-class Discoverer final : public CameraDiscoverer
+class PLUGIN_API Discoverer final : public CameraDiscoverer
 {
 public:
 	static void* create(PluginArguments&, PluginErrorCallback&) { return new Discoverer; }

@@ -38,7 +38,7 @@
 
 namespace neurala::plug::ws
 {
-class Input final : public VideoSource
+class PLUGIN_API Input final : public VideoSource
 {
 public:
 	static void* create(PluginArguments& args, PluginErrorCallback&)

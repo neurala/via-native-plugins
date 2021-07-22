@@ -22,7 +22,7 @@ conan_cmake_run(
     OUTPUT_QUIET
     KEEP_RPATHS)
 
-add_library(websocket STATIC
+add_library(websocket SHARED
     src/Client.cpp
     src/InitMe.cpp
     src/Input.cpp
