@@ -46,7 +46,7 @@ Server::Server(const std::string_view address, const std::uint16_t port)
 void
 Server::run()
 {
-	std::unique_ptr<volatile tcp::socket> socket{std::make_unique<volatile tcp::socket>(m_ioContext)};
+	std::unique_ptr<volatile tcp::socket> socket;
 	volatile bool detachingThread{};
 	while (true)
 	{
