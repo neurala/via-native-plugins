@@ -48,6 +48,7 @@ class Client final
 {
 public:
 	Client(const std::string_view ipAddress, const std::uint16_t port);
+	~Client() { m_stream.close(beast::websocket::close_code::normal); }
 
 	/**
 	 * @brief Retrieve metadata regarding frames fed by the server.
