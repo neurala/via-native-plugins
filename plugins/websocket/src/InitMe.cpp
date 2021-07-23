@@ -33,7 +33,7 @@ initMe(NeuralaPluginManager* pluginManager, NeuralaPluginStatus* status)
 {
 	using namespace neurala;
 	auto& pm = *dynamic_cast<PluginRegistrar*>(pluginManager);
-	*status = pm.registerPlugin<plug::ws::Discoverer>("Discoverer", neurala::Version(1, 0));
+	*status = pm.registerPlugin<plug::ws::Discoverer>("websocketDiscoverer", neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
 		return nullptr;
