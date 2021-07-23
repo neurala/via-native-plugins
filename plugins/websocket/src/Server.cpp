@@ -35,12 +35,21 @@
 namespace neurala::plug::ws
 {
 Server::Server(const std::string_view address, const std::uint16_t port)
- : m_ioContext{1},
+ : m_metadata{800, 600, "RGB", "planar", "uint8"},
+   m_ioContext{1},
    m_acceptor{m_ioContext, tcp::endpoint{net::ip::make_address(address), port}},
-   m_metadata{800, 600, "RGB", "planar", "uint8"},
-   m_sessions{}
+   m_sessions{},
+   m_running{true},
+   m_thread{[&] { run(); }}
+{ }
+
+Server::~Server()
 {
-	run();
+	m_running = false;
+	m_acceptor.close();
+	for (boost::thread& session : m_sessions)
+		session.join();
+	m_thread.join();
 }
 
 void
@@ -48,7 +57,7 @@ Server::run()
 {
 	std::unique_ptr<volatile tcp::socket> socket;
 	volatile bool detachingThread{};
-	while (true)
+	while (m_running)
 	{
 		while (detachingThread)
 		{
@@ -77,7 +86,7 @@ Server::session(tcp::socket&& socket)
 			        std::string(BOOST_BEAST_VERSION_STRING) + " websocket-server-sync");
 		}));
 		stream.accept();
-		while (true)
+		while (m_running)
 		{
 			handleRequest(stream);
 		}
@@ -104,8 +113,7 @@ Server::handleRequest(beast::websocket::stream<tcp::socket>& stream)
 	static const std::unordered_map<std::string_view, std::function<void(WebSocketStream&)>> handlers{
 	 {"metadata", [&](WebSocketStream& stream) { handleMetadata(stream); }},
 	 {"frame", [&](WebSocketStream& stream) { handleFrame(stream); }},
-	 {"{ \"result\": \"success\" }", [&](WebSocketStream& stream) { handleResult(stream); }},
-	};
+	 {"{ \"result\": \"success\" }", [&](WebSocketStream& stream) { handleResult(stream); }}};
 	const net::const_buffer key{buffer.cdata()};
 	handlers.at(std::string_view(reinterpret_cast<const char*>(key.data()), key.size()))(stream);
 }
@@ -138,7 +146,7 @@ Server::handleFrame(beast::websocket::stream<tcp::socket>& stream)
 void
 Server::handleResult(beast::websocket::stream<tcp::socket>& stream)
 {
-	stream.write(net::buffer("DONE"));
+	stream.write(net::buffer("result submitted"));
 }
 
 } // namespace neurala::plug::ws

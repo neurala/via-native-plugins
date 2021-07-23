@@ -47,6 +47,7 @@ class PLUGIN_API Server final
 {
 public:
 	Server(const std::string_view address, const std::uint16_t port);
+	~Server();
 
 private:
 	/// Deploy the server.
@@ -65,9 +66,6 @@ private:
 	/// Handle a result JSON.
 	void handleResult(beast::websocket::stream<tcp::socket>& stream);
 
-	net::io_context m_ioContext;
-	tcp::acceptor m_acceptor;
-
 	struct Metadata final
 	{
 		std::size_t width;
@@ -77,7 +75,11 @@ private:
 		std::string dataType;
 	} m_metadata;
 
+	net::io_context m_ioContext;
+	tcp::acceptor m_acceptor;
 	std::vector<boost::thread> m_sessions;
+	volatile bool m_running;
+	boost::thread m_thread;
 };
 
 } // namespace neurala::plug::ws
