@@ -5,7 +5,7 @@
 
 #include <neurala/plugin/PluginArguments.h>
 #include <neurala/plugin/PluginBindings.h>
-#include <neurala/plugin/PluginRegistrar.h>
+#include <neurala/plugin/PluginErrorCallback.h>
 #include <neurala/video/CameraDiscoverer.h>
 #include <neurala/video/CameraInfo.h>
 

@@ -21,7 +21,7 @@
  */
 
 #include <neurala/plugin/PluginBindings.h>
-#include <neurala/plugin/PluginRegistrar.h>
+#include <neurala/plugin/PluginManager.h>
 #include <neurala/utils/Version.h>
 
 #include "Discoverer.h"
@@ -29,20 +29,21 @@
 #include "Output.h"
 
 extern "C" PLUGIN_API NeuralaPluginExitFunction
-initMe(NeuralaPluginStatus* status)
+initMe(NeuralaPluginManager* pluginManager, NeuralaPluginStatus* status)
 {
 	using namespace neurala;
-	*status = registerPlugin<plug::ws::Discoverer>("Discoverer", neurala::Version(1, 0));
+	auto& pm = *dynamic_cast<PluginRegistrar*>(pluginManager);
+	*status = pm.registerPlugin<plug::ws::Discoverer>("Discoverer", neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
 		return nullptr;
 	}
-	*status = registerPlugin<plug::ws::Input>("Input", neurala::Version(1, 0));
+	*status = pm.registerPlugin<plug::ws::Input>("Input", neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
 		return nullptr;
 	}
-	*status = registerPlugin<plug::ws::Output>("Output", neurala::Version(1, 0));
+	*status = pm.registerPlugin<plug::ws::Output>("Output", neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
 		return nullptr;
