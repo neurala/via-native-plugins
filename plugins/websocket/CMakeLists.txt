@@ -15,12 +15,17 @@ else()
 endif()
 
 conan_cmake_run(
-    REQUIRES boost/1.76.0
-    BASIC_SETUP CMAKE_TARGETS
-    BUILD_TYPE ${CONAN_BUILD_TYPE}
-    BUILD missing
-    OUTPUT_QUIET
-    KEEP_RPATHS)
+	REQUIRES
+		boost/1.76.0
+	BASIC_SETUP
+		CMAKE_TARGETS
+		KEEP_RPATHS
+		NO_OUTPUT_DIRS
+	BUILD_TYPE
+		${CONAN_BUILD_TYPE}
+	BUILD
+		missing
+	OUTPUT_QUIET)
 
 add_library(websocket SHARED
     src/Client.cpp
