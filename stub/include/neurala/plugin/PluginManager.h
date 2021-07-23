@@ -36,7 +36,14 @@ extern "C"
 		// Ignored member to ensure the struct has a non-zero size which
 		// causes a warning when compiling the header against both C and C++.
 		// see: -Wextern-c-compat
-		std::size_t m_unused1;
+		std::size_t m_unused{0};
+
+		NeuralaPluginManager() = default;
+		NeuralaPluginManager(const NeuralaPluginManager&) = delete;
+		NeuralaPluginManager(NeuralaPluginManager&&) = delete;
+		NeuralaPluginManager& operator=(const NeuralaPluginManager&) = delete;
+		NeuralaPluginManager& operator=(NeuralaPluginManager&&) = delete;
+		virtual ~NeuralaPluginManager() = default;
 	};
 }
 
@@ -72,11 +79,6 @@ public:
 	}
 
 private:
-	// Ignored member to ensure the struct has a non-zero size which
-	// causes a warning when compiling the header against both C and C++.
-	// see: -Wextern-c-compat
-	std::size_t m_unused1;
-
 	/**
 	 * @brief Registers a class with the plugin manager.
 	 *
