@@ -12,6 +12,3 @@ add_executable(test
 
 target_link_libraries(test CONAN_PKG::boost websocket)
 target_compile_definitions(test PRIVATE NEURALA_IMPORT_PLUGIN)
-
-file(COPY ${CMAKE_BINARY_DIR}/stub/stub.dll
-	DESTINATION ${CMAKE_BINARY_DIR}/plugins/websocket/bin)
