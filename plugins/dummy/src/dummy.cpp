@@ -48,14 +48,14 @@ extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginManager* pluginManager, NeuralaPluginStatus* status)
 {
 	auto& pm = *static_cast<neurala::PluginRegistrar*>(pluginManager);
-	*status = pm.registerPlugin<neurala::plug::dummy::Source>("neuralaDummyVideoSource",
+	*status = pm.registerPlugin<neurala::plug::dummy::Source>("dummyVideoSource",
 	                                                          neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
 		return nullptr;
 	}
 
-	*status = pm.registerPlugin<neurala::plug::dummy::Discoverer>("neuralaVideoPluginDummyDiscoverer",
+	*status = pm.registerPlugin<neurala::plug::dummy::Discoverer>("dummyDiscoverer",
 	                                                              neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
@@ -72,7 +72,7 @@ std::vector<CameraInfo>
 Discoverer::operator()() const
 {
 	std::cout << "Discovering available cameras...\n";
-	return {CameraInfo("DummyVideoSourceId", ECameraType::unknown, "Dummy Test Video Source", "")};
+	return {CameraInfo("DummyNativePluginCamera", ECameraType::unknown, "External Dummy Camera", "")};
 }
 
 void*
