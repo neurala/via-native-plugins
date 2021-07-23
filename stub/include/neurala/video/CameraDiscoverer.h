@@ -24,6 +24,8 @@
 #ifndef NEURALA_VIDEO_CAMERA_DISCOVERER_H
 #define NEURALA_VIDEO_CAMERA_DISCOVERER_H
 
+#include <vector>
+
 #include "neurala/video/CameraInfo.h"
 
 namespace neurala

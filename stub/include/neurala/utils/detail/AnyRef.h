@@ -28,8 +28,7 @@
 #include <type_traits>
 #include <typeindex>
 
-#include "neurala/error/Exception.h"
-#include "neurala/error/assert.h"
+#include "neurala/utils/string.h"
 #include "neurala/meta/detail/demangle.h"
 #include "neurala/meta/detail/typeName.h"
 
@@ -87,7 +86,6 @@ public:
 	template<class T>
 	T& unsafeGet() const noexcept
 	{
-		NEURALA_ASSERT(isOfType<T>());
 		return *static_cast<T*>(m_data);
 	}
 
@@ -99,12 +97,16 @@ public:
 	template<class T>
 	T& get() const
 	{
-		NEURALA_GUARD(isOfType<T>(),
-		              "Stored object type \"",
-		              demangle(m_type.name()) ? demangle(m_type.name()).get() : m_type.name(),
-		              " != \"",
-		              typeName<T>(),
-		              '\"');
+		if (!isOfType<T>())
+		{
+			throw std::logic_error(
+			 neurala::toString("Stored object type \"",
+			                   demangle(m_type.name()) ? demangle(m_type.name()).get() : m_type.name(),
+			                   " != \"",
+			                   typeName<T>(),
+			                   '\"'));
+		}
+
 		return unsafeGet<T>();
 	}
 };
