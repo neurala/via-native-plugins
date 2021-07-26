@@ -78,7 +78,7 @@ Client::Client(const std::string_view ipAddress, const std::uint16_t port)
 	if (ec.failed())
 	{
 		std::cerr << "Failed to connect: " << ec.message() << ".\n";
-		std::exit(1);
+		throw std::system_error(ec);
 	}
 	std::cout << "Client connected.\n";
 	m_stream.handshake(ipAddress.data(), "/");

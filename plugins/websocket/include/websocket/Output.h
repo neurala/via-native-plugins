@@ -38,7 +38,28 @@ namespace neurala::plug::ws
 class PLUGIN_API Output final : public ResultsOutput
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Output; }
+	static void* create(PluginArguments&, PluginErrorCallback& ec)
+	{
+		try
+		{
+			return new Output;
+		}
+		catch (const std::system_error& se)
+		{
+			ec(se.code(), se.what());
+		}
+		catch (const std::exception& e)
+		{
+			ec(e.what());
+		}
+		catch (...)
+		{
+			ec("Could not create output interface");
+		}
+
+		return nullptr;
+	}
+
 	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
 
 	Output() : ResultsOutput{}, m_client{"127.0.0.1", 43210} { }
