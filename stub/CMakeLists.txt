@@ -9,7 +9,8 @@ add_library(stub SHARED
 	src/B4BError.cpp
 	src/demangle.cpp
 	src/Option.cpp
-	src/PluginManager.cpp)
+	src/PluginManager.cpp
+	src/VideoSourceStatus.cpp)
 	
 target_compile_definitions(stub PRIVATE NeuralaB4B_EXPORTS)
 
