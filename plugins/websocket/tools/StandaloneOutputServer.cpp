@@ -22,10 +22,13 @@
 
 #include "websocket/OutputServer.h"
 
-int main()
+int
+main()
 {
 	neurala::plug::ws::OutputServer outputServer{"127.0.0.1", 43210};
 
 	for (;;)
-		;
-};
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}

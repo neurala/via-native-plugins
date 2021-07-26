@@ -28,5 +28,7 @@ main()
 	neurala::plug::ws::InputServer inputServer{"127.0.0.1", 54321};
 
 	for (;;)
-		;
-};
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}
