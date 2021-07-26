@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(GetCameraInfo)
 	BOOST_TEST(cameraInfo.front().valid());
 	BOOST_TEST(cameraInfo.front().id() == "0");
 	BOOST_TEST(cameraInfo.front().name() == "websocket");
-	BOOST_TEST(cameraInfo.front().type() == ECameraType::eBUS);
+	BOOST_TEST(cameraInfo.front().type() == "Input");
 	BOOST_TEST(cameraInfo.front().connection() == "127.0.0.1:54321");
 }
 
