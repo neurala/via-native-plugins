@@ -41,13 +41,32 @@ namespace neurala::plug::ws
 class PLUGIN_API Input final : public VideoSource
 {
 public:
-	static void* create(PluginArguments& args, PluginErrorCallback&)
+	static void* create(PluginArguments& args, PluginErrorCallback& ec)
 	{
 		const std::string& connection{args.get<0, const CameraInfo>().connection()};
 		const std::size_t delimiterIndex = connection.find(':');
-		return new Input{std::string_view{connection.data(), delimiterIndex},
-		                 static_cast<std::uint16_t>(std::atoi(connection.data() + delimiterIndex + 1))};
+
+		try
+		{
+			return new Input{std::string_view{connection.data(), delimiterIndex},
+			                 static_cast<std::uint16_t>(std::atoi(connection.data() + delimiterIndex + 1))};
+		}
+		catch (const std::system_error& se)
+		{
+			ec(se.code(), se.what());
+		}
+		catch (const std::exception& e)
+		{
+			ec(e.what());
+		}
+		catch (...)
+		{
+			ec("Could not create input interface");
+		}
+
+		return nullptr;
 	}
+
 	static void destroy(void* p) { delete reinterpret_cast<Input*>(p); }
 
 	Input(const std::string_view ip, const std::uint16_t port);

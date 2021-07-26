@@ -45,3 +45,4 @@ target_include_directories(websocket
 target_link_libraries(websocket PUBLIC stub CONAN_PKG::boost)
 
 add_subdirectory(test)
+add_subdirectory(tools)

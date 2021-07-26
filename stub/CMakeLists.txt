@@ -5,14 +5,18 @@ cmake_minimum_required(VERSION 3.17.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(stub SHARED
+set(stub_target NeuralaB4B)
+
+add_library(${stub_target} SHARED
+	src/B4BError.cpp
 	src/demangle.cpp
 	src/Option.cpp
-	src/PluginManager.cpp)
+	src/PluginManager.cpp
+	src/VideoSourceStatus.cpp)
 	
-target_compile_definitions(stub PRIVATE NeuralaB4B_EXPORTS)
+target_compile_definitions(${stub_target} PRIVATE NeuralaB4B_EXPORTS)
 
-target_include_directories(stub SYSTEM PUBLIC include)
+target_include_directories(${stub_target} SYSTEM PUBLIC include)
 
 # The compiler options for this stub library are part of its public interface, so it will be propagated
 # to all targets that depends on this stub by CMake.
@@ -38,4 +42,7 @@ target_include_directories(stub SYSTEM PUBLIC include)
 # Spammed by C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winbase.h
 # https://developercommunity.visualstudio.com/t/1249671
 #
-target_compile_options(stub PUBLIC /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251 /wd5104 /wd5105)
+target_compile_options(${stub_target} PUBLIC /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251 /wd5104 /wd5105)
+
+# Add friendly alias
+add_library(stub ALIAS ${stub_target})

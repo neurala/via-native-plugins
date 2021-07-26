@@ -20,7 +20,7 @@ public:
 	// Scan for all available cameras
 	[[nodiscard]] std::vector<CameraInfo> operator()() const final
 	{
-		return {{"0", ECameraType::eBUS, "websocket", "127.0.0.1:54321"}};
+		return {{"0", "Input", "websocket", "127.0.0.1:54321"}};
 	}
 };
 

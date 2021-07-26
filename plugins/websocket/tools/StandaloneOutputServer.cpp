@@ -1,5 +1,4 @@
 /*
- * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -21,71 +20,15 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H
-#define NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H
+#include "websocket/OutputServer.h"
 
-#include <string>
-
-#include "neurala/error/B4BError.h"
-
-namespace neurala
+int
+main()
 {
+	neurala::plug::ws::OutputServer outputServer{"127.0.0.1", 43210};
 
-/**
- * @brief Utility class to transport exception messages between @ref PluginManager and plugins.
- */
-class PluginErrorCallback
-{
-	std::error_code m_code{B4BError::ok};
-	std::string m_exception;
-
-public:
-	void
-	operator()(const char* s) noexcept
+	for (;;)
 	{
-		try
-		{
-			m_code = B4BError::genericError;
-			m_exception = s;
-		}
-		catch (...)
-		{
-			// ignore all exceptions due to string creation
-		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
-
-	void
-	operator()(const std::error_code& code, const char* s) noexcept
-	{
-		try
-		{
-			m_code = code;
-			m_exception = s;
-		}
-		catch (...)
-		{
-			// ignore all exceptions due to string creation
-		}
-	}
-
-	const char*
-	what() const noexcept
-	{
-		if (m_exception.empty())
-		{
-			return "failed to propagate error message";
-		}
-		return m_exception.c_str();
-	}
-
-	const std::error_code&
-	code() const noexcept
-	{
-		return m_code;
-	}
-
-};
-
-} // namespace neurala
-
-#endif // NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H
+}

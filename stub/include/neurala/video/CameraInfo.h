@@ -28,39 +28,8 @@
 #include <ostream>
 #include <string>
 
-#include "neurala/meta/enum.h"
-
 namespace neurala
 {
-/**
- * @brief Camera type.
- */
-enum class ECameraType
-{
-	unknown,
-	/// simulated camera
-	simulated,
-	/// USB camera
-	usb,
-	/// GEV accessible camera
-	gev,
-	/// Pleora SDK accessible camera
-	eBUS
-};
-
-template<>
-class MetaEnum<ECameraType> : public MetaEnumRegister<ECameraType>
-{
-public:
-	static constexpr const auto values = enumRegisterValues(
-	 NEURALA_META_ENUM_ENTRY(ECameraType, unknown),
-	 NEURALA_META_ENUM_ENTRY(ECameraType, simulated),
-	 NEURALA_META_ENUM_ENTRY(ECameraType, usb),
-	 NEURALA_META_ENUM_ENTRY(ECameraType, gev),
-	 NEURALA_META_ENUM_ENTRY(ECameraType, eBUS));
-
-	static constexpr const auto fallbackValue = values[0];
-};
 
 /**
  * @brief Camera information.
@@ -70,7 +39,7 @@ class CameraInfo
 	std::string m_id;
 	std::string m_name;
 	std::string m_connection;
-	ECameraType m_type{ECameraType::unknown};
+	std::string m_type;
 
 public:
 	CameraInfo() = default;
@@ -78,8 +47,8 @@ public:
 	/**
 	 * @brief Constructs a new @ref CameraInfo object.
 	 */
-	CameraInfo(std::string id, ECameraType type, std::string name, std::string connection) noexcept
-	 : m_id{std::move(id)}, m_name{std::move(name)}, m_connection{std::move(connection)}, m_type{type}
+	CameraInfo(std::string id, std::string type, std::string name, std::string connection) noexcept
+	 : m_id{std::move(id)}, m_name{std::move(name)}, m_connection{std::move(connection)}, m_type{std::move(type)}
 	{ }
 
 	/**
@@ -104,7 +73,7 @@ public:
 	/**
 	 * @brief Returns the camera type.
 	 */
-	ECameraType type() const noexcept { return m_type; }
+	const std::string& type() const noexcept { return m_type; }
 
 	/**
 	 * @brief Returns how the camera is connected.
@@ -128,7 +97,8 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const CameraInfo& cameraInfo)
 	{
-		return os << "{id = " << std::quoted(cameraInfo.id()) << ", type = " << cameraInfo.type()
+		return os << "{id = " << std::quoted(cameraInfo.id())
+		          << ", type = " << std::quoted(cameraInfo.type())
 		          << ", name = " << std::quoted(cameraInfo.name())
 		          << ", connection = " << std::quoted(cameraInfo.connection()) << '}';
 	}

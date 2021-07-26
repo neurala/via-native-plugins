@@ -21,71 +21,60 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H
-#define NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H
+#ifndef NEURALA_ERROR_ERROR_CODE_H
+#define NEURALA_ERROR_ERROR_CODE_H
 
-#include <string>
+#include <system_error>
 
-#include "neurala/error/B4BError.h"
+#include "neurala/exports.h"
+#include "neurala/meta/enum.h"
 
 namespace neurala
 {
+enum class B4BError : int
+{
+	ok = 0,
+	unknown = 1,
+	notImplemented,
+	genericError,
+	invalidParameter,
+	unsupportedAction
+};
+
+#ifndef SWIG
+template<>
+class MetaEnum<B4BError> : public MetaEnumRegister<B4BError>
+{
+public:
+	static constexpr const auto values = enumRegisterValues(NEURALA_META_ENUM_ENTRY(B4BError, ok),
+	                                                        NEURALA_META_ENUM_ENTRY(B4BError, unknown),
+	                                                        NEURALA_META_ENUM_ENTRY(B4BError, notImplemented),
+	                                                        NEURALA_META_ENUM_ENTRY(B4BError, genericError),
+	                                                        NEURALA_META_ENUM_ENTRY(B4BError, invalidParameter),
+	                                                        NEURALA_META_ENUM_ENTRY(B4BError, unsupportedAction));
+	static constexpr const auto fallbackValue = values[1];
+};
+#endif  // SWIG
+
+NEURALA_PUBLIC const std::error_category& b4bCategory() noexcept;
 
 /**
- * @brief Utility class to transport exception messages between @ref PluginManager and plugins.
+ * @brief Generate and error code from arguments
  */
-class PluginErrorCallback
-{
-	std::error_code m_code{B4BError::ok};
-	std::string m_exception;
+NEURALA_PUBLIC std::error_code make_error_code(B4BError error) noexcept; // NOLINT
 
-public:
-	void
-	operator()(const char* s) noexcept
-	{
-		try
-		{
-			m_code = B4BError::genericError;
-			m_exception = s;
-		}
-		catch (...)
-		{
-			// ignore all exceptions due to string creation
-		}
-	}
-
-	void
-	operator()(const std::error_code& code, const char* s) noexcept
-	{
-		try
-		{
-			m_code = code;
-			m_exception = s;
-		}
-		catch (...)
-		{
-			// ignore all exceptions due to string creation
-		}
-	}
-
-	const char*
-	what() const noexcept
-	{
-		if (m_exception.empty())
-		{
-			return "failed to propagate error message";
-		}
-		return m_exception.c_str();
-	}
-
-	const std::error_code&
-	code() const noexcept
-	{
-		return m_code;
-	}
-
-};
+/**
+ * @brief Generate and error category from arguments
+ */
+NEURALA_PUBLIC std::error_condition make_error_condition(B4BError error) noexcept; // NOLINT
 
 } // namespace neurala
 
-#endif // NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H
+namespace std
+{
+template<>
+struct is_error_code_enum<neurala::B4BError> : public true_type
+{ };
+} // namespace std
+
+#endif // NEURALA_ERROR_ERROR_CODE_H
