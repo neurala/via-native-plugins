@@ -21,6 +21,7 @@
  */
 
 #include "Input.h"
+#include "neurala/video/VideoSourceStatus.h"
 
 #include <iostream>
 
@@ -38,7 +39,7 @@ Input::nextFrame()
 		std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
 		m_client.frame(frameBuffer.data(), frameBuffer.size());
 		m_frames.emplace_back(std::move(frameBuffer));
-		return {};
+		return make_error_code(VideoSourceStatus::success);
 	}
 	catch (const beast::system_error& se)
 	{
