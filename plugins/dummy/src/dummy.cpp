@@ -42,14 +42,15 @@ exitHere()
 	return 0;
 }
 
+constexpr auto kSourceTypeName = "dummyVideoSource";
+
 } // namespace
 
 extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginManager* pluginManager, NeuralaPluginStatus* status)
 {
 	auto& pm = *static_cast<neurala::PluginRegistrar*>(pluginManager);
-	*status = pm.registerPlugin<neurala::plug::dummy::Source>("dummyVideoSource",
-	                                                          neurala::Version(1, 0));
+	*status = pm.registerPlugin<neurala::plug::dummy::Source>(kSourceTypeName, neurala::Version(1, 0));
 	if (*status != NeuralaPluginStatus::success)
 	{
 		return nullptr;
@@ -72,7 +73,8 @@ std::vector<CameraInfo>
 Discoverer::operator()() const
 {
 	std::cout << "Discovering available cameras...\n";
-	return {CameraInfo("DummyNativePluginCamera", ECameraType::unknown, "External Dummy Camera", "")};
+	return {CameraInfo("DummyNativePluginCamera1", kSourceTypeName, "External Dummy Camera #1", ""),
+	        CameraInfo("DummyNativePluginCamera2", kSourceTypeName, "External Dummy Camera #2", "")};
 }
 
 void*
