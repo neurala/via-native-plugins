@@ -70,7 +70,7 @@ Client::frame(std::byte* const location, const std::size_t capacity)
 }
 
 Client::Client(const std::string_view ipAddress, const std::uint16_t port)
- : m_context{}, m_socket{m_context}, m_stream{m_socket}
+ : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 {
 	boost::system::error_code ec;
 	tcp::endpoint endpoint{net::ip::make_address(ipAddress, ec), port};

@@ -23,14 +23,16 @@
 #ifndef NEURALA_PLUG_WS_SERVER_H
 #define NEURALA_PLUG_WS_SERVER_H
 
-#include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <string>
 #include <string_view>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
-#include <boost/config.hpp>
 #include <boost/thread.hpp>
 #include <neurala/plugin/PluginBindings.h>
 
@@ -43,11 +45,16 @@ using tcp = net::ip::tcp;
 /**
  * @brief Websocket server that offers mock image data.
  */
-class PLUGIN_API Server final
+class PLUGIN_API Server
 {
 public:
-	Server(const std::string_view address, const std::uint16_t port);
-	~Server();
+	using WebSocketStream = beast::websocket::stream<tcp::socket>;
+
+	Server(
+	 const std::string_view address,
+	 const std::uint16_t port,
+	 std::vector<std::pair<std::string_view, std::function<void(WebSocketStream&)>>>&& requestHandlers);
+	virtual ~Server();
 
 private:
 	/// Deploy the server.
@@ -57,24 +64,9 @@ private:
 	void session(tcp::socket&& socket);
 
 	/// Handle a particular request made by a client.
-	void handleRequest(beast::websocket::stream<tcp::socket>& stream);
+	void handleRequest(WebSocketStream& stream);
 
-	/// Handle an image metadata request.
-	void handleMetadata(beast::websocket::stream<tcp::socket>& stream);
-	/// Handle a frame request.
-	void handleFrame(beast::websocket::stream<tcp::socket>& stream);
-	/// Handle a result JSON.
-	void handleResult(beast::websocket::stream<tcp::socket>& stream);
-
-	struct Metadata final
-	{
-		std::size_t width;
-		std::size_t height;
-		std::string colorSpace;
-		std::string layout;
-		std::string dataType;
-	} m_metadata;
-
+	std::unordered_map<std::string_view, std::function<void(WebSocketStream&)>> m_requestHandlers;
 	net::io_context m_ioContext;
 	tcp::acceptor m_acceptor;
 	std::vector<boost::thread> m_sessions;

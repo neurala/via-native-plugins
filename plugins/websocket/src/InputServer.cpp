@@ -20,18 +20,44 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#define BOOST_TEST_MODULE Websocket
+#include "InputServer.h"
 
-#include <boost/test/unit_test.hpp>
-#include <boost/thread.hpp>
+#include <numeric>
+#include <string>
 
-#include "websocket/InputServer.h"
-#include "websocket/OutputServer.h"
-
-struct ServerFixture
+namespace neurala::plug::ws
 {
-	neurala::plug::ws::InputServer inputServer{"127.0.0.1", 54321};
-	neurala::plug::ws::OutputServer outputServer{"127.0.0.1", 43210};
-};
+InputServer::InputServer(const std::string_view address, const std::uint16_t port)
+ : Server{address,
+          port,
+          {{"metadata", [&](WebSocketStream& stream) { handleMetadata(stream); }},
+           {"frame", [&](WebSocketStream& stream) { handleFrame(stream); }}}},
+   m_metadata{800, 600, "RGB", "planar", "uint8"}
+{ }
 
-BOOST_TEST_GLOBAL_FIXTURE(ServerFixture);
+void
+InputServer::handleMetadata(WebSocketStream& stream)
+{
+	std::string metadata;
+	const auto add{[&](const std::string_view element) {
+		metadata += element;
+		metadata += ';';
+	}};
+	add(std::to_string(m_metadata.width));
+	add(std::to_string(m_metadata.height));
+	add(m_metadata.colorSpace);
+	add(m_metadata.layout);
+	add(m_metadata.dataType);
+	stream.write(net::buffer(metadata));
+}
+
+void
+InputServer::handleFrame(WebSocketStream& stream)
+{
+	std::vector<std::uint8_t> frameData(m_metadata.width * m_metadata.height
+	                                    * m_metadata.colorSpace.size());
+	std::iota(begin(frameData), end(frameData), 0);
+	stream.write(net::buffer(frameData));
+}
+
+} // namespace neurala::plug::ws

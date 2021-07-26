@@ -82,7 +82,7 @@ private:
 	/// Retrieve the response for a given request.
 	net::const_buffer response(const std::string_view request);
 
-	net::io_context m_context;
+	net::io_context m_ioContext;
 	tcp::socket m_socket;
 	beast::websocket::stream<tcp::socket&> m_stream;
 	beast::flat_buffer m_buffer;

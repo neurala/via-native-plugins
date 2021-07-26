@@ -31,6 +31,8 @@ add_library(websocket SHARED
     src/Client.cpp
     src/InitMe.cpp
     src/Input.cpp
+    src/InputServer.cpp
+    src/OutputServer.cpp
     src/Server.cpp)
 
 target_include_directories(websocket INTERFACE include PRIVATE include/websocket)

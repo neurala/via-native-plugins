@@ -20,18 +20,22 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#define BOOST_TEST_MODULE Websocket
+#include <boost/beast.hpp>
 
-#include <boost/test/unit_test.hpp>
-#include <boost/thread.hpp>
+#include "OutputServer.h"
 
-#include "websocket/InputServer.h"
-#include "websocket/OutputServer.h"
-
-struct ServerFixture
+namespace neurala::plug::ws
 {
-	neurala::plug::ws::InputServer inputServer{"127.0.0.1", 54321};
-	neurala::plug::ws::OutputServer outputServer{"127.0.0.1", 43210};
-};
+OutputServer::OutputServer(const std::string_view address, const std::uint16_t port)
+ : Server{address,
+          port,
+          {{"{ \"result\": \"success\" }", [&](WebSocketStream& stream) { handleResult(stream); }}}}
+{ }
 
-BOOST_TEST_GLOBAL_FIXTURE(ServerFixture);
+void
+OutputServer::handleResult(WebSocketStream& stream)
+{
+	stream.write(net::buffer("result submitted"));
+}
+
+} // namespace neurala::plug::ws

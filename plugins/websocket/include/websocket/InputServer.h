@@ -20,18 +20,40 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#define BOOST_TEST_MODULE Websocket
+#ifndef NEURALA_PLUG_WS_INPUT_SERVER_H
+#define NEURALA_PLUG_WS_INPUT_SERVER_H
 
-#include <boost/test/unit_test.hpp>
-#include <boost/thread.hpp>
+#include <cstddef>
+#include <cstdint>
+#include <string_view>
 
-#include "websocket/InputServer.h"
-#include "websocket/OutputServer.h"
+#include <neurala/plugin/PluginBindings.h>
 
-struct ServerFixture
+#include "Server.h"
+
+namespace neurala::plug::ws
 {
-	neurala::plug::ws::InputServer inputServer{"127.0.0.1", 54321};
-	neurala::plug::ws::OutputServer outputServer{"127.0.0.1", 43210};
+class PLUGIN_API InputServer final : public Server
+{
+public:
+	InputServer(const std::string_view address, const std::uint16_t port);
+
+private:
+	/// Handle an image metadata request.
+	void handleMetadata(WebSocketStream& stream);
+	/// Handle a frame request.
+	void handleFrame(WebSocketStream& stream);
+
+	struct Metadata final
+	{
+		std::size_t width;
+		std::size_t height;
+		std::string_view colorSpace;
+		std::string_view layout;
+		std::string_view dataType;
+	} m_metadata;
 };
 
-BOOST_TEST_GLOBAL_FIXTURE(ServerFixture);
+} // namespace neurala::plug::ws
+
+#endif // NEURALA_PLUG_WS_INPUT_SERVER_H

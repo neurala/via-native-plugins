@@ -66,7 +66,8 @@ BOOST_AUTO_TEST_CASE(Response)
 {
 	try
 	{
-		client.sendResult("{ \"result\": \"success\" }");
+		plug::ws::Client outputClient{"127.0.0.1", 43210};
+		outputClient.sendResult("{ \"result\": \"success\" }");
 	}
 	catch (...)
 	{
