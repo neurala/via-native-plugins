@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(plugin_target empty)
 add_library(${plugin_target} SHARED src/initme.cpp)
 target_include_directories(${plugin_target} PUBLIC include)
-target_link_libraries(${plugin_target} stub)
+target_link_libraries(${plugin_target} NeuralaB4B)
 
 # Build the tests
 set(test_target ${plugin_target}_tests)
