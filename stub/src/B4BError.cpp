@@ -1,3 +1,4 @@
+
 /*
  * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
@@ -21,71 +22,40 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H
-#define NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H
-
-#include <string>
-
 #include "neurala/error/B4BError.h"
 
 namespace neurala
 {
-
-/**
- * @brief Utility class to transport exception messages between @ref PluginManager and plugins.
- */
-class PluginErrorCallback
+namespace
 {
-	std::error_code m_code{B4BError::ok};
-	std::string m_exception;
-
+class B4BCategoryImpl final : public std::error_category
+{
 public:
-	void
-	operator()(const char* s) noexcept
+	virtual const char* name() const noexcept { return "b4b_error"; }
+	virtual std::string message(int ev) const noexcept
 	{
-		try
-		{
-			m_code = B4BError::genericError;
-			m_exception = s;
-		}
-		catch (...)
-		{
-			// ignore all exceptions due to string creation
-		}
+		const auto code = static_cast<B4BError>(ev);
+		return enumToString(code);
 	}
-
-	void
-	operator()(const std::error_code& code, const char* s) noexcept
-	{
-		try
-		{
-			m_code = code;
-			m_exception = s;
-		}
-		catch (...)
-		{
-			// ignore all exceptions due to string creation
-		}
-	}
-
-	const char*
-	what() const noexcept
-	{
-		if (m_exception.empty())
-		{
-			return "failed to propagate error message";
-		}
-		return m_exception.c_str();
-	}
-
-	const std::error_code&
-	code() const noexcept
-	{
-		return m_code;
-	}
-
 };
+} // namespace
 
+const std::error_category&
+b4bCategory() noexcept
+{
+	static B4BCategoryImpl category;
+	return category;
+}
+
+std::error_code
+make_error_code(B4BError error) noexcept // NOLINT
+{
+	return std::error_code{static_cast<int>(error), b4bCategory()};
+}
+
+std::error_condition
+make_error_condition(B4BError error) noexcept // NOLINT
+{
+	return std::error_condition{static_cast<int>(error), b4bCategory()};
+}
 } // namespace neurala
-
-#endif // NEURALA_PLUGIN_PLUGIN_ERROR_CALLBACK_H
