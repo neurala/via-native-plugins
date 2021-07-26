@@ -27,6 +27,7 @@
 #include "neurala/plugin/PluginBindings.h"
 
 #include "neurala/video/VideoSource.h"
+#include "neurala/video/VideoSourceStatus.h"
 #include "neurala/video/CameraDiscoverer.h"
 
 namespace neurala
@@ -60,7 +61,7 @@ public:
 		return ImageMetadata(200, 200, EColorSpace::RGB, EImageDataLayout::planar, EDatatype::uint8);
 	}
 
-	[[nodiscard]] std::error_code nextFrame() override { return std::error_code{}; }
+	[[nodiscard]] std::error_code nextFrame() override { return make_error_code(VideoSourceStatus::success); }
 
 	[[nodiscard]] ImageView frame() override { return ImageView(metadata(), m_frame.get()); }
 

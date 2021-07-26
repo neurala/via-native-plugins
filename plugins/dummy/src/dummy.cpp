@@ -73,8 +73,8 @@ std::vector<CameraInfo>
 Discoverer::operator()() const
 {
 	std::cout << "Discovering available cameras...\n";
-	return {CameraInfo("DummyNativePluginCamera1", kSourceTypeName, "External Dummy Camera #1", ""),
-	        CameraInfo("DummyNativePluginCamera2", kSourceTypeName, "External Dummy Camera #2", "")};
+	return {CameraInfo("DummyNativePluginCameraId1", kSourceTypeName, "External Dummy Camera #1", "DummyNativePluginCameraConnection1"),
+	        CameraInfo("DummyNativePluginCameraId1", kSourceTypeName, "External Dummy Camera #2", "DummyNativePluginCameraConnection2")};
 }
 
 void*
