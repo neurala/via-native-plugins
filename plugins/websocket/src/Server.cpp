@@ -22,6 +22,7 @@
 
 #include "Server.h"
 
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <numeric>
@@ -31,10 +32,9 @@
 
 namespace neurala::plug::ws
 {
-Server::Server(
- const std::string_view address,
- const std::uint16_t port,
- std::vector<std::pair<std::string_view, std::function<void(WebSocketStream&)>>>&& requestHandlers)
+Server::Server(const std::string_view address,
+               const std::uint16_t port,
+               std::vector<std::pair<std::string_view, RequestHandler>>&& requestHandlers)
  : m_requestHandlers{},
    m_ioContext{1},
    m_acceptor{m_ioContext, tcp::endpoint{net::ip::make_address(address), port}},
@@ -117,7 +117,11 @@ Server::handleRequest(WebSocketStream& stream)
 	beast::flat_buffer buffer;
 	stream.read(buffer);
 	const net::const_buffer key{buffer.cdata()};
-	m_requestHandlers.at(std::string_view{reinterpret_cast<const char*>(key.data()), key.size()})(stream);
+	const char* const headerBegin{reinterpret_cast<const char*>(key.data())};
+	const char* const headerEnd{std::find(headerBegin, headerBegin + key.size(), ';')};
+	const std::size_t headerSize{static_cast<std::size_t>(std::distance(headerBegin, headerEnd))};
+	const RequestHandler& handler{m_requestHandlers.at(std::string_view{headerBegin, headerSize})};
+	handler(stream, std::string_view{headerEnd + 1, key.size() - headerSize - 1});
 }
 
 } // namespace neurala::plug::ws

@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(MultipleFrames)
 	{
 		BOOST_TEST(input.nextFrame().value() == 0);
 		const ImageView imageView{input.frame()};
-		output("{ \"result\": \"success\" }", nullptr);
+		output("{ \"status\": \"success\" }", nullptr);
 	}
 }
 

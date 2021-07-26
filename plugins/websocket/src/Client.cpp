@@ -85,8 +85,11 @@ Client::Client(const std::string_view ipAddress, const std::uint16_t port)
 }
 
 net::const_buffer
-Client::response(const std::string_view request)
+Client::response(const std::string_view header, const std::string_view body /*= {}*/)
 {
+	std::string request{header};
+	request += ';';
+	request += body;
 	m_buffer.clear();
 	m_stream.write(net::buffer(request));
 	m_stream.read(m_buffer);

@@ -20,6 +20,8 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
+#include <iostream>
+
 #include <boost/beast.hpp>
 
 #include "OutputServer.h"
@@ -27,15 +29,16 @@
 namespace neurala::plug::ws
 {
 OutputServer::OutputServer(const std::string_view address, const std::uint16_t port)
- : Server{address,
-          port,
-          {{"{ \"result\": \"success\" }", [&](WebSocketStream& stream) { handleResult(stream); }}}}
+ : Server{address, port, {{"result", [&](WebSocketStream& stream, const std::string_view json) {
+	                           handleResult(stream, json);
+                           }}}}
 { }
 
 void
-OutputServer::handleResult(WebSocketStream& stream)
+OutputServer::handleResult(WebSocketStream& stream, const std::string_view json)
 {
-	stream.write(net::buffer("result submitted"));
+	std::cout << "Received result:\n" << json << '\n';
+	stream.write(net::buffer("result JSON received"));
 }
 
 } // namespace neurala::plug::ws

@@ -3,15 +3,15 @@ cmake_minimum_required(VERSION 3.17.0)
 set(CMAKE_CXX_STANDARD 17)
 
 if(MSVC)
-    add_compile_options(/Zc:__cplusplus /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251 /wd5104 /wd5105)
+	add_compile_options(/Zc:__cplusplus /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251 /wd5104 /wd5105)
 endif()
 
 include(conan)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CONAN_BUILD_TYPE "Debug")
+	set(CONAN_BUILD_TYPE "Debug")
 else()
-    set(CONAN_BUILD_TYPE "Release")
+	set(CONAN_BUILD_TYPE "Release")
 endif()
 
 conan_cmake_run(
@@ -28,14 +28,19 @@ conan_cmake_run(
 	OUTPUT_QUIET)
 
 add_library(websocket SHARED
-    src/Client.cpp
-    src/InitMe.cpp
-    src/Input.cpp
-    src/InputServer.cpp
-    src/OutputServer.cpp
-    src/Server.cpp)
+	src/Client.cpp
+	src/InitMe.cpp
+	src/Input.cpp
+	src/InputServer.cpp
+	src/OutputServer.cpp
+	src/Server.cpp)
 
-target_include_directories(websocket INTERFACE include PRIVATE include/websocket)
+target_include_directories(websocket
+	INTERFACE
+		include
+	PRIVATE
+		include/websocket
+		external/nlohmann)
 
 target_link_libraries(websocket PUBLIC stub CONAN_PKG::boost)
 

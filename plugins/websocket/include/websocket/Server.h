@@ -49,11 +49,11 @@ class PLUGIN_API Server
 {
 public:
 	using WebSocketStream = beast::websocket::stream<tcp::socket>;
+	using RequestHandler = std::function<void(WebSocketStream&, const std::string_view)>;
 
-	Server(
-	 const std::string_view address,
-	 const std::uint16_t port,
-	 std::vector<std::pair<std::string_view, std::function<void(WebSocketStream&)>>>&& requestHandlers);
+	Server(const std::string_view address,
+	       const std::uint16_t port,
+	       std::vector<std::pair<std::string_view, RequestHandler>>&& requestHandlers);
 	virtual ~Server();
 
 private:
@@ -66,7 +66,7 @@ private:
 	/// Handle a particular request made by a client.
 	void handleRequest(WebSocketStream& stream);
 
-	std::unordered_map<std::string_view, std::function<void(WebSocketStream&)>> m_requestHandlers;
+	std::unordered_map<std::string_view, RequestHandler> m_requestHandlers;
 	net::io_context m_ioContext;
 	tcp::acceptor m_acceptor;
 	std::vector<boost::thread> m_sessions;

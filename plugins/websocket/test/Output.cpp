@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(SendResult)
 {
 	try
 	{
-		plug::ws::Output{}("{ \"result\": \"success\" }", nullptr);
+		plug::ws::Output{}("{ \"status\": \"success\" }", nullptr);
 	}
 	catch (...)
 	{

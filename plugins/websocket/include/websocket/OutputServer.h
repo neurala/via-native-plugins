@@ -39,7 +39,7 @@ public:
 
 private:
 	/// Handle a result JSON.
-	void handleResult(WebSocketStream& stream);
+	void handleResult(WebSocketStream& stream, const std::string_view json);
 };
 
 } // namespace neurala::plug::ws

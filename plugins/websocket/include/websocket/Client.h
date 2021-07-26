@@ -64,7 +64,7 @@ public:
 	bool frame(std::byte* const location, const std::size_t capacity);
 
 	/// Send the result of processing a frame back to the server.
-	void sendResult(const std::string& result) { response(result); }
+	void sendResult(const std::string& result) { response("result", result); }
 
 private:
 	/// Return a pointer to the start of the next metadata element.
@@ -80,7 +80,7 @@ private:
 	}
 
 	/// Retrieve the response for a given request.
-	net::const_buffer response(const std::string_view request);
+	net::const_buffer response(const std::string_view header, const std::string_view body = {});
 
 	net::io_context m_ioContext;
 	tcp::socket m_socket;
