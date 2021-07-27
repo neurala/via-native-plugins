@@ -23,16 +23,15 @@
 #ifndef NEURALA_PLUG_WS_CLIENT_H
 #define NEURALA_PLUG_WS_CLIENT_H
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
-#include <iterator>
 #include <string>
 #include <string_view>
 
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <boost/config.hpp>
+#include <boost/json.hpp>
 #include <neurala/image/ImageMetadata.h>
 #include <neurala/plugin/PluginBindings.h>
 
@@ -78,23 +77,11 @@ public:
 	 * @brief Send the result of processing a frame back to the server.
 	 * @param result body of the result sending request
 	 */
-	void sendResult(const std::string& result) { response("result", result); }
+	void sendResult(const boost::json::object& result) { response("result", result); }
 
 private:
-	/// Return a pointer to the start of the next metadata element.
-	static const char* parseMetadata(const char* const begin, const char* const end)
-	{
-		return std::next(std::find(begin, end, ';'));
-	}
-
-	/// Return the length of the current metadata element.
-	static std::size_t metadataLength(const char* const begin, const char* const end)
-	{
-		return std::distance(begin, std::find(begin, end, ';'));
-	}
-
 	/// Retrieve the response for a given request.
-	net::const_buffer response(const std::string_view header, const std::string_view body = {});
+	net::const_buffer response(const std::string_view header, const boost::json::object& body = {});
 
 	net::io_context m_ioContext;
 	tcp::socket m_socket;

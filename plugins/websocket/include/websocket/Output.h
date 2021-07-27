@@ -25,6 +25,7 @@
 
 #include <string>
 
+#include <boost/json.hpp>
 #include <neurala/image/views/ImageView.h>
 #include <neurala/plugin/PluginArguments.h>
 #include <neurala/plugin/PluginBindings.h>
@@ -76,7 +77,8 @@ public:
 	 */
 	void operator()(const std::string& metadata, const ImageView*) final
 	{
-		m_client.sendResult(metadata);
+		using namespace boost::json;
+		m_client.sendResult(parse(string_view{metadata.data(), metadata.size()}).as_object());
 	}
 
 private:

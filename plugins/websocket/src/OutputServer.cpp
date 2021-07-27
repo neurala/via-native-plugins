@@ -29,15 +29,17 @@
 namespace neurala::plug::ws
 {
 OutputServer::OutputServer(const std::string_view ipAddress, const std::uint16_t port)
- : Server{ipAddress, port, {{"result", [&](WebSocketStream& stream, const std::string_view json) {
-	                             handleResult(stream, json);
-                             }}}}
+ : Server{ipAddress,
+          port,
+          {{"result", [&](WebSocketStream& stream, const boost::json::object& request) {
+	            handleResult(stream, request);
+            }}}}
 { }
 
 void
-OutputServer::handleResult(WebSocketStream& stream, const std::string_view json)
+OutputServer::handleResult(WebSocketStream& stream, const boost::json::object& request)
 {
-	std::cout << "Received result:\n" << json << '\n';
+	std::cout << "Received result:\n" << boost::json::serialize(request) << '\n';
 	stream.write(net::buffer("result JSON received"));
 }
 

@@ -116,12 +116,22 @@ Server::handleRequest(WebSocketStream& stream)
 {
 	beast::flat_buffer buffer;
 	stream.read(buffer);
-	const net::const_buffer key{buffer.cdata()};
-	const char* const headerBegin{reinterpret_cast<const char*>(key.data())};
-	const char* const headerEnd{std::find(headerBegin, headerBegin + key.size(), ';')};
-	const std::size_t headerSize{static_cast<std::size_t>(std::distance(headerBegin, headerEnd))};
-	const RequestHandler& handler{m_requestHandlers.at(std::string_view{headerBegin, headerSize})};
-	handler(stream, std::string_view{headerEnd + 1, key.size() - headerSize - 1});
+	const net::const_buffer readBuffer{buffer.cdata()};
+	using namespace boost::json;
+	value requestValue{
+	 parse(string_view{reinterpret_cast<const char*>(readBuffer.data()), readBuffer.size()})};
+	object& requestObject{requestValue.as_object()};
+	const string& requestType{requestObject.at("request").as_string()};
+	const RequestHandler& handler{
+	 m_requestHandlers.at(std::string_view{requestType.data(), requestType.size()})};
+	if (const auto requestBodyIt{requestObject.find("body")}; requestBodyIt != requestObject.cend())
+	{
+		handler(stream, requestBodyIt->value().as_object());
+	}
+	else
+	{
+		handler(stream, {});
+	}
 }
 
 } // namespace neurala::plug::ws

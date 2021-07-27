@@ -25,7 +25,6 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <boost/json.hpp>
 #include <neurala/meta/enum.h>
 
 namespace neurala::plug::ws
@@ -80,13 +79,16 @@ Client::frame(std::byte* const location, const std::size_t capacity)
 }
 
 net::const_buffer
-Client::response(const std::string_view header, const std::string_view body /*= {}*/)
+Client::response(const std::string_view header, const boost::json::object& body /*= {}*/)
 {
-	std::string request{header};
-	request += ';';
-	request += body;
 	m_buffer.clear();
-	m_stream.write(net::buffer(request));
+	boost::json::object request;
+	request["request"] = header.data();
+	if (!body.empty())
+	{
+		request["body"] = body;
+	}
+	m_stream.write(net::buffer(serialize(request)));
 	m_stream.read(m_buffer);
 	const net::const_buffer data = m_buffer.cdata();
 	if (data.size() < 1024)

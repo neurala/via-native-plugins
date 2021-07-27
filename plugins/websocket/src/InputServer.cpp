@@ -33,8 +33,9 @@ InputServer::InputServer(const std::string_view ipAddress, const std::uint16_t p
  : Server{ipAddress,
           port,
           {{"metadata",
-            [&](WebSocketStream& stream, const std::string_view) { handleMetadata(stream); }},
-           {"frame", [&](WebSocketStream& stream, const std::string_view) { handleFrame(stream); }}}},
+            [&](WebSocketStream& stream, const boost::json::object&) { handleMetadata(stream); }},
+           {"frame",
+            [&](WebSocketStream& stream, const boost::json::object&) { handleFrame(stream); }}}},
    m_metadata{800, 600, "RGB", "planar", "uint8"}
 { }
 

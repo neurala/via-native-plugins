@@ -33,6 +33,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
+#include <boost/json.hpp>
 #include <boost/thread.hpp>
 #include <neurala/plugin/PluginBindings.h>
 
@@ -51,7 +52,7 @@ class PLUGIN_API Server
 {
 public:
 	using WebSocketStream = beast::websocket::stream<tcp::socket>;
-	using RequestHandler = std::function<void(WebSocketStream&, const std::string_view)>;
+	using RequestHandler = std::function<void(WebSocketStream&, const boost::json::object&)>;
 
 	/**
 	 * @param ipAddress connection IP address

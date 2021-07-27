@@ -20,6 +20,7 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
+#include <boost/json.hpp>
 #include <boost/test/unit_test.hpp>
 
 #include "websocket/Client.h"
@@ -67,7 +68,7 @@ BOOST_AUTO_TEST_CASE(Response)
 	try
 	{
 		plug::ws::Client outputClient{"127.0.0.1", 43210};
-		outputClient.sendResult("{ \"status\": \"success\" }");
+		outputClient.sendResult(boost::json::object{{"status", "success"}});
 	}
 	catch (...)
 	{

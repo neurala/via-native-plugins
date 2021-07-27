@@ -26,6 +26,7 @@
 #include <cstdint>
 #include <string_view>
 
+#include <boost/json.hpp>
 #include <neurala/plugin/PluginBindings.h>
 
 #include "Server.h"
@@ -42,7 +43,7 @@ public:
 
 private:
 	/// Send a result JSON to the output server.
-	void handleResult(WebSocketStream& stream, const std::string_view json);
+	void handleResult(WebSocketStream& stream, const boost::json::object& request);
 };
 
 } // namespace neurala::plug::ws
