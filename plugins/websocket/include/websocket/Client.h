@@ -43,12 +43,18 @@ namespace net = boost::asio;
 using tcp = net::ip::tcp;
 
 /**
- * @brief Websocket client that receives input frames from a local server.
+ * @brief Websocket client that receives input frames from a specified server.
  */
 class PLUGIN_API Client final
 {
 public:
+	/**
+	 * @param ipAddress the server's IP address
+	 * @param port the port on which the server is receiving connection
+	 */
 	Client(const std::string_view ipAddress, const std::uint16_t port);
+
+	/// Closes the WebSocket stream used to communicate with the server.
 	~Client() { m_stream.close(beast::websocket::close_code::normal); }
 
 	/**
@@ -60,10 +66,18 @@ public:
 	 */
 	ImageMetadata metadata();
 
-	/// Retrieve the next frame and copy data to the specified location.
+	/**
+	 * @brief Retrieve the next frame and copy data to the specified location.
+	 * @param location address to which the frame data must be copied
+	 * @param capacity capacity of the buffer at the given address
+	 * @return true if the capacity was sufficient, false otherwise
+	 */
 	bool frame(std::byte* const location, const std::size_t capacity);
 
-	/// Send the result of processing a frame back to the server.
+	/**
+	 * @brief Send the result of processing a frame back to the server.
+	 * @param result body of the result sending request
+	 */
 	void sendResult(const std::string& result) { response("result", result); }
 
 private:

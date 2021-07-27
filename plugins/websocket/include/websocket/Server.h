@@ -43,7 +43,9 @@ namespace beast = boost::beast;
 using tcp = net::ip::tcp;
 
 /**
- * @brief Websocket server that offers mock image data.
+ * @brief Base implementation for a WebSocket server.
+ *
+ * Specific behavior depending on client requests must be added for an instance to be useful.
  */
 class PLUGIN_API Server
 {
@@ -51,9 +53,16 @@ public:
 	using WebSocketStream = beast::websocket::stream<tcp::socket>;
 	using RequestHandler = std::function<void(WebSocketStream&, const std::string_view)>;
 
-	Server(const std::string_view address,
+	/**
+	 * @param ipAddress connection IP address
+	 * @param port connection port
+	 * @param requestHandlers list of mappings between expected headers and the corresponding way of
+	 * responding to the request messages
+	 */
+	Server(const std::string_view ipAddress,
 	       const std::uint16_t port,
 	       std::vector<std::pair<std::string_view, RequestHandler>>&& requestHandlers);
+	/// Stop accepting connections and stop all existing ones before destroying the object.
 	virtual ~Server();
 
 private:

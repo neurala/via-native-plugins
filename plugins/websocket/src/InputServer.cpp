@@ -27,8 +27,8 @@
 
 namespace neurala::plug::ws
 {
-InputServer::InputServer(const std::string_view address, const std::uint16_t port)
- : Server{address,
+InputServer::InputServer(const std::string_view ipAddress, const std::uint16_t port)
+ : Server{ipAddress,
           port,
           {{"metadata",
             [&](WebSocketStream& stream, const std::string_view) { handleMetadata(stream); }},

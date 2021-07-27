@@ -32,12 +32,12 @@
 
 namespace neurala::plug::ws
 {
-Server::Server(const std::string_view address,
+Server::Server(const std::string_view ipAddress,
                const std::uint16_t port,
                std::vector<std::pair<std::string_view, RequestHandler>>&& requestHandlers)
  : m_requestHandlers{},
    m_ioContext{1},
-   m_acceptor{m_ioContext, tcp::endpoint{net::ip::make_address(address), port}},
+   m_acceptor{m_ioContext, tcp::endpoint{net::ip::make_address(ipAddress), port}},
    m_sessions{},
    m_running{true},
    m_thread{[&] { run(); }}

@@ -28,10 +28,10 @@
 
 namespace neurala::plug::ws
 {
-OutputServer::OutputServer(const std::string_view address, const std::uint16_t port)
- : Server{address, port, {{"result", [&](WebSocketStream& stream, const std::string_view json) {
-	                           handleResult(stream, json);
-                           }}}}
+OutputServer::OutputServer(const std::string_view ipAddress, const std::uint16_t port)
+ : Server{ipAddress, port, {{"result", [&](WebSocketStream& stream, const std::string_view json) {
+	                             handleResult(stream, json);
+                             }}}}
 { }
 
 void

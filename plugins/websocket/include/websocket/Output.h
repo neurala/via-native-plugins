@@ -35,6 +35,9 @@
 
 namespace neurala::plug::ws
 {
+/**
+ * @brief Implementation of the ResultsOutput interface that handles resulting data.
+ */
 class PLUGIN_API Output final : public ResultsOutput
 {
 public:
@@ -65,7 +68,7 @@ public:
 	Output() : ResultsOutput{}, m_client{"127.0.0.1", 43210} { }
 
 	/**
-	 * @brief Function call operator for invoking the output action.
+	 * @brief Send a result JSON to the output server.
 	 *
 	 * @param metadata A JSON document containing information about the result.
 	 * @param image A pointer to an image view, which may be null if no frame

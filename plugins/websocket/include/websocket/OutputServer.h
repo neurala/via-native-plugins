@@ -32,13 +32,16 @@
 
 namespace neurala::plug::ws
 {
+/**
+ * @brief Implementation of the server base that handles result requests.
+ */
 class PLUGIN_API OutputServer final : public Server
 {
 public:
-	OutputServer(const std::string_view address, const std::uint16_t port);
+	OutputServer(const std::string_view ipAddress, const std::uint16_t port);
 
 private:
-	/// Handle a result JSON.
+	/// Send a result JSON to the output server.
 	void handleResult(WebSocketStream& stream, const std::string_view json);
 };
 

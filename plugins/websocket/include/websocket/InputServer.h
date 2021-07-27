@@ -33,10 +33,13 @@
 
 namespace neurala::plug::ws
 {
+/**
+ * @brief Implementation of the server base that handles metadata and frame requests.
+ */
 class PLUGIN_API InputServer final : public Server
 {
 public:
-	InputServer(const std::string_view address, const std::uint16_t port);
+	InputServer(const std::string_view ipAddress, const std::uint16_t port);
 
 private:
 	/// Handle an image metadata request.

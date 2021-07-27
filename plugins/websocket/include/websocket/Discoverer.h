@@ -11,13 +11,16 @@
 
 namespace neurala::plug::ws
 {
+/**
+ * @brief Implementation of the CameraDiscoverer interface that provides connection information.
+ */
 class PLUGIN_API Discoverer final : public CameraDiscoverer
 {
 public:
 	static void* create(PluginArguments&, PluginErrorCallback&) { return new Discoverer; }
 	static void destroy(void* p) { delete reinterpret_cast<Discoverer*>(p); }
 
-	// Scan for all available cameras
+	/// Return information for the camera emulated by the plugin.
 	[[nodiscard]] std::vector<CameraInfo> operator()() const final
 	{
 		return {{"0", "Input", "websocket", "127.0.0.1:54321"}};

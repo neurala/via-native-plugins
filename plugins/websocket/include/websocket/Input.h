@@ -38,6 +38,9 @@
 
 namespace neurala::plug::ws
 {
+/**
+ * @brief Implementation of the VideoSource interface that retrieves frame data.
+ */
 class PLUGIN_API Input final : public VideoSource
 {
 public:
@@ -69,7 +72,11 @@ public:
 
 	static void destroy(void* p) { delete reinterpret_cast<Input*>(p); }
 
-	Input(const std::string_view ip, const std::uint16_t port);
+	/**
+	 * @param ipAddress server's IP address
+	 * @param port server's listening port
+	 */
+	Input(const std::string_view ipAddress, const std::uint16_t port);
 
 	// Image dimension information
 	[[nodiscard]] ImageMetadata metadata() const final { return cachedMetadata(); }

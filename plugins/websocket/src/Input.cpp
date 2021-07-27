@@ -27,8 +27,8 @@
 
 namespace neurala::plug::ws
 {
-Input::Input(const std::string_view ip, const std::uint16_t port)
- : VideoSource{}, m_client{ip, port}, m_metadata{}, m_frames{}
+Input::Input(const std::string_view ipAddress, const std::uint16_t port)
+ : VideoSource{}, m_client{ipAddress, port}, m_metadata{}, m_frames{}
 { }
 
 std::error_code
