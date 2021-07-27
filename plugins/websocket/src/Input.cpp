@@ -28,7 +28,7 @@
 namespace neurala::plug::ws
 {
 Input::Input(const std::string_view ipAddress, const std::uint16_t port)
- : VideoSource{}, m_client{ipAddress, port}, m_metadata{}, m_frames{}
+ : VideoSource{}, m_client{ipAddress, port}, m_metadata{}, m_frame{}
 { }
 
 std::error_code
@@ -38,7 +38,7 @@ Input::nextFrame()
 	{
 		std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
 		m_client.frame(frameBuffer.data(), frameBuffer.size());
-		m_frames.emplace_back(std::move(frameBuffer));
+		m_frame = std::move(frameBuffer);
 		return make_error_code(VideoSourceStatus::success);
 	}
 	catch (const beast::system_error& se)
@@ -57,8 +57,7 @@ Input::frame(std::byte* data, std::size_t size)
 	}
 	else
 	{
-		std::copy(cbegin(m_frames.back()), cend(m_frames.back()), data);
-		m_frames.pop_back();
+		std::copy(cbegin(m_frame), cend(m_frame), data);
 	}
 	return {md, data};
 }

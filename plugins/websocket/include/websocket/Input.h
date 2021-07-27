@@ -85,13 +85,13 @@ public:
 	[[nodiscard]] std::error_code nextFrame() final;
 
 	// Get a frame from host memory, data needs to be valid until the end of processing​
-	[[nodiscard]] ImageView frame() final { return {cachedMetadata(), m_frames.back().data()}; }
+	[[nodiscard]] ImageView frame() final { return {cachedMetadata(), m_frame.data()}; }
 
 	// Copy a frame into the buffer provided as argument
 	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) final;
 
 	// Executes an arbitrary action on the video source
-	[[nodiscard]] std::error_code execute(const std::string& action) final { return {}; }
+	[[nodiscard]] std::error_code execute(const std::string&) final { return {}; }
 
 private:
 	// Access the image metadata. Only retrieve over the network if necessary.
@@ -99,7 +99,7 @@ private:
 
 	mutable Client m_client;
 	mutable std::optional<ImageMetadata> m_metadata;
-	std::vector<std::vector<std::byte>> m_frames;
+	std::vector<std::byte> m_frame;
 };
 
 } // namespace neurala::plug::ws
