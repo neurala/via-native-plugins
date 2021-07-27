@@ -25,6 +25,8 @@
 #include <numeric>
 #include <string>
 
+#include <boost/json.hpp>
+
 namespace neurala::plug::ws
 {
 InputServer::InputServer(const std::string_view ipAddress, const std::uint16_t port)
@@ -39,17 +41,13 @@ InputServer::InputServer(const std::string_view ipAddress, const std::uint16_t p
 void
 InputServer::handleMetadata(WebSocketStream& stream)
 {
-	std::string metadata;
-	const auto add{[&](const std::string_view element) {
-		metadata += element;
-		metadata += ';';
-	}};
-	add(std::to_string(m_metadata.width));
-	add(std::to_string(m_metadata.height));
-	add(m_metadata.colorSpace);
-	add(m_metadata.layout);
-	add(m_metadata.dataType);
-	stream.write(net::buffer(metadata));
+	boost::json::object md;
+	md["width"] = m_metadata.width;
+	md["height"] = m_metadata.height;
+	md["colorSpace"] = m_metadata.colorSpace.data();
+	md["layout"] = m_metadata.layout.data();
+	md["dataType"] = m_metadata.dataType.data();
+	stream.write(net::buffer(serialize(md)));
 }
 
 void
