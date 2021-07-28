@@ -1,3 +1,5 @@
 cmake_minimum_required(VERSION 3.17.0)
 
+add_subdirectory(empty)
+add_subdirectory(dummy)
 add_subdirectory(websocket)
