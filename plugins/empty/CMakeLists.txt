@@ -5,13 +5,11 @@ cmake_minimum_required(VERSION 3.17.0)
 set(CMAKE_CXX_STANDARD 17)
 
 # Build the plugin
-set(plugin_target empty)
-add_library(${plugin_target} SHARED src/initme.cpp)
-target_include_directories(${plugin_target} PUBLIC include)
-target_link_libraries(${plugin_target} NeuralaB4B)
+add_library(empty SHARED src/initme.cpp)
+target_include_directories(empty PUBLIC include)
+target_link_libraries(empty stub)
 
 # Build the tests
-set(test_target ${plugin_target}_tests)
-add_executable(${test_target} test/main.cpp)
-target_link_libraries(${test_target} ${plugin_target})
-target_compile_definitions(${test_target} PRIVATE NEURALA_IMPORT_PLUGIN)
+add_executable(empty_tests test/main.cpp)
+target_link_libraries(empty_tests empty)
+target_compile_definitions(empty_tests PRIVATE NEURALA_IMPORT_PLUGIN)
