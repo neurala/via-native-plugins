@@ -73,7 +73,12 @@ private:
 	/// Handle communication with a particular client.
 	void session(tcp::socket&& socket);
 
-	/// Handle a particular request made by a client.
+	/**
+	 * @brief Handle a particular request made by a client.
+	 *
+	 * Requests must use the JSON format. A "request" element representing the type is required. If a
+	 * "body" element is also present, it gets passed to the corresponding handler function.
+	 */
 	void handleRequest(WebSocketStream& stream);
 
 	std::unordered_map<std::string_view, RequestHandler> m_requestHandlers;

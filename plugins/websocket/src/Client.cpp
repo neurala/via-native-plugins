@@ -79,11 +79,11 @@ Client::frame(std::byte* const location, const std::size_t capacity)
 }
 
 net::const_buffer
-Client::response(const std::string_view header, const boost::json::object& body /*= {}*/)
+Client::response(const std::string_view requestType, const boost::json::object& body /*= {}*/)
 {
 	m_buffer.clear();
 	boost::json::object request;
-	request["request"] = header.data();
+	request["request"] = requestType.data();
 	if (!body.empty())
 	{
 		request["body"] = body;

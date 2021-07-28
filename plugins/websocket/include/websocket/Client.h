@@ -60,7 +60,7 @@ public:
 	 * @brief Retrieve metadata regarding frames fed by the server.
 	 *
 	 * The client parses a sequence of five attributes (width, height, color space, layout, data type)
-	 * separated by semicolons. The width and height attributes must be represented as numbers. The
+	 * enclosed as a JSON object. The width and height attributes must be represented as numbers. The
 	 * latter three are interpreted as the string encoding of an element from the corresponding enum.
 	 */
 	ImageMetadata metadata();
@@ -80,8 +80,13 @@ public:
 	void sendResult(const boost::json::object& result) { response("result", result); }
 
 private:
-	/// Retrieve the response for a given request.
-	net::const_buffer response(const std::string_view header, const boost::json::object& body = {});
+	/**
+	 * @brief Retrieve the response for a given request.
+	 *
+	 * Requests used the JSON format. The request type is set as the "request" element. If a body
+	 * object is specified, a "body" element is also included in the message.
+	 */
+	net::const_buffer response(const std::string_view requestType, const boost::json::object& body = {});
 
 	net::io_context m_ioContext;
 	tcp::socket m_socket;
