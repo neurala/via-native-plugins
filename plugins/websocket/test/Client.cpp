@@ -20,6 +20,10 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
+#include <algorithm>
+#include <cstddef>
+#include <vector>
+
 #include <boost/json.hpp>
 #include <boost/test/unit_test.hpp>
 

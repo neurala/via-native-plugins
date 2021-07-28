@@ -22,8 +22,10 @@
 
 #include "InputServer.h"
 
+#include <cstdint>
 #include <numeric>
-#include <string>
+#include <string_view>
+#include <vector>
 
 #include <boost/json.hpp>
 

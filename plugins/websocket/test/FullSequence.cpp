@@ -20,6 +20,8 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
+#include <cstddef>
+
 #include <boost/test/unit_test.hpp>
 
 #include "websocket/Input.h"

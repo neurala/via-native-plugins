@@ -27,6 +27,7 @@
 #include <memory>
 #include <numeric>
 #include <stdexcept>
+#include <string>
 
 #include <boost/chrono.hpp>
 

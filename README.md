@@ -10,7 +10,7 @@ ninja
 
 ## Testing
 Tests are implemented using Boost.Test. The test executable can be ran using `bin/test.exe`.
-All generated DLLs and executables (such as the B4B stub and plugins) are generated in the same directory.
+All generated DLLs and executables (such as the SDK and plugins) are generated in the same directory.
 
 ## Writing your first plugin (WIP)
 - Have a look at the sample plugins in `/plugins`
@@ -30,7 +30,7 @@ All generated DLLs and executables (such as the B4B stub and plugins) are genera
 		4. connection (e.g. IP address or directory path)
 	- `VideoSource` is used to retrieve image metadata and frames. In the call to `create()`, there are two `PluginArguments`, representing the `CameraInfo` retrieved through `CameraDiscoverer` and `Option` object.
 	- `ResultsOutput` passes back the results of processing each frame as a string in JSON format and an `ImageView` to the associated input.
-3. How are these types identified and loaded in B4B?
+3. How are these types identified and loaded by the Neurala SDK?
 	The DLL will be scanned for an `extern "C" PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, NeuralaPluginStatus*)`. Types derived from the three interfaces mentioned above must be registered through the `PluginManager` (`PluginRegistrar`).
 	Each implementation must define two static functions through which instance lifetime is managed:
 	- `void* create(PluginArguments&, PluginErrorCallback&)` provides necessary arguments and a function to call in case of errors during instantiation.
@@ -39,4 +39,4 @@ All generated DLLs and executables (such as the B4B stub and plugins) are genera
 	This is intentional. The call to `metadata()` should return the expected information for the corresponding camera, while the metadata provided as part of each image allows for potential flexibility on a per frame basis.
 5. Why are there two `frame()` functions?
 	- `ImageView frame()` must return a pointer to a buffer that remains managed by the plugin until the next call to `nextFrame()`.
-	- `ImageView frame(std::byte*, std::size_t)` specifies the address to which frame data must be copied and the capacity of the memory block expressed in bytes. Lifetime is afterwards handled by B4B.
+	- `ImageView frame(std::byte*, std::size_t)` specifies the address to which frame data must be copied and the capacity of the memory block expressed in bytes. Lifetime is afterwards handled by the SDK.
