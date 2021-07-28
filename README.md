@@ -33,8 +33,8 @@ All generated DLLs and executables (such as the B4B stub and plugins) are genera
 3. How are these types identified and loaded in B4B?
 	The DLL will be scanned for an `extern "C" PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, NeuralaPluginStatus*)`. Types derived from the three interfaces mentioned above must be registered through the `PluginManager` (`PluginRegistrar`).
 	Each implementation must define two static functions through which instance lifetime is managed:
-	- `void* create(PluginArguments&, PluginErrorCallback&)` provides necessary arguments and a function to call in case of errors during instantiation
-	- `void destroy(void*)` specifies a pointer to a previously created object that must be deallocated
+	- `void* create(PluginArguments&, PluginErrorCallback&)` provides necessary arguments and a function to call in case of errors during instantiation.
+	- `void destroy(void*)` specifies a pointer to a previously created object that must be deallocated.
 4. Why is the `ImageMetadata` retrieved separately and as a part of `ImageView` per each frame?
 	This is intentional. The call to `metadata()` should return the expected information for the corresponding camera, while the metadata provided as part of each image allows for potential flexibility on a per frame basis.
 5. Why are there two `frame()` functions?
