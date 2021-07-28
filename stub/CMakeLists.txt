@@ -42,4 +42,5 @@ target_include_directories(NeuralaB4B SYSTEM PUBLIC include)
 #
 target_compile_options(NeuralaB4B PUBLIC /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251 /wd5104 /wd5105)
 
+# Add friendly alias
 add_library(stub ALIAS NeuralaB4B)

@@ -4,7 +4,7 @@ project(via-native-plugins)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
-# Set output directories for all builds (Debug, Release, etc.) and on multi-config generators (Visual Studio)
+# Place all generated executables and runtime libraries together.
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -16,5 +16,5 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIGUPPER} ${CMAKE_BINARY_DIR}/${OUTPUTCONFIG}/bin)
 endforeach()
 
-add_subdirectory(plugins)
 add_subdirectory(stub)
+add_subdirectory(plugins)
