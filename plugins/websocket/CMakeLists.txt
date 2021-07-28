@@ -3,17 +3,26 @@ cmake_minimum_required(VERSION 3.17.0)
 set(CMAKE_CXX_STANDARD 17)
 
 if(MSVC)
-	add_compile_options(/Zc:__cplusplus /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251 /wd5104 /wd5105)
+	add_compile_options(
+		/Zc:__cplusplus # Some types definitions rely on checking the C++ version.
+		/permissive-
+		/Zc:preprocessor
+		/MP
+		/wd4251
+		/wd5104
+		/wd5105)
 endif()
 
 include(conan)
 
+# Default to Release, including the case of RelWithDebInfo.
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(CONAN_BUILD_TYPE "Debug")
 else()
 	set(CONAN_BUILD_TYPE "Release")
 endif()
 
+# Load Boost libraries through Conan.
 conan_cmake_run(
 	REQUIRES
 		boost/1.76.0
@@ -36,11 +45,11 @@ add_library(websocket SHARED
 	src/Server.cpp)
 
 target_include_directories(websocket
+	# Headers should be prefixed with websocket/ when used as a dependency.
 	INTERFACE
 		include
 	PRIVATE
-		include/websocket
-		external/nlohmann)
+		include/websocket)
 
 target_link_libraries(websocket PUBLIC stub CONAN_PKG::boost)
 
