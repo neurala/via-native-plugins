@@ -2,17 +2,6 @@ cmake_minimum_required(VERSION 3.17.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-if(MSVC)
-	add_compile_options(
-		/Zc:__cplusplus # Some types definitions rely on checking the C++ version.
-		/permissive-
-		/Zc:preprocessor
-		/MP
-		/wd4251
-		/wd5104
-		/wd5105)
-endif()
-
 include(conan)
 
 # Default to Release, including the case of RelWithDebInfo.
