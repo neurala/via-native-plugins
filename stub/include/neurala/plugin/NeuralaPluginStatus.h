@@ -1,4 +1,5 @@
 /*
+ * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
@@ -20,29 +21,39 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#include <neurala/utils/Version.h>
-#include <neurala/plugin/PluginManager.h>
-#include <neurala/plugin/PluginBindings.h>
-#include <neurala/plugin/NeuralaPluginStatus.h>
+#ifndef NEURALA_PLUGIN_NEURALA_PLUGIN_STATUS_H
+#define NEURALA_PLUGIN_NEURALA_PLUGIN_STATUS_H
 
-#include "EmptyResultsOutput.h"
-#include "EmptyVideoSource.h"
+#include <system_error>
 
-extern "C" PLUGIN_API NeuralaPluginExitFunction
-initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
+#include "neurala/exports.h"
+#include "neurala/plugin/PluginBindings.h"
+
+/// @brief Definition of the plugin status error domain
+NEURALA_PUBLIC const std::error_category& neuralaPluginStatusCategory() noexcept;
+
+/**
+ * @brief Creates a std::error_condition from a @p NeuralaPluginStatus
+ * @param status The code to convert
+ */
+NEURALA_PUBLIC std::error_condition
+make_error_condition(NeuralaPluginStatus status) noexcept; // NOLINT
+
+/**
+ * @brief Creates a std::error_condition from a @p NeuralaPluginStatus
+ *
+ * @note While @p NeuralaPluginStatus can be used as a std::error_code, you are encouraged to create
+ *       your own error codes and define equivalence relationship with this status.
+ *
+ * @param status The code to convert
+ */
+NEURALA_PUBLIC std::error_code make_error_code(NeuralaPluginStatus status) noexcept; // NOLINT
+
+namespace std
 {
-	auto& pm = *static_cast<neurala::PluginRegistrar*>(pluginManager);
-	*status = pm.registerPlugin<neurala::plug::empty::VideoSource>("EmptyVideoSource",
-	                                                               neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
-	{
-		return nullptr;
-	}
-	*status = pm.registerPlugin<neurala::plug::empty::ResultsOutput>("EmptyResultsOutput",
-	                                                                 neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
-	{
-		return nullptr;
-	}
-	return [] { return 0; };
-}
+template<>
+struct is_error_condition_enum<NeuralaPluginStatus> : true_type
+{ };
+} // namespace std
+
+#endif // NEURALA_PLUGIN_NEURALA_PLUGIN_STATUS_H

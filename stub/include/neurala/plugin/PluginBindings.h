@@ -24,6 +24,8 @@
 #ifndef NEURALA_PLUGIN_PLUGIN_BINDINGS_H
 #define NEURALA_PLUGIN_PLUGIN_BINDINGS_H
 
+#include <system_error>
+
 #include "neurala/config/os.h"
 
 #ifdef NEURALA_OS_WINDOWS
@@ -77,10 +79,10 @@ typedef int (*NeuralaPluginExitFunction)();
  * @return exit function of the plugin or @c nullptr if initialization failed.
  */
 typedef NeuralaPluginExitFunction (*NeuralaPluginEntryFunction)(NeuralaPluginManager* pluginManager,
-                                                                NeuralaPluginStatus* status);
+                                                                std::error_code* status);
 
 /// @brief Plugin entry point, needs to be implemented in plugin implementation.
-PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, NeuralaPluginStatus*);
+PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, std::error_code*);
 
 #ifdef __cplusplus
 } // extern "C"
