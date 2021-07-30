@@ -10,10 +10,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Build the plugin
 add_library(dummy SHARED src/dummy.cpp)
+target_compile_definitions(dummy PRIVATE NEURALA_EXPORT_PLUGIN)
 target_include_directories(dummy PUBLIC include)
 target_link_libraries(dummy stub)
 
 # Build the tests
 add_executable(dummy_tests test/main.cpp)
 target_link_libraries(dummy_tests dummy)
-target_compile_definitions(dummy_tests PRIVATE NEURALA_IMPORT_PLUGIN)
