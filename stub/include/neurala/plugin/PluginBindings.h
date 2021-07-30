@@ -24,6 +24,8 @@
 #ifndef NEURALA_PLUGIN_PLUGIN_BINDINGS_H
 #define NEURALA_PLUGIN_PLUGIN_BINDINGS_H
 
+#include <system_error>
+
 #include "neurala/config/os.h"
 
 #ifdef NEURALA_OS_WINDOWS

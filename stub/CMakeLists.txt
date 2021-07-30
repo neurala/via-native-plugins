@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_library(NeuralaB4B SHARED
 	src/B4BError.cpp
 	src/demangle.cpp
+	src/NeuralaPluginStatus.cpp
 	src/Option.cpp
 	src/PluginManager.cpp
 	src/VideoSourceStatus.cpp)
