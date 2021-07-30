@@ -73,7 +73,7 @@ public:
 	 * @return status of registration
 	 */
 	template<class Plugin>
-	NeuralaPluginStatus registerPlugin(const char* name, const Version& version)
+	std::error_code registerPlugin(const char* name, const Version& version)
 	{
 		return registerClass(name, version, Plugin::create, Plugin::destroy);
 	}
@@ -91,10 +91,10 @@ private:
 	 *
 	 * @return status of registration
 	 */
-	virtual NeuralaPluginStatus registerClass(const char* name,
-	                                          const Version& version,
-	                                          ClassConstructorPtr classConstructor,
-	                                          ClassDestructorPtr classDestructor) = 0;
+	virtual std::error_code registerClass(const char* name,
+	                                      const Version& version,
+	                                      ClassConstructorPtr classConstructor,
+	                                      ClassDestructorPtr classDestructor) = 0;
 };
 
 } // namespace neurala
