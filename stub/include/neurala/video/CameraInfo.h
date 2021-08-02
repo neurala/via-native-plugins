@@ -30,7 +30,6 @@
 
 namespace neurala
 {
-
 /**
  * @brief Camera information.
  */
@@ -46,6 +45,11 @@ public:
 
 	/**
 	 * @brief Constructs a new @ref CameraInfo object.
+	 *
+	 * @param id unique ID (e.g. MAC address for eBUS cameras)
+	 * @param type name used inside `initMe()` to register the associated `VideoSource` implementation
+	 * @param name display name of the camera
+	 * @param connection connectivity data (e.g. IP address or directory path)
 	 */
 	CameraInfo(std::string id, std::string type, std::string name, std::string connection) noexcept
 	 : m_id{std::move(id)}, m_name{std::move(name)}, m_connection{std::move(connection)}, m_type{std::move(type)}

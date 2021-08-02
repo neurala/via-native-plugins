@@ -24,21 +24,43 @@
 #ifndef NEURALA_VIDEO_VIDEO_SOURCE_H
 #define NEURALA_VIDEO_VIDEO_SOURCE_H
 
-#include "neurala/utils/Option.h"
 #include "neurala/image/ImageMetadata.h"
 #include "neurala/image/views/ImageView.h"
+#include "neurala/utils/Option.h"
 #include "neurala/video/CameraInfo.h"
+
 
 namespace neurala
 {
 /**
- * @brief Base class for an abstact video data source.
+ * @brief Base class for an abstact video data source. Plugin implementers should inherit from this
+ * type.
+ *
+ * The sequence of calls can be expected to occur as follows:
+ * 1. metadata()
+ * 2. nextFrame()
+ * 3. in case an error is returned, try step 2. again or abort, depending on the specifics
+ * 4. frame() - either of the two
+ * 5. go back to step 2.
  */
 class VideoSource
 {
 public:
+	/**
+	 * @brief Possible parameter sequence for constructors of derived types.
+	 *
+	 * The PluginArguments passed to the create call will offer references to these two types.
+	 *
+	 * @param cameraInfo information about the camera associated with the object, as provided by the
+	 * implementation of Camera Discoverer. Connection data could prove especially relevant.
+	 * @param cameraOptions optionally, additional camera settings
+	 */
 	explicit VideoSource(const CameraInfo& cameraInfo, const Option& cameraOptions = {}) { }
 
+	/**
+	 * @brief The default constructor is also available, for cases where the above parameters do not
+	 * apply.
+	 */
 	VideoSource() = default;
 
 	VideoSource(const VideoSource&) = default;
@@ -48,18 +70,38 @@ public:
 	VideoSource& operator=(VideoSource&&) = default;
 
 	virtual ~VideoSource() = default;
-	
+
 	// Image dimension information
 	[[nodiscard]] virtual ImageMetadata metadata() const = 0;
 
-	// Query new frames​
+	/**
+	 * @brief Query new frames​
+	 *
+	 * At this point it is safe to assume potential resources for previous requests can be released.
+	 */
 	[[nodiscard]] virtual std::error_code nextFrame() = 0;
 
-	// Get a frame from host memory, data needs to be valid until the end of processing​
+	/**
+	 * @brief Get a frame from host memory
+	 *
+	 * Data needs to be valid until the frame is done processing. There is however no need for queues
+	 * or other data structures. Work on a frame is finished by the time the next one is requested.
+	 *
+	 * Repetition in metadata requests between the dedicated function and as part of the ImageView's is
+	 * intentional. Provided there are no frame to frame changes, the returned data should be the same.
+	 */
 	[[nodiscard]] virtual ImageView frame() = 0;
 
-	// Copy a frame into the buffer provided as argument
-	[[nodiscard]] virtual ImageView frame(std::byte* data, std::size_t size) = 0;
+	/**
+	 * @brief Copy a frame into the buffer provided as argument
+	 *
+	 * Similar to the above declaration, yet in this case memory is managed automatically. The provided
+	 * address should be used in constructing the returned ImageView.
+	 *
+	 * @param data address of the provided buffer
+	 * @param capacity size limit of the provided buffer, expressed in bytes
+	 */
+	[[nodiscard]] virtual ImageView frame(std::byte* data, std::size_t capacity) = 0;
 
 	// Executes an arbitrary action on the video source
 	[[nodiscard]] virtual std::error_code execute(const std::string& action) = 0;
