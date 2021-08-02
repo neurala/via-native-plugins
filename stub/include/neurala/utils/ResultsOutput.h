@@ -32,7 +32,6 @@
 #include "neurala/image/views/ImageView.h"
 #include "neurala/utils/Option.h"
 
-
 namespace neurala
 {
 /**

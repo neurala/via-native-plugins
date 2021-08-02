@@ -29,7 +29,6 @@
 #include "neurala/utils/Option.h"
 #include "neurala/video/CameraInfo.h"
 
-
 namespace neurala
 {
 /**
