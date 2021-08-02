@@ -58,7 +58,8 @@ InputServer::handleFrame(WebSocketStream& stream)
 {
 	std::vector<std::uint8_t> frameData(m_metadata.width * m_metadata.height
 	                                    * m_metadata.colorSpace.size());
-	std::iota(begin(frameData), end(frameData), 0);
+	static std::uint8_t init{}; // make every frame slightly different
+	std::iota(begin(frameData), end(frameData), ++init);
 	stream.write(net::buffer(frameData));
 }
 

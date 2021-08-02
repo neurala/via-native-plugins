@@ -12,7 +12,7 @@ add_library(NeuralaB4B SHARED
 	src/PluginManager.cpp
 	src/VideoSourceStatus.cpp)
 		
-target_compile_definitions(NeuralaB4B PRIVATE NeuralaB4B_EXPORTS NEURALA_EXPORT_PLUGIN)
+target_compile_definitions(NeuralaB4B PRIVATE NeuralaB4B_EXPORTS)
 
 target_include_directories(NeuralaB4B SYSTEM PUBLIC include)
 

@@ -28,17 +28,15 @@
 
 #ifdef NEURALA_OS_WINDOWS
 #ifndef PLUGIN_API
-#ifdef NEURALA_EXPORT_PLUGIN
-// We are building this library
+#ifdef NEURALA_EXPORT_PLUGIN // building the library
 #define PLUGIN_API __declspec(dllexport)
-#else
-// We are using this library
+#else // using the library
 #define PLUGIN_API __declspec(dllimport)
-#endif
-#endif
+#endif // NEURALA_EXPORT_PLUGIN
+#endif // PLUGIN_API
 #else
 #define PLUGIN_API __attribute__((visibility("default")))
-#endif
+#endif // NEURALA_OS_WINDOWS
 
 #ifdef __cplusplus
 extern "C"
