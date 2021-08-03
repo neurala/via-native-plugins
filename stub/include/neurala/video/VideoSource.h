@@ -24,9 +24,9 @@
 #ifndef NEURALA_VIDEO_VIDEO_SOURCE_H
 #define NEURALA_VIDEO_VIDEO_SOURCE_H
 
-#include "neurala/utils/Option.h"
 #include "neurala/image/ImageMetadata.h"
 #include "neurala/image/views/ImageView.h"
+#include "neurala/utils/Option.h"
 #include "neurala/video/CameraInfo.h"
 
 namespace neurala
@@ -48,21 +48,21 @@ public:
 	VideoSource& operator=(VideoSource&&) = default;
 
 	virtual ~VideoSource() = default;
-	
+
 	// Image dimension information
-	[[nodiscard]] virtual ImageMetadata metadata() const = 0;
+	[[nodiscard]] virtual ImageMetadata metadata() const noexcept = 0;
 
 	// Query new frames​
-	[[nodiscard]] virtual std::error_code nextFrame() = 0;
+	[[nodiscard]] virtual std::error_code nextFrame() noexcept = 0;
 
 	// Get a frame from host memory, data needs to be valid until the end of processing​
-	[[nodiscard]] virtual ImageView frame() = 0;
+	[[nodiscard]] virtual ImageView frame() noexcept = 0;
 
 	// Copy a frame into the buffer provided as argument
-	[[nodiscard]] virtual ImageView frame(std::byte* data, std::size_t size) = 0;
+	[[nodiscard]] virtual ImageView frame(std::byte* data, std::size_t size) noexcept = 0;
 
 	// Executes an arbitrary action on the video source
-	[[nodiscard]] virtual std::error_code execute(const std::string& action) = 0;
+	[[nodiscard]] virtual std::error_code execute(const std::string& action) noexcept = 0;
 };
 
 } // namespace neurala

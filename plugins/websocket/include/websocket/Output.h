@@ -75,7 +75,7 @@ public:
 	 * @param image A pointer to an image view, which may be null if no frame
 	 *              is available or could be retrieved.
 	 */
-	void operator()(const std::string& metadata, const ImageView*) final
+	void operator()(const std::string& metadata, const ImageView*) noexcept final
 	{
 		using namespace boost::json;
 		m_client.sendResult(parse(string_view{metadata.data(), metadata.size()}).as_object());

@@ -40,19 +40,19 @@ public:
 	static void destroy(void* p) { delete reinterpret_cast<VideoSource*>(p); }
 
 	// Image dimension information
-	[[nodiscard]] ImageMetadata metadata() const final { return {}; }
+	[[nodiscard]] ImageMetadata metadata() const noexcept final { return {}; }
 
 	// Query new frames​
-	[[nodiscard]] std::error_code nextFrame() final { return {}; }
+	[[nodiscard]] std::error_code nextFrame() noexcept final { return {}; }
 
 	// Get a frame from host memory, data needs to be valid until the end of processing​
-	[[nodiscard]] ImageView frame() final { return {}; }
+	[[nodiscard]] ImageView frame() noexcept final { return {}; }
 
 	// Copy a frame into the buffer provided as argument
-	[[nodiscard]] ImageView frame(std::byte*, std::size_t) final { return {}; }
+	[[nodiscard]] ImageView frame(std::byte*, std::size_t) noexcept final { return {}; }
 
 	// Executes an arbitrary action on the video source
-	[[nodiscard]] std::error_code execute(const std::string&) final { return {}; }
+	[[nodiscard]] std::error_code execute(const std::string&) noexcept final { return {}; }
 };
 
 } // namespace neurala::plug::empty

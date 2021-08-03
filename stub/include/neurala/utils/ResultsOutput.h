@@ -29,8 +29,8 @@
 #include <string_view>
 
 #include "neurala/exports.h"
-#include "neurala/utils/Option.h"
 #include "neurala/image/views/ImageView.h"
+#include "neurala/utils/Option.h"
 
 namespace neurala
 {
@@ -47,7 +47,8 @@ enum class EResultsOutputStatus
 /**
  * @brief Base type for output actions implemented as plugins.
  */
-class ResultsOutputBase {
+class ResultsOutputBase
+{
 public:
 	/// @brief Virtual destructor.
 	virtual ~ResultsOutputBase() = default;
@@ -58,7 +59,7 @@ public:
 	 * @param id The ID of the pipeline job that is starting. This value can be
 	 *           used as a discriminator to track which job is starting.
 	 */
-	virtual void onStart(std::string_view id) { }
+	virtual void onStart(std::string_view id) noexcept { }
 
 	/**
 	 * @brief Called at the end of a pipeline job.
@@ -67,7 +68,7 @@ public:
 	 *           used as a discriminator to track which job is stopping.
 	 * @param status The reason for stopping.
 	 */
-	virtual void onStop(std::string_view id, EResultsOutputStatus status) { }
+	virtual void onStop(std::string_view id, EResultsOutputStatus status) noexcept { }
 };
 
 /**
@@ -84,7 +85,7 @@ public:
 	 * @param image A pointer to an image view, which may be null if no frame
 	 *              is available or could be retrieved.
 	 */
-	virtual void operator()(const std::string& metadata, const ImageView* image) = 0;
+	virtual void operator()(const std::string& metadata, const ImageView* image) noexcept = 0;
 };
 
 } // namespace neurala
