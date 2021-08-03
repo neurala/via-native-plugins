@@ -41,7 +41,7 @@ public:
 	static void destroy(void* p) { delete reinterpret_cast<CameraDiscoverer*>(p); }
 
 	/// Return information for the camera emulated by the plugin.
-	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept final { }
+	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept final { return {}; }
 };
 
 } // namespace neurala::plug::empty
