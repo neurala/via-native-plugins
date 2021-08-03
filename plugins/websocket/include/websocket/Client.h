@@ -52,11 +52,6 @@ public:
 	 */
 	Client(const std::string_view ipAddress, const std::uint16_t port);
 
-	Client(const Client&) = delete;
-	Client(Client&&) = default;
-	Client& operator=(const Client&) = delete;
-	Client& operator=(Client&&) = default;
-
 	/// Closes the WebSocket stream used to communicate with the server.
 	~Client() { m_stream.close(beast::websocket::close_code::normal); }
 
