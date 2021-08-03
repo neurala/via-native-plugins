@@ -47,7 +47,8 @@ public:
 	 * @brief Constructs a new @ref CameraInfo object.
 	 *
 	 * @param id unique ID (e.g. MAC address for eBUS cameras)
-	 * @param type name used inside `initMe()` to register the associated `VideoSource` implementation
+	 * @param type name used inside `initMe()` to register the associated `VideoSource` implementation.
+	 * When used in other context, the type can also represent a camera type internal to the SDK.
 	 * @param name display name of the camera
 	 * @param connection connectivity data (e.g. IP address or directory path)
 	 */
