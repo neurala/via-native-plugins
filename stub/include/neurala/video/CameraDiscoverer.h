@@ -37,14 +37,6 @@ namespace neurala
 class CameraDiscoverer
 {
 public:
-	CameraDiscoverer() = default;
-
-	CameraDiscoverer(const CameraDiscoverer&) = default;
-	CameraDiscoverer(CameraDiscoverer&&) = default;
-
-	CameraDiscoverer& operator=(const CameraDiscoverer&) = default;
-	CameraDiscoverer& operator=(CameraDiscoverer&&) = default;
-
 	virtual ~CameraDiscoverer() = default;
 
 	// Scan for all available cameras

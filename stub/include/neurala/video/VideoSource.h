@@ -46,27 +46,12 @@ class VideoSource
 {
 public:
 	/**
-	 * @brief Possible parameter sequence for constructors of derived types.
-	 *
-	 * The PluginArguments passed to the create call will offer references to these two types.
-	 *
-	 * @param cameraInfo information about the camera associated with the object, as provided by the
-	 * implementation of Camera Discoverer. Connection data could prove especially relevant.
-	 * @param cameraOptions optionally, additional camera settings
+	 * For VideoSource implementations, the call to void* create(PluginArguments&,
+	 * PluginErrorCallback&) will provide two plugin arguments:
+	 *  1. CameraInfo (information about the camera and how to connect to it, as provided through the
+	 * implementation of CameraDiscoverer)
+	 *  2. Option (additional camera settings - not mandatory)
 	 */
-	explicit VideoSource(const CameraInfo& cameraInfo, const Option& cameraOptions = {}) { }
-
-	/**
-	 * @brief The default constructor is also available, for cases where the above parameters do not
-	 * apply.
-	 */
-	VideoSource() = default;
-
-	VideoSource(const VideoSource&) = default;
-	VideoSource(VideoSource&&) = default;
-
-	VideoSource& operator=(const VideoSource&) = default;
-	VideoSource& operator=(VideoSource&&) = default;
 
 	virtual ~VideoSource() = default;
 
