@@ -63,7 +63,7 @@ public:
 	/**
 	 * @brief Query availability of new frames​
 	 *
-	 * The request for the frame itself that follows will involve oferring a view of the corresponding
+	 * The request for the frame itself that follows will involve offering a view of the corresponding
 	 * data. The process of making the frame available within the plugin should be resolved before
 	 * returning for timely identification of errors.
 	 *
