@@ -50,7 +50,7 @@ extern "C"
 namespace neurala
 {
 /**
- * @brief Class used to register user defiend types while initializing a plugin.
+ * @brief Class used to register user defined types while initializing a plugin.
  *
  * The pointer to NeuralaPluginManager passed through the call to initMe should first be
  * dynamically cast as a PluginRegistrar to gain access to the registerPlugin function.
