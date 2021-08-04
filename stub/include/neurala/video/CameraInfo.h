@@ -46,11 +46,14 @@ public:
 	/**
 	 * @brief Constructs a new @ref CameraInfo object.
 	 *
+	 * Most notably, CameraInfo objects represent a means of communication with the Neurala SDK through
+	 * the implementation of a CameraDiscoverer.
+	 *
 	 * @param id unique ID (e.g. MAC address for eBUS cameras)
 	 * @param type name used inside initMe() to register the associated VideoSource implementation.
 	 * When used in other context, the type can also represent a camera type internal to the SDK.
 	 * @param name display name of the camera
-	 * @param connection connectivity data (e.g. IP address or directory path)
+	 * @param connection plugin-defined connection data (e.g. IP address or directory path)
 	 */
 	CameraInfo(std::string id, std::string type, std::string name, std::string connection) noexcept
 	 : m_id{std::move(id)}, m_name{std::move(name)}, m_connection{std::move(connection)}, m_type{std::move(type)}

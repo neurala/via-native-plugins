@@ -38,7 +38,9 @@ namespace neurala
  * The sequence of calls can be expected to occur as follows:
  * 1. metadata()
  * 2. nextFrame()
- * 3. in case an error is returned, try step 2. again or abort, depending on the specifics
+ * 3. in case an error is returned:
+ *     a) if it represents an overflow, the pipeline is stopped
+ *     b) otherwise, the frame is skipped (go back to step 2.)
  * 4. frame() - either of the two
  * 5. go back to step 2.
  */
@@ -59,9 +61,14 @@ public:
 	[[nodiscard]] virtual ImageMetadata metadata() const = 0;
 
 	/**
-	 * @brief Query new frames​
+	 * @brief Query availability of new frames​
 	 *
-	 * At this point it is safe to assume potential resources for previous requests can be released.
+	 * The request for the frame itself that follows will involve oferring a view of the corresponding
+	 * data. The process of making the frame available within the plugin should be resolved before
+	 * returning for timely identification of errors.
+	 *
+	 * When this function is called, it is safe to assume potential resources for previous requests can
+	 * be released.
 	 */
 	[[nodiscard]] virtual std::error_code nextFrame() = 0;
 
