@@ -32,6 +32,8 @@ add_library(websocket SHARED
 	src/InputServer.cpp
 	src/OutputServer.cpp
 	src/Server.cpp)
+	
+target_compile_definitions(websocket PRIVATE NEURALA_EXPORT_PLUGIN)
 
 target_include_directories(websocket
 	# Headers should be prefixed with websocket/ when used as a dependency.

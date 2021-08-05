@@ -4,8 +4,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(StandaloneInputServer StandaloneInputServer.cpp)
 target_link_libraries(StandaloneInputServer websocket)
-target_compile_definitions(StandaloneInputServer PRIVATE NEURALA_IMPORT_PLUGIN)
 
 add_executable(StandaloneOutputServer StandaloneOutputServer.cpp)
 target_link_libraries(StandaloneOutputServer websocket)
-target_compile_definitions(StandaloneOutputServer PRIVATE NEURALA_IMPORT_PLUGIN)

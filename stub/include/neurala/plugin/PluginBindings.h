@@ -29,63 +29,60 @@
 #include "neurala/config/os.h"
 
 #ifdef NEURALA_OS_WINDOWS
-# ifndef PLUGIN_API
-    // Define this variable in code that want
-	//  to _link a plugin_ as a regular shared object
-#   ifdef NEURALA_IMPORT_PLUGIN
-       // We are using this library
-#     define PLUGIN_API __declspec(dllimport)
-#   else
-       // We are building this library
-#     define PLUGIN_API __declspec(dllexport)
-#   endif
-# endif
+#ifndef PLUGIN_API
+#ifdef NEURALA_EXPORT_PLUGIN // building the library
+#define PLUGIN_API __declspec(dllexport)
+#else // using the library
+#define PLUGIN_API __declspec(dllimport)
+#endif // NEURALA_EXPORT_PLUGIN
+#endif // PLUGIN_API
 #else
-# define PLUGIN_API __attribute__((visibility("default")))
-#endif
+#define PLUGIN_API __attribute__((visibility("default")))
+#endif // NEURALA_OS_WINDOWS
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/**
- * @brief Base class for @ref neurala::PluginManager.
- */
-typedef struct NeuralaPluginManager NeuralaPluginManager;
+	/**
+	 * @brief Base class for @ref neurala::PluginManager.
+	 */
+	typedef struct NeuralaPluginManager NeuralaPluginManager;
 
-/**
- * @brief Plugin status codes.
- */
-typedef enum
-{
-	success,
-	unknown,
-	wrongVersion,
-	invalidName,
-	alreadyRegistered
-} NeuralaPluginStatus;
+	/**
+	 * @brief Plugin status codes.
+	 */
+	typedef enum
+	{
+		success,
+		unknown,
+		wrongVersion,
+		invalidName,
+		alreadyRegistered
+	} NeuralaPluginStatus;
 
-/// @brief Plugin cleanup function pointer, returned by the initialisation if successful.
-typedef int (*NeuralaPluginExitFunction)();
+	/// @brief Plugin cleanup function pointer, returned by the initialisation if successful.
+	typedef int (*NeuralaPluginExitFunction)();
 
-/**
- * @brief Plugin initialization function.
- *
- * This is the library entry point.
- *
- * @param pluginManager @ref neurala::PluginManager instance responsible for the plugin
- * @param status        initialization status
- *
- * @return exit function of the plugin or @c nullptr if initialization failed.
- */
-typedef NeuralaPluginExitFunction (*NeuralaPluginEntryFunction)(NeuralaPluginManager* pluginManager,
-                                                                std::error_code* status);
+	/**
+	 * @brief Plugin initialization function.
+	 *
+	 * This is the library entry point.
+	 *
+	 * @param pluginManager @ref neurala::PluginManager instance responsible for the plugin
+	 * @param status        initialization status
+	 *
+	 * @return exit function of the plugin or @c nullptr if initialization failed.
+	 */
+	typedef NeuralaPluginExitFunction (*NeuralaPluginEntryFunction)(NeuralaPluginManager* pluginManager,
+	                                                                std::error_code* status);
 
-/// @brief Plugin entry point, needs to be implemented in plugin implementation.
-PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, std::error_code*);
+	/// @brief Plugin entry point, needs to be implemented in plugin implementation.
+	PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, std::error_code*);
 
 #ifdef __cplusplus
 } // extern "C"
-#endif 
+#endif
 
 #endif // NEURALA_PLUGIN_PLUGIN_BINDINGS_H
