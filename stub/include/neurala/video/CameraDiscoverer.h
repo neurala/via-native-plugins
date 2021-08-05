@@ -30,21 +30,13 @@
 
 namespace neurala
 {
-
 /**
- * @brief Base class for a video data source discoverer.
+ * @brief Base class for a video data source discoverer. Plugin implementers
+ *        should inherit from this type.
  */
 class CameraDiscoverer
 {
 public:
-	CameraDiscoverer() = default;
-
-	CameraDiscoverer(const CameraDiscoverer&) = default;
-	CameraDiscoverer(CameraDiscoverer&&) = default;
-
-	CameraDiscoverer& operator=(const CameraDiscoverer&) = default;
-	CameraDiscoverer& operator=(CameraDiscoverer&&) = default;
-
 	virtual ~CameraDiscoverer() = default;
 
 	// Scan for all available cameras

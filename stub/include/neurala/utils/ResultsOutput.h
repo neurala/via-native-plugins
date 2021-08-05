@@ -29,8 +29,8 @@
 #include <string_view>
 
 #include "neurala/exports.h"
-#include "neurala/utils/Option.h"
 #include "neurala/image/views/ImageView.h"
+#include "neurala/utils/Option.h"
 
 namespace neurala
 {
@@ -47,7 +47,8 @@ enum class EResultsOutputStatus
 /**
  * @brief Base type for output actions implemented as plugins.
  */
-class ResultsOutputBase {
+class ResultsOutputBase
+{
 public:
 	/// @brief Virtual destructor.
 	virtual ~ResultsOutputBase() = default;
@@ -79,6 +80,9 @@ class ResultsOutput : public ResultsOutputBase
 public:
 	/**
 	 * @brief Function call operator for invoking the output action.
+	 *
+	 * In relation to the VideoSource implementation, calls may be expected following requests for
+	 * frame data and preceding those that query the status of upcoming frames (nextFrame).
 	 *
 	 * @param metadata A JSON document containing information about the result.
 	 * @param image A pointer to an image view, which may be null if no frame
