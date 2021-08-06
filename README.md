@@ -23,7 +23,7 @@ All generated DLLs and executables (such as the SDK stub library and plugins) ar
 - Implement the interfaces that your plugin requires and build your project as a shared library (DLL)
 - Write simple tests to make sure that the plugin can be loaded and that you are able to send image data or receive prediction data through the API
 - Install your plugin DLL in a VIA installation for real world testing
-
+- Along with the sample plugins, it is highly recommended to read the documentation available in the headers for the [`VideoSource`](https://github.com/neurala/via-native-plugins/blob/main/stub/include/neurala/video/VideoSource.h) and [`ResultsOutput`](https://github.com/neurala/via-native-plugins/blob/main/stub/include/neurala/utils/ResultsOutput.h) interfaces
 ## FAQ
 1. What interfaces have to be implemented?
 	- `CameraDiscoverer` and `VideoSource` for "Input" plugins
