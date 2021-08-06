@@ -9,7 +9,7 @@ ninja
 ```
 
 ## Testing
-Tests are implemented using Boost.Test. The test executable can be ran using `bin/test.exe`.
+Tests are implemented using Boost.Test. The test executables can be run using `bin/<plugin>_tests.exe`.
 All generated DLLs and executables (such as the SDK and plugins) are generated in the same directory.
 
 ## Writing your first plugin (WIP)

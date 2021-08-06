@@ -62,6 +62,12 @@ public:
 	Server(const std::string_view ipAddress,
 	       const std::uint16_t port,
 	       std::vector<std::pair<std::string_view, RequestHandler>>&& requestHandlers);
+
+	Server(const Server&) = delete;
+	Server(Server&&) = default;
+	Server& operator=(const Server&) = delete;
+	Server& operator=(Server&&) = default;
+
 	/// Stop accepting connections and stop all existing ones before destroying the object.
 	virtual ~Server();
 

@@ -24,10 +24,10 @@
 #ifndef NEURALA_PLUGIN_PLUGIN_MANAGER_H
 #define NEURALA_PLUGIN_PLUGIN_MANAGER_H
 
-#include "neurala/utils/Version.h"
-#include "neurala/plugin/PluginBindings.h"
 #include "neurala/plugin/PluginArguments.h"
+#include "neurala/plugin/PluginBindings.h"
 #include "neurala/plugin/PluginErrorCallback.h"
+#include "neurala/utils/Version.h"
 
 extern "C"
 {
@@ -49,7 +49,12 @@ extern "C"
 
 namespace neurala
 {
-
+/**
+ * @brief Class used to register user defined types while initializing a plugin.
+ *
+ * The pointer to NeuralaPluginManager passed through the call to initMe should first be
+ * dynamically cast as a PluginRegistrar to gain access to the registerPlugin function.
+ */
 class NEURALA_PUBLIC PluginRegistrar : public NeuralaPluginManager
 {
 public:
@@ -73,7 +78,7 @@ public:
 	 * @return status of registration
 	 */
 	template<class Plugin>
-	NeuralaPluginStatus registerPlugin(const char* name, const Version& version)
+	std::error_code registerPlugin(const char* name, const Version& version)
 	{
 		return registerClass(name, version, Plugin::create, Plugin::destroy);
 	}
@@ -91,10 +96,10 @@ private:
 	 *
 	 * @return status of registration
 	 */
-	virtual NeuralaPluginStatus registerClass(const char* name,
-	                                          const Version& version,
-	                                          ClassConstructorPtr classConstructor,
-	                                          ClassDestructorPtr classDestructor) = 0;
+	virtual std::error_code registerClass(const char* name,
+	                                      const Version& version,
+	                                      ClassConstructorPtr classConstructor,
+	                                      ClassDestructorPtr classDestructor) = 0;
 };
 
 } // namespace neurala

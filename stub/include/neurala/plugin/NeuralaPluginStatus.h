@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of Neurala SDK.
  * Copyright Neurala Inc. 2013-2021. All rights reserved.
  *
@@ -21,28 +21,39 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_VIDEO_CAMERA_DISCOVERER_H
-#define NEURALA_VIDEO_CAMERA_DISCOVERER_H
+#ifndef NEURALA_PLUGIN_NEURALA_PLUGIN_STATUS_H
+#define NEURALA_PLUGIN_NEURALA_PLUGIN_STATUS_H
 
-#include <vector>
+#include <system_error>
 
-#include "neurala/video/CameraInfo.h"
+#include "neurala/exports.h"
+#include "neurala/plugin/PluginBindings.h"
 
-namespace neurala
-{
+/// @brief Definition of the plugin status error domain
+NEURALA_PUBLIC const std::error_category& neuralaPluginStatusCategory() noexcept;
+
 /**
- * @brief Base class for a video data source discoverer. Plugin implementers
- *        should inherit from this type.
+ * @brief Creates a std::error_condition from a @p NeuralaPluginStatus
+ * @param status The code to convert
  */
-class CameraDiscoverer
+NEURALA_PUBLIC std::error_condition
+make_error_condition(NeuralaPluginStatus status) noexcept; // NOLINT
+
+/**
+ * @brief Creates a std::error_condition from a @p NeuralaPluginStatus
+ *
+ * @note While @p NeuralaPluginStatus can be used as a std::error_code, you are encouraged to create
+ *       your own error codes and define equivalence relationship with this status.
+ *
+ * @param status The code to convert
+ */
+NEURALA_PUBLIC std::error_code make_error_code(NeuralaPluginStatus status) noexcept; // NOLINT
+
+namespace std
 {
-public:
-	virtual ~CameraDiscoverer() = default;
+template<>
+struct is_error_condition_enum<NeuralaPluginStatus> : true_type
+{ };
+} // namespace std
 
-	// Scan for all available cameras
-	[[nodiscard]] virtual std::vector<CameraInfo> operator()() const noexcept = 0;
-};
-
-} // namespace neurala
-
-#endif // NEURALA_VIDEO_CAMERA_DISCOVERER_H
+#endif // NEURALA_PLUGIN_NEURALA_PLUGIN_STATUS_H

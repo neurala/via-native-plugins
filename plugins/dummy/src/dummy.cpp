@@ -25,7 +25,9 @@
 
 #include <iostream>
 #include <numeric>
+#include <system_error>
 
+#include "neurala/plugin/NeuralaPluginStatus.h"
 #include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginBindings.h"
 #include "neurala/plugin/PluginErrorCallback.h"
@@ -46,7 +48,7 @@ constexpr auto kSourceTypeName = "dummyVideoSource";
 } // namespace
 
 extern "C" PLUGIN_API NeuralaPluginExitFunction
-initMe(NeuralaPluginManager* pluginManager, NeuralaPluginStatus* status)
+initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
 	auto& pm = *static_cast<neurala::PluginRegistrar*>(pluginManager);
 	*status = pm.registerPlugin<neurala::plug::dummy::Source>(kSourceTypeName, neurala::Version(1, 0));

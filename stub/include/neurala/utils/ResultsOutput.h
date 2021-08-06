@@ -81,6 +81,9 @@ public:
 	/**
 	 * @brief Function call operator for invoking the output action.
 	 *
+	 * In relation to the VideoSource implementation, calls may be expected following requests for
+	 * frame data and preceding those that query the status of upcoming frames (nextFrame).
+	 *
 	 * @param metadata A JSON document containing information about the result.
 	 * @param image A pointer to an image view, which may be null if no frame
 	 *              is available or could be retrieved.

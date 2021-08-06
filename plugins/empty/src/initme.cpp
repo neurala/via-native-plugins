@@ -20,6 +20,9 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
+#include <system_error>
+
+#include <neurala/plugin/NeuralaPluginStatus.h>
 #include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginManager.h>
 #include <neurala/utils/Version.h>
@@ -29,7 +32,7 @@
 #include "EmptyVideoSource.h"
 
 extern "C" PLUGIN_API NeuralaPluginExitFunction
-initMe(NeuralaPluginManager* pluginManager, NeuralaPluginStatus* status)
+initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
 	auto& pm = *static_cast<neurala::PluginRegistrar*>(pluginManager);
 	*status = pm.registerPlugin<neurala::plug::empty::CameraDiscoverer>("EmptyCameraDiscoverer",
