@@ -20,9 +20,11 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#include <neurala/plugin/PluginStatus.h>
+#include <system_error>
+
 #include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginManager.h>
+#include <neurala/plugin/PluginStatus.h>
 #include <neurala/utils/Version.h>
 
 #include "Discoverer.h"

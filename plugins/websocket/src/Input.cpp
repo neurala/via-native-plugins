@@ -32,7 +32,7 @@ Input::Input(const std::string_view ipAddress, const std::uint16_t port)
 { }
 
 std::error_code
-Input::nextFrame()
+Input::nextFrame() noexcept
 {
 	try
 	{
@@ -48,7 +48,7 @@ Input::nextFrame()
 }
 
 ImageView
-Input::frame(std::byte* data, std::size_t size)
+Input::frame(std::byte* data, std::size_t size) noexcept
 {
 	const ImageMetadata& md = cachedMetadata();
 	if (size < md.sizeBytes())

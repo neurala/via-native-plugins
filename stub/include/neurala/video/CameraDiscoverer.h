@@ -40,7 +40,7 @@ public:
 	virtual ~CameraDiscoverer() = default;
 
 	// Scan for all available cameras
-	[[nodiscard]] virtual std::vector<CameraInfo> operator()() const = 0;
+	[[nodiscard]] virtual std::vector<CameraInfo> operator()() const noexcept = 0;
 };
 
 } // namespace neurala

@@ -20,31 +20,30 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_EMPTY_RESULTS_OUTPUT_H
-#define NEURALA_EMPTY_RESULTS_OUTPUT_H
+#ifndef NEURALA_EMPTY_CAMERA_DISCOVERER_H
+#define NEURALA_EMPTY_CAMERA_DISCOVERER_H
+
+#include <vector>
 
 #include <neurala/plugin/PluginArguments.h>
+#include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginErrorCallback.h>
-#include <neurala/utils/ResultsOutput.h>
+
+#include <neurala/video/CameraDiscoverer.h>
+#include <neurala/video/CameraInfo.h>
 
 namespace neurala::plug::empty
 {
-class ResultsOutput final : public neurala::ResultsOutput
+class CameraDiscoverer final : public neurala::CameraDiscoverer
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new ResultsOutput; }
-	static void destroy(void* p) { delete reinterpret_cast<ResultsOutput*>(p); }
+	static void* create(PluginArguments&, PluginErrorCallback&) { return new CameraDiscoverer; }
+	static void destroy(void* p) { delete reinterpret_cast<CameraDiscoverer*>(p); }
 
-	/**
-	 * @brief Function call operator for invoking the output action.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string&, const ImageView*) noexcept final { }
+	/// Return information for the camera emulated by the plugin.
+	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept final { return {}; }
 };
 
 } // namespace neurala::plug::empty
 
-#endif // NEURALA_EMPTY_RESULTS_OUTPUT_H
+#endif // NEURALA_EMPTY_CAMERA_DISCOVERER_H

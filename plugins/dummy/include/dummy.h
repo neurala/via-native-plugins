@@ -26,23 +26,21 @@
 
 #include "neurala/plugin/PluginBindings.h"
 
+#include "neurala/video/CameraDiscoverer.h"
 #include "neurala/video/VideoSource.h"
 #include "neurala/video/VideoSourceStatus.h"
-#include "neurala/video/CameraDiscoverer.h"
 
 namespace neurala
 {
-
 class PluginArguments;
 class PluginErrorCallback;
 
 namespace plug::dummy
 {
-
 class PLUGIN_API Discoverer : public CameraDiscoverer
 {
 public:
-	[[nodiscard]] std::vector<CameraInfo> operator()() const override;
+	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept override;
 
 	static void* create(PluginArguments&, PluginErrorCallback&);
 	static void destroy(void* p);
@@ -56,18 +54,21 @@ class PLUGIN_API Source : public VideoSource
 public:
 	explicit Source(const CameraInfo& cameraInfo, const Option& cameraOptions = {});
 
-	[[nodiscard]] ImageMetadata metadata() const override
+	[[nodiscard]] ImageMetadata metadata() const noexcept override
 	{
 		return ImageMetadata(200, 200, EColorSpace::RGB, EImageDataLayout::planar, EDatatype::uint8);
 	}
 
-	[[nodiscard]] std::error_code nextFrame() override { return make_error_code(VideoSourceStatus::success); }
+	[[nodiscard]] std::error_code nextFrame() noexcept override
+	{
+		return make_error_code(VideoSourceStatus::success);
+	}
 
-	[[nodiscard]] ImageView frame() override { return ImageView(metadata(), m_frame.get()); }
+	[[nodiscard]] ImageView frame() noexcept override { return ImageView(metadata(), m_frame.get()); }
 
-	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) override;
+	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) noexcept override;
 
-	std::error_code execute(const std::string& action) override;
+	std::error_code execute(const std::string& action) noexcept override;
 
 	static void* create(PluginArguments&, PluginErrorCallback&);
 	static void destroy(void*);

@@ -21,7 +21,7 @@ public:
 	static void destroy(void* p) { delete reinterpret_cast<Discoverer*>(p); }
 
 	/// Return information for the camera emulated by the plugin.
-	[[nodiscard]] std::vector<CameraInfo> operator()() const final
+	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept final
 	{
 		return {{"0", "Input", "websocket", "127.0.0.1:54321"}};
 	}
