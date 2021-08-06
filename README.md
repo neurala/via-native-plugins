@@ -31,7 +31,7 @@ All generated DLLs and executables (such as the SDK and plugins) are generated i
 	- `VideoSource` is used to retrieve image metadata and frames. In the call to `create()`, there are two `PluginArguments`, representing the `CameraInfo` retrieved through `CameraDiscoverer` and `Option` object.
 	- `ResultsOutput` passes back the results of processing each frame as a string in JSON format and an `ImageView` to the associated input.
 3. How are these types identified and loaded by the Neurala SDK?
-	The DLL will be scanned for an `extern "C" PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, NeuralaPluginStatus*)`. Types derived from the three interfaces mentioned above must be registered through the `PluginManager` (`PluginRegistrar`).
+	The DLL will be scanned for an `extern "C" PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, std::error_code*)`. Types derived from the three interfaces mentioned above must be registered through the `PluginManager` (`PluginRegistrar`).
 	Each implementation must define two static functions through which instance lifetime is managed:
 	- `void* create(PluginArguments&, PluginErrorCallback&)` provides necessary arguments and a function to call in case of errors during instantiation.
 	- `void destroy(void*)` specifies a pointer to a previously created object that must be deallocated.

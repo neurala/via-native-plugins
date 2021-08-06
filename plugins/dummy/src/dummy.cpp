@@ -30,7 +30,7 @@
 #include "neurala/plugin/PluginBindings.h"
 #include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginErrorCallback.h"
-#include "neurala/plugin/NeuralaPluginStatus.h"
+#include "neurala/plugin/PluginStatus.h"
 
 #include "dummy.h"
 
@@ -50,16 +50,16 @@ constexpr auto kSourceTypeName = "dummyVideoSource";
 extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
-	auto& pm = *static_cast<neurala::PluginRegistrar*>(pluginManager);
+	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
 	*status = pm.registerPlugin<neurala::plug::dummy::Source>(kSourceTypeName, neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
+	if (*status != neurala::PluginStatus::success)
 	{
 		return nullptr;
 	}
 
 	*status = pm.registerPlugin<neurala::plug::dummy::Discoverer>("dummyDiscoverer",
 	                                                              neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
+	if (*status != neurala::PluginStatus::success)
 	{
 		return nullptr;
 	}
