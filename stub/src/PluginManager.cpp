@@ -27,6 +27,7 @@
 #include <unordered_map>
 
 #include "neurala/utils/Version.h"
+#include "neurala/plugin/PluginStatus.h"
 #include "neurala/plugin/PluginManager.h"
 #include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginErrorCallback.h"
@@ -68,7 +69,8 @@ registerClass(const char* name,
 		}
 
 		std::lock_guard<std::mutex> lock{m_classesMutex};
-		auto it = m_classes.emplace(className, ClassMetadata{ classConstructor, classDestructor });
+		auto it = m_classes.emplace(className,
+		                            PluginRegistrar::ClassMetadata{classConstructor, classDestructor});
 		if (!it.second)
 		{
 			// class already registered

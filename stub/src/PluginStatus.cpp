@@ -48,7 +48,7 @@ pluginStatusToStr(neurala::PluginStatus status)
 	}
 }
 
-class neurala::PluginStatusCategory : public std::error_category
+class PluginStatusCategory : public std::error_category
 {
 public:
 	const char* name() const noexcept override { return "neurala::PluginStatus"; }
