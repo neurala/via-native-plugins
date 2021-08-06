@@ -37,7 +37,7 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
 	*status = pm.registerPlugin<neurala::plug::empty::CameraDiscoverer>("EmptyCameraDiscoverer",
 	                                                                    neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
+	if (*status != neurala::PluginStatus::success)
 	{
 		return nullptr;
 	}
