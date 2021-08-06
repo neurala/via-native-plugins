@@ -29,8 +29,8 @@
 #include <string_view>
 
 #include "neurala/exports.h"
-#include "neurala/image/views/ImageView.h"
 #include "neurala/utils/Option.h"
+#include "neurala/image/views/ImageView.h"
 
 namespace neurala
 {

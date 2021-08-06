@@ -21,39 +21,54 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
-#ifndef NEURALA_PLUGIN_NEURALA_PLUGIN_STATUS_H
-#define NEURALA_PLUGIN_NEURALA_PLUGIN_STATUS_H
+#ifndef NEURALA_PLUGIN_PLUGIN_STATUS_H
+#define NEURALA_PLUGIN_PLUGIN_STATUS_H
 
 #include <system_error>
 
 #include "neurala/exports.h"
 #include "neurala/plugin/PluginBindings.h"
 
+namespace neurala
+{
+/**
+ * @brief Plugin status codes.
+ */
+enum class PluginStatus
+{
+	success,
+	unknown,
+	wrongVersion,
+	invalidName,
+	alreadyRegistered
+};
+
 /// @brief Definition of the plugin status error domain
-NEURALA_PUBLIC const std::error_category& neuralaPluginStatusCategory() noexcept;
+NEURALA_PUBLIC const std::error_category& pluginStatusCategory() noexcept;
 
 /**
- * @brief Creates a std::error_condition from a @p NeuralaPluginStatus
+ * @brief Creates a std::error_condition from a @p neurala::PluginStatus
  * @param status The code to convert
  */
-NEURALA_PUBLIC std::error_condition
-make_error_condition(NeuralaPluginStatus status) noexcept; // NOLINT
+NEURALA_PUBLIC std::error_condition make_error_condition(PluginStatus status) noexcept; // NOLINT
 
 /**
- * @brief Creates a std::error_condition from a @p NeuralaPluginStatus
+ * @brief Creates a std::error_condition from a @p neurala::PluginStatus
  *
- * @note While @p NeuralaPluginStatus can be used as a std::error_code, you are encouraged to create
+ * @note While @p neurala::PluginStatus can be used as a std::error_code, you are encouraged to create
  *       your own error codes and define equivalence relationship with this status.
  *
  * @param status The code to convert
  */
-NEURALA_PUBLIC std::error_code make_error_code(NeuralaPluginStatus status) noexcept; // NOLINT
+NEURALA_PUBLIC std::error_code make_error_code(PluginStatus status) noexcept; // NOLINT
+
+} // namespace neurala
 
 namespace std
 {
 template<>
-struct is_error_condition_enum<NeuralaPluginStatus> : true_type
+struct is_error_condition_enum<neurala::PluginStatus> : true_type
 { };
 } // namespace std
 
-#endif // NEURALA_PLUGIN_NEURALA_PLUGIN_STATUS_H
+#endif // NEURALA_PLUGIN_PLUGIN_STATUS_H

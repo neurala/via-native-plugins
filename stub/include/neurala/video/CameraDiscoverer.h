@@ -31,8 +31,8 @@
 namespace neurala
 {
 /**
- * @brief Base class for a video data source discoverer. Plugin implementers
- *        should inherit from this type.
+ * @brief Base class for a video data source discoverer. Plugin implementers should inherit from
+ * this type.
  */
 class CameraDiscoverer
 {

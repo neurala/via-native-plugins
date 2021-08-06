@@ -28,6 +28,12 @@
 #include <ostream>
 #include <string>
 
+#ifdef __GLIBCXX__
+// Undefine major and minor macros provided by glibc
+#undef major
+#undef minor
+#endif // __GLIBCXX__
+
 namespace neurala
 {
 /**

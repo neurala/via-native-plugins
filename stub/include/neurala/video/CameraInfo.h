@@ -51,7 +51,8 @@ public:
 	 *
 	 * @param id unique ID (e.g. MAC address for eBUS cameras)
 	 * @param type name used inside initMe() to register the associated VideoSource implementation.
-	 * When used in other context, the type can also represent a camera type internal to the SDK.
+	 * Outside of this context, the type equates to the string representation of the corresponding
+	 * ECameraType.
 	 * @param name display name of the camera
 	 * @param connection plugin-defined connection data (e.g. IP address or directory path)
 	 */

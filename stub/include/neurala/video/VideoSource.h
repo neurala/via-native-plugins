@@ -32,8 +32,8 @@
 namespace neurala
 {
 /**
- * @brief Base class for an abstact video data source. Plugin implementers should inherit from this
- * type.
+ * @brief Base class for an abstact video data source. Plugin implementers should inherit from
+ * this type.
  *
  * The sequence of calls can be expected to occur as follows:
  * 1. metadata()
