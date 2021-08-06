@@ -21,22 +21,22 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
+#include "dummy.h"
+
 #include <iostream>
 #include <numeric>
+#include <system_error>
 
+#include "neurala/plugin/NeuralaPluginStatus.h"
+#include "neurala/plugin/PluginArguments.h"
+#include "neurala/plugin/PluginBindings.h"
+#include "neurala/plugin/PluginErrorCallback.h"
+#include "neurala/plugin/PluginManager.h"
 #include "neurala/utils/Version.h"
 #include "neurala/video/CameraInfo.h"
-#include "neurala/plugin/PluginManager.h"
-#include "neurala/plugin/PluginBindings.h"
-#include "neurala/plugin/PluginArguments.h"
-#include "neurala/plugin/PluginErrorCallback.h"
-#include "neurala/plugin/NeuralaPluginStatus.h"
-
-#include "dummy.h"
 
 namespace
 {
-
 int
 exitHere()
 {
@@ -69,13 +69,18 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 
 namespace neurala::plug::dummy
 {
-
 std::vector<CameraInfo>
-Discoverer::operator()() const
+Discoverer::operator()() const noexcept
 {
 	std::cout << "Discovering available cameras...\n";
-	return {CameraInfo("DummyNativePluginCameraId1", kSourceTypeName, "External Dummy Camera #1", "DummyNativePluginCameraConnection1"),
-	        CameraInfo("DummyNativePluginCameraId1", kSourceTypeName, "External Dummy Camera #2", "DummyNativePluginCameraConnection2")};
+	return {CameraInfo("DummyNativePluginCameraId1",
+	                   kSourceTypeName,
+	                   "External Dummy Camera #1",
+	                   "DummyNativePluginCameraConnection1"),
+	        CameraInfo("DummyNativePluginCameraId1",
+	                   kSourceTypeName,
+	                   "External Dummy Camera #2",
+	                   "DummyNativePluginCameraConnection2")};
 }
 
 void*
@@ -112,7 +117,7 @@ Source::Source(const CameraInfo& cameraInfo, const Option& options)
 }
 
 ImageView
-Source::frame(std::byte* data, std::size_t size)
+Source::frame(std::byte* data, std::size_t size) noexcept
 {
 	std::cout << "Copying frame to [" << data << "]\n";
 	std::copy_n(reinterpret_cast<const std::byte*>(frame().data()), frame().sizeBytes(), data);
@@ -120,7 +125,7 @@ Source::frame(std::byte* data, std::size_t size)
 }
 
 std::error_code
-Source::execute(const std::string& action)
+Source::execute(const std::string& action) noexcept
 {
 	std::cout << "Executing action: " << action << '\n';
 	return std::error_code{};

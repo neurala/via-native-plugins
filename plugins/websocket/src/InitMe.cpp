@@ -20,6 +20,8 @@
  * notice shall be reproduced its entirety in every copy of a distributed version of this file.
  */
 
+#include <system_error>
+
 #include <neurala/plugin/NeuralaPluginStatus.h>
 #include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginManager.h>
