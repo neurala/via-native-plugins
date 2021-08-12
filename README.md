@@ -41,7 +41,8 @@ All generated DLLs and executables (such as the SDK stub library and plugins) ar
 
 3. How are these types identified and loaded by the Neurala SDK?
 	
-	The DLL will be scanned for an `extern "C" PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, NeuralaPluginStatus*)`. Types derived from the three interfaces mentioned above must be registered through the `PluginManager` (`PluginRegistrar`).
+	The DLL will be scanned for an `extern "C" PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, std::error_code*)`. Types derived from the three interfaces mentioned above must be registered through the `PluginManager` (`PluginRegistrar`).
+
 	Each implementation must define two static functions through which instance lifetime is managed:
 	- `void* create(PluginArguments&, PluginErrorCallback&)` provides necessary arguments and a function to call in case of errors during instantiation.
 	- `void destroy(void*)` specifies a pointer to a previously created object that must be deallocated.

@@ -22,9 +22,9 @@
 
 #include <system_error>
 
-#include <neurala/plugin/NeuralaPluginStatus.h>
 #include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginManager.h>
+#include <neurala/plugin/PluginStatus.h>
 #include <neurala/utils/Version.h>
 
 #include "Discoverer.h"
@@ -36,18 +36,18 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
 	using namespace neurala;
 	auto& pm = *dynamic_cast<PluginRegistrar*>(pluginManager);
-	*status = pm.registerPlugin<plug::ws::Discoverer>("websocketDiscoverer", neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
+	*status = pm.registerPlugin<plug::ws::Discoverer>("websocketDiscoverer", Version(1, 0));
+	if (*status != PluginStatus::success)
 	{
 		return nullptr;
 	}
-	*status = pm.registerPlugin<plug::ws::Input>("Input", neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
+	*status = pm.registerPlugin<plug::ws::Input>("Input", Version(1, 0));
+	if (*status != PluginStatus::success)
 	{
 		return nullptr;
 	}
-	*status = pm.registerPlugin<plug::ws::Output>("Output", neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
+	*status = pm.registerPlugin<plug::ws::Output>("Output", Version(1, 0));
+	if (*status != PluginStatus::success)
 	{
 		return nullptr;
 	}

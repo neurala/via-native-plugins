@@ -22,10 +22,10 @@
 
 #include <system_error>
 
-#include <neurala/plugin/NeuralaPluginStatus.h>
-#include <neurala/plugin/PluginBindings.h>
-#include <neurala/plugin/PluginManager.h>
 #include <neurala/utils/Version.h>
+#include <neurala/plugin/PluginManager.h>
+#include <neurala/plugin/PluginBindings.h>
+#include <neurala/plugin/PluginStatus.h>
 
 #include "EmptyCameraDiscoverer.h"
 #include "EmptyResultsOutput.h"
@@ -34,22 +34,22 @@
 extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
-	auto& pm = *static_cast<neurala::PluginRegistrar*>(pluginManager);
+	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
 	*status = pm.registerPlugin<neurala::plug::empty::CameraDiscoverer>("EmptyCameraDiscoverer",
 	                                                                    neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
+	if (*status != neurala::PluginStatus::success)
 	{
 		return nullptr;
 	}
 	*status = pm.registerPlugin<neurala::plug::empty::VideoSource>("EmptyVideoSource",
 	                                                               neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
+	if (*status != neurala::PluginStatus::success)
 	{
 		return nullptr;
 	}
 	*status = pm.registerPlugin<neurala::plug::empty::ResultsOutput>("EmptyResultsOutput",
 	                                                                 neurala::Version(1, 0));
-	if (*status != NeuralaPluginStatus::success)
+	if (*status != neurala::PluginStatus::success)
 	{
 		return nullptr;
 	}

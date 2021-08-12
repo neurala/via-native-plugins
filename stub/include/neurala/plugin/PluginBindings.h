@@ -50,18 +50,6 @@ extern "C"
 	 */
 	typedef struct NeuralaPluginManager NeuralaPluginManager;
 
-	/**
-	 * @brief Plugin status codes.
-	 */
-	typedef enum
-	{
-		success,
-		unknown,
-		wrongVersion,
-		invalidName,
-		alreadyRegistered
-	} NeuralaPluginStatus;
-
 	/// @brief Plugin cleanup function pointer, returned by the initialisation if successful.
 	typedef int (*NeuralaPluginExitFunction)();
 

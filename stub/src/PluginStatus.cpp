@@ -23,7 +23,7 @@
 
 #include "neurala/error/B4BError.h"
 
-#include "neurala/plugin/NeuralaPluginStatus.h"
+#include "neurala/plugin/PluginStatus.h"
 
 namespace
 {
@@ -31,31 +31,31 @@ namespace
  * @brief Returns a string representation of @p status.
  */
 const char*
-pluginStatusToStr(NeuralaPluginStatus status)
+pluginStatusToStr(neurala::PluginStatus status)
 {
 	switch (status)
 	{
-		case NeuralaPluginStatus::success:
+		case neurala::PluginStatus::success:
 			return "success";
-		case NeuralaPluginStatus::wrongVersion:
+		case neurala::PluginStatus::wrongVersion:
 			return "incompatible version";
-		case NeuralaPluginStatus::invalidName:
+		case neurala::PluginStatus::invalidName:
 			return "invalid name";
-		case NeuralaPluginStatus::alreadyRegistered:
+		case neurala::PluginStatus::alreadyRegistered:
 			return "already registered";
 		default:
 			return "unknown";
 	}
 }
 
-class NeuralaPluginStatusCategory : public std::error_category
+class PluginStatusCategory : public std::error_category
 {
 public:
-	const char* name() const noexcept override { return "NeuralaPluginStatus"; }
+	const char* name() const noexcept override { return "neurala::PluginStatus"; }
 
 	std::string message(int c) const override
 	{
-		return pluginStatusToStr(static_cast<NeuralaPluginStatus>(c));
+		return pluginStatusToStr(static_cast<neurala::PluginStatus>(c));
 	}
 
 	bool equivalent(int code, const std::error_condition& condition) const noexcept override
@@ -66,15 +66,15 @@ public:
 			return code == condition.value();
 		}
 
-		switch (static_cast<NeuralaPluginStatus>(code))
+		switch (static_cast<neurala::PluginStatus>(code))
 		{
-			case NeuralaPluginStatus::success:
+			case neurala::PluginStatus::success:
 				return neurala::B4BError::ok == condition;
 
-			case NeuralaPluginStatus::wrongVersion:
-			case NeuralaPluginStatus::invalidName:
+			case neurala::PluginStatus::wrongVersion:
+			case neurala::PluginStatus::invalidName:
 				return neurala::B4BError::genericError == condition;
-			case NeuralaPluginStatus::unknown:
+			case neurala::PluginStatus::unknown:
 				return neurala::B4BError::unknown == condition;
 			default:
 				return false;
@@ -89,14 +89,14 @@ public:
 			return code.value() == condition;
 		}
 
-		switch (static_cast<NeuralaPluginStatus>(condition))
+		switch (static_cast<neurala::PluginStatus>(condition))
 		{
-			case NeuralaPluginStatus::success:
+			case neurala::PluginStatus::success:
 				return code == neurala::B4BError::ok;
-			case NeuralaPluginStatus::wrongVersion:
-			case NeuralaPluginStatus::invalidName:
+			case neurala::PluginStatus::wrongVersion:
+			case neurala::PluginStatus::invalidName:
 				return code == neurala::B4BError::genericError;
-			case NeuralaPluginStatus::unknown:
+			case neurala::PluginStatus::unknown:
 				return code == neurala::B4BError::unknown;
 			default:
 				return false;
@@ -105,21 +105,24 @@ public:
 };
 } // namespace
 
-const std::error_category&
-neuralaPluginStatusCategory() noexcept
+namespace neurala
 {
-	static const NeuralaPluginStatusCategory category;
+const std::error_category&
+pluginStatusCategory() noexcept
+{
+	static const PluginStatusCategory category;
 	return category;
 }
 
 std::error_condition
-make_error_condition(NeuralaPluginStatus status) noexcept
+make_error_condition(PluginStatus status) noexcept // NOLINT
 {
-	return std::error_condition{static_cast<int>(status), neuralaPluginStatusCategory()};
+	return std::error_condition{static_cast<int>(status), pluginStatusCategory()};
 }
 
 std::error_code
-make_error_code(NeuralaPluginStatus status) noexcept
+make_error_code(PluginStatus status) noexcept // NOLINT
 {
-	return std::error_code{static_cast<int>(status), neuralaPluginStatusCategory()};
+	return std::error_code{static_cast<int>(status), pluginStatusCategory()};
 }
+} // namespace neurala

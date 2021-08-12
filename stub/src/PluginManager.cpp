@@ -27,6 +27,7 @@
 #include <unordered_map>
 
 #include "neurala/utils/Version.h"
+#include "neurala/plugin/PluginStatus.h"
 #include "neurala/plugin/PluginManager.h"
 #include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginErrorCallback.h"
@@ -43,7 +44,7 @@ std::mutex m_classesMutex;
 // Manager version.
 constexpr Version m_version{1, 0};
 
-NeuralaPluginStatus
+std::error_code
 registerClass(const char* name,
               const Version& version,
               PluginRegistrar::ClassConstructorPtr classConstructor,
@@ -53,18 +54,18 @@ registerClass(const char* name,
 	{
 		std::string className = name;
 
-		if (className.empty() || !std::all_of(className.cbegin(), className.cend(), [](char c) {
-			    return std::isalnum(c) != 0 || c == '_';
-		    }))
+		if (className.empty()
+		    || !std::all_of(className.cbegin(), className.cend(),
+		                    [](char c) { return std::isalnum(c) != 0 || c == '_'; }))
 		{
 			// empty name or name with anything except [a-zA-Z0-9\_] is not allowed
-			return NeuralaPluginStatus::invalidName;
+			return make_error_code(PluginStatus::invalidName);
 		}
 
 		if (m_version.major() != version.major())
 		{
 			// plugin and host versions mismatch
-			return NeuralaPluginStatus::wrongVersion;
+			return make_error_code(PluginStatus::wrongVersion);
 		}
 
 		std::lock_guard<std::mutex> lock{m_classesMutex};
@@ -73,16 +74,16 @@ registerClass(const char* name,
 		if (!it.second)
 		{
 			// class already registered
-			return NeuralaPluginStatus::alreadyRegistered;
+			return make_error_code(PluginStatus::alreadyRegistered);
 		}
 	}
 	catch (...)
 	{
 		// unknown error - most likely memory allocation error
-		return NeuralaPluginStatus::unknown;
+		return make_error_code(PluginStatus::unknown);
 	}
 
-	return NeuralaPluginStatus::success;
+	return make_error_code(PluginStatus::success);
 }
 
 } // namespace neurala
