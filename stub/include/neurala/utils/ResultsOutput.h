@@ -30,7 +30,7 @@
 
 #include "neurala/exports.h"
 #include "neurala/image/views/ImageView.h"
-#include "neurala/utils/Option.h"
+#include "neurala/utils/Options.h"
 
 namespace neurala
 {

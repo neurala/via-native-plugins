@@ -24,13 +24,12 @@
 #include <unordered_map>
 #include <variant>
 
-#include "neurala/utils/Option.h"
+#include "neurala/utils/Options.h"
 
 namespace neurala
 {
-
-/// @brief Implementation of @ref Option.
-class Option::Impl
+/// @brief Implementation of @ref Options.
+class Options::Impl
 {
 	using OptionValueType = std::variant<bool, std::int64_t, double, std::string>;
 
@@ -100,163 +99,163 @@ public:
 	}
 };
 
-Option::Option() : m_impl{std::make_unique<Impl>()} { }
+Options::Options() : m_impl{std::make_unique<Impl>()} { }
 
-Option::Option(const std::string& name, double value) : Option()
+Options::Options(const std::string& name, double value) : Options()
 {
 	add(name, value);
 }
 
-Option::Option(const std::string& name, const std::string& value) : Option()
+Options::Options(const std::string& name, const std::string& value) : Options()
 {
 	add(name, value);
 }
 
-Option::Option(const Option& other) : m_impl{std::make_unique<Impl>(*other.m_impl)} { }
+Options::Options(const Options& other) : m_impl{std::make_unique<Impl>(*other.m_impl)} { }
 
-Option::Option(Option&&) noexcept = default;
+Options::Options(Options&&) noexcept = default;
 
-Option::~Option() = default;
+Options::~Options() = default;
 
-Option&
-Option::operator=(const Option& other)
+Options&
+Options::operator=(const Options& other)
 {
 	m_impl = std::make_unique<Impl>(*(other.m_impl));
 	return *this;
 }
 
-Option& Option::operator=(Option&&) noexcept = default;
+Options& Options::operator=(Options&&) noexcept = default;
 
 bool
-Option::empty() const noexcept
+Options::empty() const noexcept
 {
 	return m_impl->empty();
 }
 
-Option::size_type
-Option::size() const noexcept
+Options::size_type
+Options::size() const noexcept
 {
 	return m_impl->size();
 }
 
-Option&
-Option::add(const std::string& name, bool value)
+Options&
+Options::add(const std::string& name, bool value)
 {
 	m_impl->add(name, value);
 	return *this;
 }
 
-Option&
-Option::add(const std::string& name, std::int64_t value)
+Options&
+Options::add(const std::string& name, std::int64_t value)
 {
 	m_impl->add(name, value);
 	return *this;
 }
 
-Option&
-Option::add(const std::string& name, double value)
+Options&
+Options::add(const std::string& name, double value)
 {
 	m_impl->add(name, value);
 	return *this;
 }
 
-Option&
-Option::add(const std::string& name, const std::string& value)
+Options&
+Options::add(const std::string& name, const std::string& value)
 {
 	m_impl->add(name, value);
 	return *this;
 }
 
 bool
-Option::asBool(const std::string& name) const
+Options::asBool(const std::string& name) const
 {
 	return m_impl->as<bool>(name);
 }
 
 std::int64_t
-Option::asInt(const std::string& name) const
+Options::asInt(const std::string& name) const
 {
 	return m_impl->as<std::int64_t>(name);
 }
 
 double
-Option::asDouble(const std::string& name) const
+Options::asDouble(const std::string& name) const
 {
 	return m_impl->as<double>(name);
 }
 
 const std::string&
-Option::asString(const std::string& name) const
+Options::asString(const std::string& name) const
 {
 	return m_impl->as<std::string>(name);
 }
 
 const bool*
-Option::tryAsBool(const std::string& name) const
+Options::tryAsBool(const std::string& name) const
 {
 	return m_impl->tryAs<bool>(name);
 }
 
 const std::int64_t*
-Option::tryAsInt(const std::string& name) const
+Options::tryAsInt(const std::string& name) const
 {
 	return m_impl->tryAs<std::int64_t>(name);
 }
 
 const double*
-Option::tryAsDouble(const std::string& name) const
+Options::tryAsDouble(const std::string& name) const
 {
 	return m_impl->tryAs<double>(name);
 }
 
 const std::string*
-Option::tryAsString(const std::string& name) const
+Options::tryAsString(const std::string& name) const
 {
 	return m_impl->tryAs<std::string>(name);
 }
 
-Option&
-Option::mergeIn(const Option& other)
+Options&
+Options::mergeIn(const Options& other)
 {
 	m_impl->mergeIn(*(other.m_impl));
 	return *this;
 }
 
-Option&
-Option::mergeIn(Option&& other)
+Options&
+Options::mergeIn(Options&& other)
 {
 	m_impl->mergeIn(std::move(*(other.m_impl)));
 	return *this;
 }
 
-Option&
-Option::operator|=(const Option& other)
+Options&
+Options::operator|=(const Options& other)
 {
 	return mergeIn(other);
 }
 
-Option&
-Option::operator|=(Option&& other)
+Options&
+Options::operator|=(Options&& other)
 {
 	return mergeIn(std::move(other));
 }
 
-Option
-operator|(Option x, const Option& y)
+Options
+operator|(Options x, const Options& y)
 {
 	x.mergeIn(y);
 	return x;
 }
 
-Option
-operator|(Option x, Option&& y)
+Options
+operator|(Options x, Options&& y)
 {
 	x.mergeIn(std::move(y));
 	return x;
 }
 
 std::ostream&
-operator<<(std::ostream& os, const Option& option)
+operator<<(std::ostream& os, const Options& option)
 {
 	return os << *(option.m_impl);
 }

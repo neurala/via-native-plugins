@@ -106,7 +106,7 @@ Discoverer::destroy(void* p)
 	delete static_cast<Discoverer*>(p);
 }
 
-Source::Source(const CameraInfo& cameraInfo, const Option& options)
+Source::Source(const CameraInfo& cameraInfo, const Options& options)
 {
 	std::cout << "Initiating VideoSource connection with " << cameraInfo << '\n';
 	std::cout << "With options: " << options << '\n';
@@ -139,7 +139,7 @@ Source::create(PluginArguments& arguments, PluginErrorCallback& error)
 	try
 	{
 		const auto& cameraInfo = arguments.get<0, const CameraInfo>();
-		const auto& cameraOptions = arguments.get<1, const Option>();
+		const auto& cameraOptions = arguments.get<1, const Options>();
 
 		p = new Source(cameraInfo, cameraOptions);
 	}

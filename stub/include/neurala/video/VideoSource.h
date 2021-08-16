@@ -26,7 +26,7 @@
 
 #include "neurala/image/ImageMetadata.h"
 #include "neurala/image/views/ImageView.h"
-#include "neurala/utils/Option.h"
+#include "neurala/utils/Options.h"
 #include "neurala/video/CameraInfo.h"
 
 namespace neurala
@@ -52,7 +52,7 @@ public:
 	 * PluginErrorCallback&) will provide two plugin arguments:
 	 *  1. CameraInfo (information about the camera and how to connect to it, as provided through the
 	 * implementation of CameraDiscoverer)
-	 *  2. Option (additional camera settings - not mandatory)
+	 *  2. Options (additional camera settings - not mandatory)
 	 */
 
 	virtual ~VideoSource() = default;
