@@ -38,7 +38,7 @@ namespace neurala
 /**
  * @brief User-defined option container.
  */
-class NEURALA_PUBLIC Option
+class NEURALA_PUBLIC Options
 {
 public:
 	using size_type = std::size_t;
@@ -49,7 +49,7 @@ private:
 	std::unique_ptr<Impl> m_impl;
 
 public:
-	Option();
+	Options();
 
 	/**
 	 * @brief Constructs an option that maps key @p key to value @p value.
@@ -58,34 +58,35 @@ public:
 	 * @param value option value
 	 */
 	template<class T,
-	         std::enable_if_t<std::is_integral<T>::value && !std::is_same<std::decay_t<T>, bool>::value, bool> = false>
-	Option(const std::string& key, const T& value) : Option()
+	         std::enable_if_t<std::is_integral<T>::value && !std::is_same<std::decay_t<T>, bool>::value,
+	                          bool> = false>
+	Options(const std::string& key, const T& value) : Options()
 	{
 		add(key, std::int64_t(value));
 	}
 
-	/// @copydoc Option(const std::string&,const T&)
+	/// @copydoc Options(const std::string&,const T&)
 	template<class T, std::enable_if_t<std::is_same<std::decay_t<T>, bool>::value, bool> = true>
-	Option(const std::string& key, const T& value) : Option()
+	Options(const std::string& key, const T& value) : Options()
 	{
 		add(key, bool(value));
 	}
 
-	/// @copydoc Option(const std::string&,const T&)
-	Option(const std::string& key, double value);
+	/// @copydoc Options(const std::string&,const T&)
+	Options(const std::string& key, double value);
 
-	/// @copydoc Option(const std::string&,const T&)
-	Option(const std::string& key, const std::string& value);
+	/// @copydoc Options(const std::string&,const T&)
+	Options(const std::string& key, const std::string& value);
 
-	Option(const Option&);
+	Options(const Options&);
 
-	Option(Option&&) noexcept;
+	Options(Options&&) noexcept;
 
-	~Option();
+	~Options();
 
-	Option& operator=(const Option&);
+	Options& operator=(const Options&);
 
-	Option& operator=(Option&&) noexcept;
+	Options& operator=(Options&&) noexcept;
 
 	/**
 	 * @brief Returns if there are no options stored.
@@ -105,16 +106,16 @@ public:
 	 * @param key   option key
 	 * @param value option value
 	 */
-	Option& add(const std::string& key, bool value);
+	Options& add(const std::string& key, bool value);
 
 	/// @copydoc add(const std::string&,bool)
-	Option& add(const std::string& key, std::int64_t value);
+	Options& add(const std::string& key, std::int64_t value);
 
 	/// @copydoc add(const std::string&,bool)
-	Option& add(const std::string& key, double value);
+	Options& add(const std::string& key, double value);
 
 	/// @copydoc add(const std::string&,bool)
-	Option& add(const std::string& key, const std::string& value);
+	Options& add(const std::string& key, const std::string& value);
 
 	/**
 	 * @brief Returns the option associated with key @p key as a @c bool.
@@ -165,28 +166,28 @@ public:
 	 *
 	 * @warning Options in @p other with the same key as in @p this will overwrite the latter.
 	 */
-	Option& mergeIn(const Option& other);
+	Options& mergeIn(const Options& other);
 
-	/// @copydoc mergeIn(const Option&)
-	Option& mergeIn(Option&& other);
+	/// @copydoc mergeIn(const Options&)
+	Options& mergeIn(Options&& other);
 
-	/// @copydoc mergeIn(const Option&)
-	Option& operator|=(const Option& other);
+	/// @copydoc mergeIn(const Options&)
+	Options& operator|=(const Options& other);
 
-	/// @copydoc mergeIn(const Option&)
-	Option& operator|=(Option&& other);
+	/// @copydoc mergeIn(const Options&)
+	Options& operator|=(Options&& other);
 
 	/**
-	 * @brief Creates a new @ref Option object by merging @p x and @p y.
+	 * @brief Creates a new @ref Options object by merging @p x and @p y.
 	 *
 	 * @warning Options in @p other with the same key as in @p this will overwrite the latter.
 	 */
-	friend NEURALA_PUBLIC Option operator|(Option x, const Option& y);
+	friend NEURALA_PUBLIC Options operator|(Options x, const Options& y);
 
-	/// @copydoc operator|(Option,const Option&)
-	friend NEURALA_PUBLIC Option operator|(Option x, Option&& y);
+	/// @copydoc operator|(Options,const Options&)
+	friend NEURALA_PUBLIC Options operator|(Options x, Options&& y);
 
-	friend NEURALA_PUBLIC std::ostream& operator<<(std::ostream& os, const Option& option);
+	friend NEURALA_PUBLIC std::ostream& operator<<(std::ostream& os, const Options& option);
 };
 
 } // namespace neurala

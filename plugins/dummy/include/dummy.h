@@ -52,7 +52,7 @@ public:
 class PLUGIN_API Source : public VideoSource
 {
 public:
-	explicit Source(const CameraInfo& cameraInfo, const Option& cameraOptions = {});
+	explicit Source(const CameraInfo& cameraInfo, const Options& cameraOptions = {});
 
 	[[nodiscard]] ImageMetadata metadata() const noexcept override
 	{

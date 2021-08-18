@@ -9,7 +9,7 @@ add_library(NeuralaB4B SHARED
 	src/B4BError.cpp
 	src/demangle.cpp
 	src/PluginStatus.cpp
-	src/Option.cpp
+	src/Options.cpp
 	src/PluginManager.cpp
 	src/VideoSourceStatus.cpp)
 		

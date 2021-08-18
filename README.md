@@ -36,7 +36,7 @@ All generated DLLs and executables (such as the SDK stub library and plugins) ar
 		2. type (name used inside `initMe()` to register the associated `VideoSource` implementation)
 		3. name (as displayed in the Inspector GUI)
 		4. connection (e.g. IP address, directory path or any string that can be used internally by the plugin)
-	- `VideoSource` is used to retrieve image metadata and frames. In the call to `create()`, there are two `PluginArguments`, representing the `CameraInfo` retrieved through `CameraDiscoverer` and `Option` object.
+	- `VideoSource` is used to retrieve image metadata and frames. In the call to `create()`, there are two `PluginArguments`, representing the `CameraInfo` retrieved through `CameraDiscoverer` and `Options` object.
 	- `ResultsOutput` passes back the results of processing each frame as a string in JSON format and an `ImageView` to the associated input.
 
 3. How are these types identified and loaded by the Neurala SDK?
@@ -60,4 +60,3 @@ All generated DLLs and executables (such as the SDK stub library and plugins) ar
 	The stub library in `/stub` is automatically generated from the current production libraries to provide the subset of symbols required to build a plugin, link and test it without having a complete VIA installation during development.
 
 	When installing the final plugin DLL in your VIA installation, the plugin will then dynamically link against the full SDK service library in order to communicate with the SDK service backend.
-
