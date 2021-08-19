@@ -9,11 +9,12 @@
 
 ### Usage :
 ```
-mkdir build
-cd build
-cmake -GNinja ..
-ninja
+cmake -S"." -B"build" -GNinja ..
+cmake --build build
 ```
+
+> Note: `ninja` is only one of CMake generator options, it is installed along with CMake tool by Visual Studio Installer. We recommend it, but you may choose to use
+  The visual studio generator instead (based on MSBuild, run `cmake --help` for a full list).
 
 ## Testing
 Basic functional tests in the example plugins are implemented using Boost.Test. The test executables can be run using `bin/<plugin>_tests.exe`.
