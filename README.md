@@ -26,12 +26,35 @@ cmake --build build
 Basic functional tests in the example plugins are implemented using Boost.Test. The test executables can be run using `bin/<plugin>_tests.exe`.
 All generated DLLs and executables (such as the SDK stub library and plugins) are generated in the same directory.
 
-## Writing your first plugin
-- Have a look at the sample plugins in `/plugins`
-- Implement the interfaces that your plugin requires and build your project as a shared library (DLL)
-- Write simple tests to make sure that the plugin can be loaded and that you are able to send image data or receive prediction data through the API
-- Install your plugin DLL in a VIA installation for real world testing
-- Along with the sample plugins, it is highly recommended to read the documentation available in the headers for the [`VideoSource`](https://github.com/neurala/via-native-plugins/blob/main/stub/include/neurala/video/VideoSource.h) and [`ResultsOutput`](https://github.com/neurala/via-native-plugins/blob/main/stub/include/neurala/utils/ResultsOutput.h) interfaces
+## Writing a plugin
+
+Examples are available for your convenience in the `plugins` directory. The `dummy` plugin may be used as a mock objects for tests
+the `empty` plugin contains all the boiler-plate code for a new plugin. The `websocket` plugin is a non-trivial example of a `http`
+communication plugin.
+
+To implement your own plugin, the following steps are recommended:
+
+1. Copy the `plugins/empty` plugin in a new folder inside `plugins`
+2. In `plugins/CMakeLists.txt` add a new entry for your directory
+3. Rename the targets and files in your new directory
+4. Implement your business logic. We recommend adding your source files in the `src` folder, then edit the `CMakeLists.txt`
+   to add the new files to the build system. Header files can go in the `include` directory, which is added to the compiler
+   include directories path.
+5. Test your plugin by adding the appropriate files in the `test` directory then adding the source files in the `CMakeLists.txt`.
+6. Deploy your plugin by copying the newly compiled DLL in your VIA installation custom plugin folder
+   (environment variable `NEURALA_EXTRA_PLUGINS_PATH`, defaulted to `C:\ProgramData\Neurala\SDKService\Plugins`)
+   > If your plugin is not detected by Inspector, restart the Neurala SDKService from Windows' Services panel.
+
+More information on the interfaces can be found in the headers of the stub library. The interface headers are:
+- [`VideoSource`](https://github.com/neurala/via-native-plugins/blob/main/stub/include/neurala/video/VideoSource.h)
+- [`ResultsOutput`](https://github.com/neurala/via-native-plugins/blob/main/stub/include/neurala/utils/ResultsOutput.h)
+
+---
+:warning:
+Plugins have to be implemented in C++ using C++17 flags and need to be deployed according to CMake's Release build configuration type.
+**Any other parameters flags may result in ABI incompatibility**, and prevent the plugins from being loaded correctly.
+
+---
 ## FAQ
 1. What interfaces have to be implemented?
 	- `CameraDiscoverer` and `VideoSource` for "Input" plugins
