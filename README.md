@@ -7,7 +7,13 @@
 - [Conan](https://github.com/conan-io/conan/releases/latest/download/conan-win-64.exe) is used to download external dependencies for the plugin samples
 - The compilation environment should be using the latest [Visual Studio 2019 Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019)
 
-### Usage :
+### Usage (Visual Studio):
+
+Visual Studio [supports CMake projects by default](https://docs.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-160), you should just have to open the directory as a new project, and configure it as you see fit.
+### Usage (command line):
+
+From a developer shell, navigate to this project directory then type:
+
 ```
 cmake -S"." -B"build" -GNinja ..
 cmake --build build
