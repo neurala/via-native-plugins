@@ -63,7 +63,9 @@ enum class EColorSpace : std::uint8_t
 	/// YUV 4:2:0 semi-planar (Y plane, followed by interleaved U, V planes: YYYYYYYY UVUV)
 	NV12,
 	/// YUV 4:2:0 semi-planar (Y plane, followed by interleaved U, V planes: YYYYYYYY VUVU)
-	NV21
+	NV21,
+	// YUV 4:2:2
+	YUV422
 };
 
 #ifndef SWIG
@@ -87,7 +89,8 @@ public:
 	 NEURALA_META_ENUM_ENTRY(EColorSpace, HSV),
 	 NEURALA_META_ENUM_ENTRY(EColorSpace, YUV420),
 	 NEURALA_META_ENUM_ENTRY(EColorSpace, NV12),
-	 NEURALA_META_ENUM_ENTRY(EColorSpace, NV21));
+	 NEURALA_META_ENUM_ENTRY(EColorSpace, NV21),
+	 NEURALA_META_ENUM_ENTRY(EColorSpace, YUV422));
 
 	static constexpr const auto fallbackValue = values[0];
 };
@@ -116,6 +119,7 @@ colorSpaceChannelCount(EColorSpace colorSpace) noexcept
 		case EColorSpace::HSV:
 		case EColorSpace::RGB565:
 		case EColorSpace::YUV420:
+		case EColorSpace::YUV422:
 			return 3u;
 		case EColorSpace::RGBA:
 		case EColorSpace::BGRA:
