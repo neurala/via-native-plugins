@@ -2,7 +2,7 @@
 #ifndef NEURALA_PUBLIC_H
 #define NEURALA_PUBLIC_H
 
-#ifdef NEURALA_STATIC_LIB
+#if defined(NEURALA_STATIC_LIB) || defined(__GNUC__)
 #  define NEURALA_PUBLIC
 #  define NEURALA_PRIVATE
 #else

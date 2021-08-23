@@ -41,7 +41,9 @@ target_include_directories(NeuralaB4B SYSTEM PUBLIC include)
 # Spammed by C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winbase.h
 # https://developercommunity.visualstudio.com/t/1249671
 #
-target_compile_options(NeuralaB4B PUBLIC /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251 /wd5104 /wd5105)
+if(WIN32 AND MSVC)
+	target_compile_options(NeuralaB4B PUBLIC /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251 /wd5104 /wd5105)
+endif()
 
 # Add friendly alias
 add_library(stub ALIAS NeuralaB4B)
