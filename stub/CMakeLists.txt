@@ -14,7 +14,6 @@ add_library(NeuralaB4B SHARED
 	src/VideoSourceStatus.cpp)
 
 include(GenerateExportHeader)
-set(EXPORT_HEADER_FILE ${CMAKE_BINARY_DIR}/include/neurala/exports.h)
 generate_export_header(NeuralaB4B
 	BASE_NAME ""
 	PREFIX_NAME NEURALA_
@@ -23,10 +22,7 @@ generate_export_header(NeuralaB4B
 	DEPRECATED_MACRO_NAME DEPRECATED
 	NO_DEPRECATED_MACRO_NAME NOT_DEPRECATED
 	STATIC_DEFINE STATIC_LIB
-	EXPORT_FILE_NAME ${EXPORT_HEADER_FILE})
-install(FILES ${EXPORT_HEADER_FILE}
-	DESTINATION ${INCLUDE_INSTALL_DIR}/${api_module_installation_suffix}
-	COMPONENT devel)
+	EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/include/neurala/exports.h)
 
 target_compile_definitions(NeuralaB4B PRIVATE NeuralaB4B_EXPORTS)
 
