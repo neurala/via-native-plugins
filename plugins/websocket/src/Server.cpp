@@ -69,7 +69,7 @@ Server::run()
 	{
 		while (detachingThread)
 		{
-			boost::this_thread::sleep(boost::chrono::milliseconds(1000));
+			boost::this_thread::sleep(boost::posix_time::seconds(1));
 		}
 		socket = std::make_unique<volatile tcp::socket>(m_ioContext);
 		m_acceptor.accept(const_cast<tcp::socket&>(*socket));
