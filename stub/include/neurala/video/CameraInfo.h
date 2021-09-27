@@ -99,7 +99,7 @@ public:
 	 */
 	friend bool operator==(const CameraInfo& x, const CameraInfo& y) noexcept
 	{
-		return x.id() == y.id() && x.type() == y.type() && x.connection() == y.connection();
+		return x.id() == y.id();
 	}
 
 	friend bool operator!=(const CameraInfo& x, const CameraInfo& y) noexcept { return !(x == y); }
