@@ -45,6 +45,7 @@ enum class EDataRange
 	normalizedCOCO
 };
 
+// NOTE:20210927:jgerity:SWIG does not support `auto` without a trailing return type declaration (http://www.swig.org/Doc4.0/SWIGDocumentation.html#CPlusPlus11_alternate_function_syntax)
 #ifndef SWIG
 template<>
 class MetaEnum<EDataRange> : public MetaEnumRegister<EDataRange>
