@@ -53,6 +53,7 @@ enum class EDatatype : std::uint8_t
 };
 
 
+// NOTE:20210927:jgerity:SWIG does not support `auto` without a trailing return type declaration (http://www.swig.org/Doc4.0/SWIGDocumentation.html#CPlusPlus11_alternate_function_syntax)
 #ifndef SWIG
 /// @ingroup NEURALA_META_ENUM
 template<>

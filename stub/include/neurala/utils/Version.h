@@ -112,6 +112,7 @@ public:
 
 	friend std::ostream& operator<<(std::ostream&, const Version&);
 
+// NOTE:20210927:jgerity:SWIG does not support `friend constexpr` (https://github.com/swig/swig/issues/2079)
 #ifndef SWIG
 	/**
 	 * @brief Returns @c true if @p x and @p y major, minor, and revision match.

@@ -41,6 +41,7 @@ enum class B4BError : int
 	unsupportedAction
 };
 
+// NOTE:20210927:jgerity:SWIG does not support `auto` without a trailing return type declaration (http://www.swig.org/Doc4.0/SWIGDocumentation.html#CPlusPlus11_alternate_function_syntax)
 #ifndef SWIG
 template<>
 class MetaEnum<B4BError> : public MetaEnumRegister<B4BError>

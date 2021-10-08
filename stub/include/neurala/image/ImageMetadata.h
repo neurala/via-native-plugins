@@ -180,6 +180,7 @@ public:
 		return pixelComponentCount() * sizeofDatatype(datatype());
 	}
 
+// NOTE:20210927:jgerity:SWIG does not support `friend constexpr` (https://github.com/swig/swig/issues/2079)
 #ifndef SWIG
 	friend constexpr bool operator==(const ImageMetadata& x, const ImageMetadata& y) noexcept
 	{
