@@ -21,6 +21,7 @@
 
 #include "neurala/algorithms/math/utils.h"
 #include "neurala/image/ImageMetadata.h"
+#include "neurala/image/views/memoryStrategy/Contiguous.h"
 
 namespace neurala
 {
@@ -30,7 +31,8 @@ namespace neurala
  * @warning It is the user's responsibility that the data given to the view remains valid for the
  *          lifetime of the view.
  */
-class ImageView
+template<class MemoryStrategy>
+class ImageViewTemplate
 {
 public:
 	using size_type = std::size_t;
@@ -40,10 +42,10 @@ private:
 	ImageMetadata m_metadata;
 
 public:
-	ImageView() = default;
+	ImageViewTemplate() = default;
 
 	/**
-	 * @brief Constructs a new @ref ImageView with the provided arguments.
+	 * @brief Constructs a new @ref ImageViewTemplate with the provided arguments.
 	 *
 	 * The data type is derived from the type of @p data.
 	 *
@@ -53,12 +55,12 @@ public:
 	 * @param metadata image metadata
 	 * @param data     image data
 	 */
-	constexpr ImageView(const ImageMetadata& metadata, const void* data) noexcept
+	constexpr ImageViewTemplate(const ImageMetadata& metadata, const void* data) noexcept
 	 : m_data{data}, m_metadata{metadata}
 	{ }
 
 	/**
-	 * @brief Constructs a new @ref ImageView with the provided arguments.
+	 * @brief Constructs a new @ref ImageViewTemplate with the provided arguments.
 	 *
 	 * The data type is derived from the type of @p data.
 	 *
@@ -72,11 +74,11 @@ public:
 	 * @param data       image data
 	 */
 	template<class T>
-	constexpr ImageView(size_type width,
-	                    size_type height,
-	                    EColorSpace colorSpace,
-	                    EImageDataLayout layout,
-	                    const T* data) noexcept
+	constexpr ImageViewTemplate(size_type width,
+	                            size_type height,
+	                            EColorSpace colorSpace,
+	                            EImageDataLayout layout,
+	                            const T* data) noexcept
 	 : m_data{data}, m_metadata{width, height, colorSpace, layout, DatatypeTraits<T>::datatype}
 	{ }
 
@@ -132,7 +134,7 @@ public:
 		return static_cast<const T*>(data());
 	}
 
-	friend constexpr bool operator==(const ImageView& x, const ImageView& y) noexcept
+	friend constexpr bool operator==(const ImageViewTemplate& x, const ImageViewTemplate& y) noexcept
 	{
 		if (x.metadata() != y.metadata())
 		{
@@ -176,17 +178,20 @@ public:
 		return true;
 	}
 
-	friend constexpr bool operator!=(const ImageView& x, const ImageView& y) noexcept
+	friend constexpr bool operator!=(const ImageViewTemplate& x, const ImageViewTemplate& y) noexcept
 	{
 		return !(x == y);
 	}
 };
 
-constexpr ImageView
-makeImageView(const ImageView& im) noexcept
+template<class MemoryStrategy>
+constexpr ImageViewTemplate<MemoryStrategy>
+makeImageView(const ImageViewTemplate<MemoryStrategy>& im) noexcept
 {
 	return im;
 }
+
+using ImageView = ImageViewTemplate<memory_strategy::Contiguous>;
 
 } // namespace neurala
 
