@@ -34,6 +34,8 @@ enum class EDataRange
 	normalized,
 	/// Normalized data range around zero <tt>[-0.5, 0.5]</tt>
 	normalizedAroundZero,
+	/// Normalized data range around zero <tt>[-1, 1]</tt>
+	normalizedAroundZeroSSD,
 	/// Scaled data range by 255 <tt>[0.0, 255.0]</tt>
 	normalizedScaled,
 	/// normalized rgb data based on COCO mean values: channel = (channel - channelMean)/channelStd
@@ -50,6 +52,7 @@ public:
 	 NEURALA_META_ENUM_ENTRY(EDataRange, unknown),
 	 NEURALA_META_ENUM_ENTRY(EDataRange, normalized),
 	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedAroundZero),
+	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedAroundZeroSSD),
 	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedScaled),
 	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedCOCO));
 
