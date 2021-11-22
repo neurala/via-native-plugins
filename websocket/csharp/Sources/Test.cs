@@ -21,10 +21,11 @@ public static class Program {
     }
 
     private static IEnumerable<Bitmap> IterateImageDirectoryForever(string directory) {
-        var files = Directory.EnumerateFiles(directory);
+        while (true) {
+            var files = Directory.EnumerateFiles(directory);
 
-        while (true)
             foreach (var file in files)
                 yield return new Bitmap(file);
+        }
     }
 }
