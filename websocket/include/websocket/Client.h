@@ -32,17 +32,13 @@
 
 namespace neurala::websocket
 {
-namespace beast = boost::beast;
-namespace net = boost::asio;
-using tcp = net::ip::tcp;
-
 /**
  * @brief Websocket client that receives input frames from a specified server.
  */
 class PLUGIN_API Client final
 {
 public:
-	Client();
+	Client() noexcept;
 
 	Client(const Client&) = delete;
 	Client(Client&&) = default;
@@ -50,14 +46,13 @@ public:
 	Client& operator=(Client&&) = delete; // the stream is not move-assignable
 
 	/// Closes the WebSocket stream used to communicate with the server.
-	~Client() { m_stream.close(beast::websocket::close_code::normal); }
+	~Client() { m_stream.close(boost::beast::websocket::close_code::normal); }
 
 	struct CameraInfo final
 	{
 		std::string id;
 		std::string name;
-	};
-	CameraInfo cameraInfo();
+	} cameraInfo() noexcept;
 
 	/**
 	 * @brief Retrieve metadata regarding frames fed by the server.
@@ -66,7 +61,7 @@ public:
 	 * enclosed as a JSON object. The width and height attributes must be represented as numbers. The
 	 * latter three are interpreted as the string encoding of an element from the corresponding enum.
 	 */
-	ImageMetadata metadata();
+	ImageMetadata metadata() noexcept;
 
 	/**
 	 * @brief Retrieve the next frame and copy data to the specified location.
@@ -74,29 +69,32 @@ public:
 	 * @param capacity capacity of the buffer at the given address
 	 * @return true if the capacity was sufficient, false otherwise
 	 */
-	std::error_code frame(std::byte* const location, const std::size_t capacity);
+	std::error_code frame(std::byte* const location, const std::size_t capacity) noexcept;
 
-	std::error_code execute(const std::string_view action);
+	std::error_code execute(const std::string_view action) noexcept;
 
 	/**
 	 * @brief Send the result of processing a frame back to the server.
 	 * @param result body of the result sending request
 	 */
-	void sendResult(const boost::json::object& result) { response("result", result); }
+	void sendResult(const boost::json::object& result) noexcept { response("result", result); }
 
 private:
+	using const_buffer = boost::asio::const_buffer;
+
 	/**
 	 * @brief Retrieve the response for a given request.
 	 *
 	 * Requests used the JSON format. The request type is set as the "request" element. If a body
 	 * object is specified, a "body" element is also included in the message.
 	 */
-	net::const_buffer response(const std::string_view requestType, const boost::json::object& body = {});
+	const_buffer
+	response(const std::string_view requestType, const boost::json::object& body = {}) noexcept;
 
-	net::io_context m_ioContext;
-	tcp::socket m_socket;
-	beast::websocket::stream<tcp::socket&> m_stream;
-	beast::flat_buffer m_buffer;
+	boost::asio::io_context m_ioContext;
+	boost::asio::ip::tcp::socket m_socket;
+	boost::beast::websocket::stream<boost::asio::ip::tcp::socket&> m_stream;
+	boost::beast::flat_buffer m_buffer;
 };
 
 } // namespace neurala::websocket

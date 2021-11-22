@@ -27,10 +27,10 @@
 
 namespace neurala::websocket
 {
-Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
+Client::Client() noexcept : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 {
 	boost::system::error_code ec;
-	tcp::endpoint endpoint{net::ip::make_address(ipAddress, ec), port};
+	boost::asio::ip::tcp::endpoint endpoint{boost::asio::ip::make_address(ipAddress, ec), port};
 	m_socket.connect(endpoint, ec);
 	if (ec.failed())
 	{
@@ -42,9 +42,9 @@ Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 }
 
 Client::CameraInfo
-Client::cameraInfo()
+Client::cameraInfo() noexcept
 {
-	const net::const_buffer buffer{response("cameraInfo")};
+	const const_buffer buffer{response("cameraInfo")};
 	using namespace boost::json;
 	const value jsonValue{
 	 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
@@ -58,9 +58,9 @@ Client::cameraInfo()
 }
 
 ImageMetadata
-Client::metadata()
+Client::metadata() noexcept
 {
-	const net::const_buffer buffer{response("metadata")};
+	const const_buffer buffer{response("metadata")};
 	using namespace boost::json;
 	const value jsonValue{
 	 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
@@ -80,9 +80,9 @@ Client::metadata()
 }
 
 std::error_code
-Client::frame(std::byte* const location, const std::size_t capacity)
+Client::frame(std::byte* const location, const std::size_t capacity) noexcept
 {
-	net::const_buffer buffer = response("frame");
+	const_buffer buffer = response("frame");
 	const bool sufficientCapacity{buffer.size() <= capacity};
 	if (sufficientCapacity)
 	{
@@ -93,7 +93,7 @@ Client::frame(std::byte* const location, const std::size_t capacity)
 }
 
 std::error_code
-Client::execute(const std::string_view action)
+Client::execute(const std::string_view action) noexcept
 {
 	boost::json::object body;
 	body["action"] = action.data();
@@ -101,8 +101,9 @@ Client::execute(const std::string_view action)
 	return {};
 }
 
-net::const_buffer
-Client::response(const std::string_view requestType, const boost::json::object& body /*= {}*/)
+Client::const_buffer
+Client::response(const std::string_view requestType,
+                 const boost::json::object& body /*= {}*/) noexcept
 {
 	m_buffer.clear();
 	boost::json::object request;
@@ -111,12 +112,12 @@ Client::response(const std::string_view requestType, const boost::json::object& 
 	{
 		request["body"] = body;
 	}
-	m_stream.write(net::buffer(serialize(request)));
+	m_stream.write(boost::asio::buffer(serialize(request)));
 	m_stream.read(m_buffer);
-	const net::const_buffer data = m_buffer.cdata();
+	const const_buffer data = m_buffer.cdata();
 	if (data.size() < 1024)
 	{
-		std::cout << beast::make_printable(data) << '\n';
+		std::cout << boost::beast::make_printable(data) << '\n';
 	}
 	return data;
 }
