@@ -25,7 +25,7 @@
 #include <neurala/meta/enum.h>
 #include <neurala/video/VideoSourceStatus.h>
 
-namespace neurala::plug::ws
+namespace neurala::websocket
 {
 Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 {
@@ -121,4 +121,4 @@ Client::response(const std::string_view requestType, const boost::json::object& 
 	return data;
 }
 
-} // namespace neurala::plug::ws
+} // namespace neurala::websocket

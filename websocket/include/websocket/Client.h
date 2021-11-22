@@ -30,7 +30,7 @@
 #include <neurala/image/ImageMetadata.h>
 #include <neurala/plugin/PluginBindings.h>
 
-namespace neurala::plug::ws
+namespace neurala::websocket
 {
 namespace beast = boost::beast;
 namespace net = boost::asio;
@@ -99,6 +99,6 @@ private:
 	beast::flat_buffer m_buffer;
 };
 
-} // namespace neurala::plug::ws
+} // namespace neurala::websocket
 
 #endif // NEURALA_PLUG_WS_CLIENT_H

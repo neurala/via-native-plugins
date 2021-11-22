@@ -31,7 +31,7 @@
 #include "websocket/Client.h"
 #include "websocket/Environment.h"
 
-namespace neurala::plug::ws
+namespace neurala::websocket
 {
 /**
  * @brief Implementation of the CameraDiscoverer interface that provides connection information.
@@ -66,7 +66,7 @@ public:
 	{
 		Client::CameraInfo cameraInfo{m_client.cameraInfo()};
 		return {{std::move(cameraInfo.id),
-		         "Input",
+		         "WebsocketInput",
 		         std::move(cameraInfo.name),
 		         std::string{ipAddress} + ':' + std::to_string(port)}};
 	}
@@ -75,6 +75,6 @@ private:
 	mutable Client m_client;
 };
 
-} // namespace neurala::plug::ws
+} // namespace neurala::websocket
 
 #endif // NEURALA_STREAM_PLUGIN_DISCOVERER_H

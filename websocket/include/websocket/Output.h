@@ -30,7 +30,7 @@
 
 #include "websocket/Client.h"
 
-namespace neurala::plug::ws
+namespace neurala::websocket
 {
 /**
  * @brief Implementation of the ResultsOutput interface that handles resulting data.
@@ -79,6 +79,6 @@ private:
 	Client m_client;
 };
 
-} // namespace neurala::plug::ws
+} // namespace neurala::websocket
 
 #endif // NEURALA_PLUG_WS_OUTPUT_H

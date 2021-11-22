@@ -32,17 +32,17 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
 	using namespace neurala;
 	auto& pm = *dynamic_cast<PluginRegistrar*>(pluginManager);
-	*status = pm.registerPlugin<plug::ws::Discoverer>("websocketDiscoverer", Version(1, 0));
+	*status = pm.registerPlugin<websocket::Discoverer>("WebsocketDiscoverer", Version(1, 0));
 	if (*status != PluginStatus::success)
 	{
 		return nullptr;
 	}
-	*status = pm.registerPlugin<plug::ws::Input>("Input", Version(1, 0));
+	*status = pm.registerPlugin<websocket::Input>("WebsocketInput", Version(1, 0));
 	if (*status != PluginStatus::success)
 	{
 		return nullptr;
 	}
-	*status = pm.registerPlugin<plug::ws::Output>("Output", Version(1, 0));
+	*status = pm.registerPlugin<websocket::Output>("WebsocketOutput", Version(1, 0));
 	if (*status != PluginStatus::success)
 	{
 		return nullptr;

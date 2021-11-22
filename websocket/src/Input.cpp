@@ -21,7 +21,7 @@
 
 #include <iostream>
 
-namespace neurala::plug::ws
+namespace neurala::websocket
 {
 std::error_code
 Input::nextFrame() noexcept
@@ -63,4 +63,4 @@ Input::cachedMetadata() const noexcept
 	return *m_metadata;
 }
 
-} // namespace neurala::plug::ws
+} // namespace neurala::websocket

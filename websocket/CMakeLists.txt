@@ -38,5 +38,3 @@ target_compile_definitions(websocket PRIVATE NEURALA_EXPORT_PLUGIN)
 target_include_directories(websocket PUBLIC include)
 
 target_link_libraries(websocket PUBLIC stub CONAN_PKG::boost)
-
-add_subdirectory(test)
