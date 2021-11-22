@@ -22,6 +22,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string_view>
+#include <system_error>
 
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
@@ -38,7 +39,7 @@ namespace neurala::websocket
 class PLUGIN_API Client final
 {
 public:
-	Client() noexcept;
+	Client();
 
 	Client(const Client&) = delete;
 	Client(Client&&) = default;
@@ -77,7 +78,7 @@ public:
 	 * @brief Send the result of processing a frame back to the server.
 	 * @param result body of the result sending request
 	 */
-	void sendResult(const boost::json::object& result) noexcept { response("result", result); }
+	void sendResult(boost::json::object&& result) noexcept;
 
 private:
 	using const_buffer = boost::asio::const_buffer;
@@ -88,8 +89,9 @@ private:
 	 * Requests used the JSON format. The request type is set as the "request" element. If a body
 	 * object is specified, a "body" element is also included in the message.
 	 */
-	const_buffer
-	response(const std::string_view requestType, const boost::json::object& body = {}) noexcept;
+	const_buffer response(const std::string_view requestType,
+	                      boost::json::object&& body,
+	                      std::error_code& ec) noexcept;
 
 	boost::asio::io_context m_ioContext;
 	boost::asio::ip::tcp::socket m_socket;

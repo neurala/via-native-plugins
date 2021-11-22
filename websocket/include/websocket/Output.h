@@ -20,6 +20,7 @@
 #define NEURALA_PLUG_WS_OUTPUT_H
 
 #include <string>
+#include <utility>
 
 #include <boost/json.hpp>
 #include <neurala/image/views/ImageView.h>
@@ -72,7 +73,7 @@ public:
 	void operator()(const std::string& metadata, const ImageView*) noexcept final
 	{
 		using namespace boost::json;
-		m_client.sendResult(parse(string_view{metadata.data(), metadata.size()}).as_object());
+		m_client.sendResult(std::move(parse(string_view{metadata.data(), metadata.size()}).as_object()));
 	}
 
 private:

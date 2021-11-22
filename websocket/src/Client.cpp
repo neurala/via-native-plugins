@@ -21,105 +21,159 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <utility>
 
 #include <neurala/meta/enum.h>
 #include <neurala/video/VideoSourceStatus.h>
 
 namespace neurala::websocket
 {
-Client::Client() noexcept : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
+Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 {
-	boost::system::error_code ec;
-	boost::asio::ip::tcp::endpoint endpoint{boost::asio::ip::make_address(ipAddress, ec), port};
-	m_socket.connect(endpoint, ec);
-	if (ec.failed())
+	try
 	{
-		std::cerr << "Failed to connect: " << ec.message() << ".\n";
-		throw std::system_error(ec);
+		boost::asio::ip::tcp::endpoint endpoint{boost::asio::ip::make_address(ipAddress), port};
+		m_socket.connect(endpoint);
+		std::clog << "Websocket client connected.\n";
+		m_stream.handshake(ipAddress.data(), "/");
 	}
-	std::cout << "Client connected.\n";
-	m_stream.handshake(ipAddress.data(), "/");
+	catch (const std::exception& e)
+	{
+		std::cerr << "Error while initializing websocket connection: " << e.what();
+	}
+	catch (...)
+	{
+		std::cerr << "Unknown error while initializing websocket connection.";
+	}
 }
 
 Client::CameraInfo
 Client::cameraInfo() noexcept
 {
-	const const_buffer buffer{response("cameraInfo")};
-	using namespace boost::json;
-	const value jsonValue{
-	 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
-	const object& jsonObject{jsonValue.as_object()};
-	CameraInfo cameraInfo;
-	const string& id{jsonObject.at("id").as_string()};
-	cameraInfo.id = std::string{id.data(), id.size()};
-	const string& name{jsonObject.at("name").as_string()};
-	cameraInfo.name = std::string{name.data(), name.size()};
-	return cameraInfo;
+	std::error_code ec;
+	const const_buffer buffer{response("cameraInfo", {}, ec)};
+	if (ec)
+	{
+		return {};
+	}
+	try
+	{
+		using namespace boost::json;
+		const value jsonValue{
+		 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
+		const object& jsonObject{jsonValue.as_object()};
+		CameraInfo cameraInfo;
+		const string& id{jsonObject.at("id").as_string()};
+		cameraInfo.id = std::string{id.data(), id.size()};
+		const string& name{jsonObject.at("name").as_string()};
+		cameraInfo.name = std::string{name.data(), name.size()};
+		return cameraInfo;
+	}
+	catch (...)
+	{
+		std::cerr << "Error while parsing 'cameraInfo' response";
+	}
+	return {};
 }
 
 ImageMetadata
 Client::metadata() noexcept
 {
-	const const_buffer buffer{response("metadata")};
-	using namespace boost::json;
-	const value jsonValue{
-	 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
-	const object& jsonObject{jsonValue.as_object()};
-	const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
-	const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
-	const string& colorSpaceStr{jsonObject.at("colorSpace").as_string()};
-	const EColorSpace colorSpace{
-	 stringToEnum<EColorSpace>(std::string_view{colorSpaceStr.data(), colorSpaceStr.size()})};
-	const string& layoutStr{jsonObject.at("layout").as_string()};
-	const EImageDataLayout layout{
-	 stringToEnum<EImageDataLayout>(std::string_view{layoutStr.data(), layoutStr.size()})};
-	const string& dataTypeStr{jsonObject.at("dataType").as_string()};
-	const EDatatype dataType{
-	 stringToEnum<EDatatype>(std::string_view{dataTypeStr.data(), dataTypeStr.size()})};
-	return {width, height, colorSpace, layout, dataType};
+	std::error_code ec;
+	const const_buffer buffer{response("metadata", {}, ec)};
+	if (ec)
+	{
+		return {};
+	}
+	try
+	{
+		using namespace boost::json;
+		const value jsonValue{
+		 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
+		const object& jsonObject{jsonValue.as_object()};
+		const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
+		const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
+		const string& colorSpaceStr{jsonObject.at("colorSpace").as_string()};
+		const EColorSpace colorSpace{
+		 stringToEnum<EColorSpace>(std::string_view{colorSpaceStr.data(), colorSpaceStr.size()})};
+		const string& layoutStr{jsonObject.at("layout").as_string()};
+		const EImageDataLayout layout{
+		 stringToEnum<EImageDataLayout>(std::string_view{layoutStr.data(), layoutStr.size()})};
+		const string& dataTypeStr{jsonObject.at("dataType").as_string()};
+		const EDatatype dataType{
+		 stringToEnum<EDatatype>(std::string_view{dataTypeStr.data(), dataTypeStr.size()})};
+		return {width, height, colorSpace, layout, dataType};
+	}
+	catch (...)
+	{
+		std::cerr << "Error while parsing 'metadata' response";
+	}
+	return {};
 }
 
 std::error_code
 Client::frame(std::byte* const location, const std::size_t capacity) noexcept
 {
-	const_buffer buffer = response("frame");
+	std::error_code ec;
+	const const_buffer buffer{response("frame", {}, ec)};
+	if (ec)
+	{
+		return ec;
+	}
 	const bool sufficientCapacity{buffer.size() <= capacity};
 	if (sufficientCapacity)
 	{
 		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), location);
+		return make_error_code(VideoSourceStatus::success);
 	}
-	return make_error_code(sufficientCapacity ? VideoSourceStatus::success
-	                                          : VideoSourceStatus::overflow);
+	return make_error_code(VideoSourceStatus::overflow);
 }
 
 std::error_code
 Client::execute(const std::string_view action) noexcept
 {
-	boost::json::object body;
-	body["action"] = action.data();
-	response("execute", body);
-	return {};
+	std::error_code ec;
+	response("execute", {{"action", action.data()}}, ec);
+	return ec;
+}
+
+void
+Client::sendResult(boost::json::object&& result) noexcept
+{
+	std::error_code ec;
+	response("result", std::move(result), ec);
 }
 
 Client::const_buffer
 Client::response(const std::string_view requestType,
-                 const boost::json::object& body /*= {}*/) noexcept
+                 boost::json::object&& body,
+                 std::error_code& ec) noexcept
 {
 	m_buffer.clear();
-	boost::json::object request;
-	request["request"] = requestType.data();
-	if (!body.empty())
+	try
 	{
-		request["body"] = body;
+		boost::json::object request{{"request", requestType.data()}};
+		if (!body.empty())
+		{
+			request.emplace("body", std::move(body));
+		}
+		m_stream.write(boost::asio::buffer(serialize(request)));
+		m_stream.read(m_buffer);
 	}
-	m_stream.write(boost::asio::buffer(serialize(request)));
-	m_stream.read(m_buffer);
-	const const_buffer data = m_buffer.cdata();
-	if (data.size() < 1024)
+	catch (const boost::beast::system_error& bse)
 	{
-		std::cout << boost::beast::make_printable(data) << '\n';
+		ec = std::make_error_code(static_cast<std::errc>(bse.code().value()));
+		std::cerr << "Error while processing request: " << bse.what();
 	}
-	return data;
+	catch (const std::exception& e)
+	{
+		std::cerr << "Error while processing request: " << e.what();
+	}
+	catch (...)
+	{
+		std::cerr << "Unknown error while processing request.";
+	}
+	return m_buffer.cdata();
 }
 
 } // namespace neurala::websocket
