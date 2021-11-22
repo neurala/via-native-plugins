@@ -23,9 +23,9 @@
 #include <neurala/plugin/PluginStatus.h>
 #include <neurala/utils/Version.h>
 
-#include "Discoverer.h"
-#include "Input.h"
-#include "Output.h"
+#include "websocket/Discoverer.h"
+#include "websocket/Input.h"
+#include "websocket/Output.h"
 
 extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginManager* pluginManager, std::error_code* status)

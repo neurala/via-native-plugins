@@ -30,7 +30,7 @@
 #include <neurala/plugin/PluginErrorCallback.h>
 #include <neurala/video/VideoSource.h>
 
-#include "Client.h"
+#include "websocket/Client.h"
 
 namespace neurala::plug::ws
 {

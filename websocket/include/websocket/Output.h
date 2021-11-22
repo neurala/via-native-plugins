@@ -28,7 +28,7 @@
 #include <neurala/plugin/PluginErrorCallback.h>
 #include <neurala/utils/ResultsOutput.h>
 
-#include "Client.h"
+#include "websocket/Client.h"
 
 namespace neurala::plug::ws
 {

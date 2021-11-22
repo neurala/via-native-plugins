@@ -35,12 +35,7 @@ add_library(websocket SHARED
 
 target_compile_definitions(websocket PRIVATE NEURALA_EXPORT_PLUGIN)
 
-target_include_directories(websocket
-	# Headers should be prefixed with websocket/ when used as a dependency.
-	INTERFACE
-		include
-	PRIVATE
-		include/websocket)
+target_include_directories(websocket PUBLIC include)
 
 target_link_libraries(websocket PUBLIC stub CONAN_PKG::boost)
 

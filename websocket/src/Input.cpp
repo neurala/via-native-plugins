@@ -16,7 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "Input.h"
+#include "websocket/Input.h"
 #include "neurala/video/VideoSourceStatus.h"
 
 #include <iostream>
