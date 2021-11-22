@@ -1,9 +1,0 @@
-cmake_minimum_required(VERSION 3.17.0)
-
-set(CMAKE_CXX_STANDARD 17)
-
-add_executable(StandaloneInputServer StandaloneInputServer.cpp)
-target_link_libraries(StandaloneInputServer websocket)
-
-add_executable(StandaloneOutputServer StandaloneOutputServer.cpp)
-target_link_libraries(StandaloneOutputServer websocket)

@@ -28,11 +28,8 @@ conan_cmake_run(
 add_library(websocket SHARED
 	src/Client.cpp
 	src/InitMe.cpp
-	src/Input.cpp
-	src/InputServer.cpp
-	src/OutputServer.cpp
-	src/Server.cpp)
-	
+	src/Input.cpp)
+
 target_compile_definitions(websocket PRIVATE NEURALA_EXPORT_PLUGIN)
 
 target_include_directories(websocket
@@ -45,4 +42,3 @@ target_include_directories(websocket
 target_link_libraries(websocket PUBLIC stub CONAN_PKG::boost)
 
 add_subdirectory(test)
-add_subdirectory(tools)
