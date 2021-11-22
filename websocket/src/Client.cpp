@@ -39,11 +39,11 @@ Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << "Error while initializing websocket connection: " << e.what();
+		std::cerr << "Error while initializing websocket connection: " << e.what() << '\n';
 	}
 	catch (...)
 	{
-		std::cerr << "Unknown error while initializing websocket connection.";
+		std::cerr << "Unknown error while initializing websocket connection.\n";
 	}
 }
 
@@ -71,7 +71,7 @@ Client::cameraInfo() noexcept
 	}
 	catch (...)
 	{
-		std::cerr << "Error while parsing 'cameraInfo' response";
+		std::cerr << "Error while parsing 'cameraInfo' response\n";
 	}
 	return {};
 }
@@ -106,7 +106,7 @@ Client::metadata() noexcept
 	}
 	catch (...)
 	{
-		std::cerr << "Error while parsing 'metadata' response";
+		std::cerr << "Error while parsing 'metadata' response\n";
 	}
 	return {};
 }
@@ -163,15 +163,15 @@ Client::response(const std::string_view requestType,
 	catch (const boost::beast::system_error& bse)
 	{
 		ec = std::make_error_code(static_cast<std::errc>(bse.code().value()));
-		std::cerr << "Error while processing request: " << bse.what();
+		std::cerr << "Error while processing request: " << bse.what() << '\n';
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << "Error while processing request: " << e.what();
+		std::cerr << "Error while processing request: " << e.what() << '\n';
 	}
 	catch (...)
 	{
-		std::cerr << "Unknown error while processing request.";
+		std::cerr << "Unknown error while processing request.\n";
 	}
 	return m_buffer.cdata();
 }
