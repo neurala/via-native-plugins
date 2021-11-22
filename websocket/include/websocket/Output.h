@@ -62,8 +62,6 @@ public:
 
 	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
 
-	Output() : ResultsOutput{}, m_client{"127.0.0.1", 43210} { }
-
 	/**
 	 * @brief Send a result JSON to the output server.
 	 *

@@ -29,7 +29,7 @@ using namespace neurala;
 
 struct ClientFixture
 {
-	plug::ws::Client client{"127.0.0.1", 54321};
+	plug::ws::Client client{};
 };
 
 BOOST_FIXTURE_TEST_SUITE(Client, ClientFixture)
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(Response)
 {
 	try
 	{
-		plug::ws::Client outputClient{"127.0.0.1", 43210};
+		plug::ws::Client outputClient{};
 		outputClient.sendResult(boost::json::object{{"status", "success"}});
 	}
 	catch (...)

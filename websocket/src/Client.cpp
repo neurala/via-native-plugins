@@ -17,6 +17,7 @@
  */
 
 #include "websocket/Client.h"
+#include "websocket/Environment.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -25,8 +26,7 @@
 
 namespace neurala::plug::ws
 {
-Client::Client(const std::string_view ipAddress, const std::uint16_t port)
- : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
+Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 {
 	boost::system::error_code ec;
 	tcp::endpoint endpoint{net::ip::make_address(ipAddress, ec), port};
@@ -38,6 +38,22 @@ Client::Client(const std::string_view ipAddress, const std::uint16_t port)
 	}
 	std::cout << "Client connected.\n";
 	m_stream.handshake(ipAddress.data(), "/");
+}
+
+Client::CameraInfo
+Client::cameraInfo()
+{
+	const net::const_buffer buffer{response("cameraInfo")};
+	using namespace boost::json;
+	const value jsonValue{
+	 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
+	const object& jsonObject{jsonValue.as_object()};
+	CameraInfo cameraInfo;
+	const string& id{jsonObject.at("id").as_string()};
+	cameraInfo.id = std::string{id.data(), id.size()};
+	const string& name{jsonObject.at("name").as_string()};
+	cameraInfo.name = std::string{name.data(), name.size()};
+	return cameraInfo;
 }
 
 ImageMetadata

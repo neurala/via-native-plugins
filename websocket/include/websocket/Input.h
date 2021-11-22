@@ -42,13 +42,9 @@ class PLUGIN_API Input final : public VideoSource
 public:
 	static void* create(PluginArguments& args, PluginErrorCallback& ec)
 	{
-		const std::string& connection{args.get<0, const CameraInfo>().connection()};
-		const std::size_t delimiterIndex = connection.find(':');
-
 		try
 		{
-			return new Input{std::string_view{connection.data(), delimiterIndex},
-			                 static_cast<std::uint16_t>(std::atoi(connection.data() + delimiterIndex + 1))};
+			return new Input;
 		}
 		catch (const std::system_error& se)
 		{
@@ -67,12 +63,6 @@ public:
 	}
 
 	static void destroy(void* p) { delete reinterpret_cast<Input*>(p); }
-
-	/**
-	 * @param ipAddress server's IP address
-	 * @param port server's listening port
-	 */
-	Input(const std::string_view ipAddress, const std::uint16_t port);
 
 	// Image dimension information
 	[[nodiscard]] ImageMetadata metadata() const noexcept final { return cachedMetadata(); }

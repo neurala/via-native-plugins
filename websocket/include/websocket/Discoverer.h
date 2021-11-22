@@ -19,6 +19,7 @@
 #ifndef NEURALA_PLUG_WS_DISCOVERER_H
 #define NEURALA_PLUG_WS_DISCOVERER_H
 
+#include <string>
 #include <vector>
 
 #include <neurala/plugin/PluginArguments.h>
@@ -26,6 +27,9 @@
 #include <neurala/plugin/PluginErrorCallback.h>
 #include <neurala/video/CameraDiscoverer.h>
 #include <neurala/video/CameraInfo.h>
+
+#include "websocket/Client.h"
+#include "websocket/Environment.h"
 
 namespace neurala::plug::ws
 {
@@ -35,14 +39,40 @@ namespace neurala::plug::ws
 class PLUGIN_API Discoverer final : public CameraDiscoverer
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback&) { return new Discoverer; }
+	static void* create(PluginArguments&, PluginErrorCallback& ec)
+	{
+		try
+		{
+			return new Discoverer;
+		}
+		catch (const std::system_error& se)
+		{
+			ec(se.code(), se.what());
+		}
+		catch (const std::exception& e)
+		{
+			ec(e.what());
+		}
+		catch (...)
+		{
+			ec("Could not create camera discoverer");
+		}
+		return nullptr;
+	}
 	static void destroy(void* p) { delete reinterpret_cast<Discoverer*>(p); }
 
 	/// Return information for the camera emulated by the plugin.
 	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept final
 	{
-		return {{"0", "Input", "websocket", "127.0.0.1:54321"}};
+		Client::CameraInfo cameraInfo{m_client.cameraInfo()};
+		return {{std::move(cameraInfo.id),
+		         "Input",
+		         std::move(cameraInfo.name),
+		         std::string{ipAddress} + ':' + std::to_string(port)}};
 	}
+
+private:
+	mutable Client m_client;
 };
 
 } // namespace neurala::plug::ws

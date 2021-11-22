@@ -23,10 +23,6 @@
 
 namespace neurala::plug::ws
 {
-Input::Input(const std::string_view ipAddress, const std::uint16_t port)
- : VideoSource{}, m_client{ipAddress, port}, m_metadata{}, m_frame{}
-{ }
-
 std::error_code
 Input::nextFrame() noexcept
 {

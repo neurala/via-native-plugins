@@ -16,28 +16,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <cstddef>
+#ifndef NEURALA_PLUG_WS_ENVIRONMENT_H
+#define NEURALA_PLUG_WS_ENVIRONMENT_H
 
-#include <boost/test/unit_test.hpp>
+#include <cstdlib>
 
-#include "websocket/Input.h"
-#include "websocket/Output.h"
-
-using namespace neurala;
-
-BOOST_AUTO_TEST_SUITE(FullSequence)
-
-BOOST_AUTO_TEST_CASE(MultipleFrames)
+namespace neurala::plug::ws
 {
-	plug::ws::Input input{};
-	plug::ws::Output output;
-	const ImageMetadata imageMetadata{input.metadata()};
-	for (std::size_t i{}; i < 10; ++i)
-	{
-		BOOST_TEST(input.nextFrame().value() == 0);
-		const ImageView imageView{input.frame()};
-		output("{ \"status\": \"success\" }", nullptr);
-	}
-}
+inline const std::string_view ipAddress{std::getenv("NEURALA_SERVER_IP_ADDRESS")};
+inline const std::uint16_t port{
+ static_cast<std::uint16_t>(std::atoi(std::getenv("NEURALA_SERVER_PORT")))};
 
-BOOST_AUTO_TEST_SUITE_END()
+} // namespace neurala::plug::ws
+
+#endif // NEURALA_PLUG_WS_ENVIRONMENT_H

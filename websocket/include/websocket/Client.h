@@ -42,11 +42,7 @@ using tcp = net::ip::tcp;
 class PLUGIN_API Client final
 {
 public:
-	/**
-	 * @param ipAddress the server's IP address
-	 * @param port the port on which the server is receiving connection
-	 */
-	Client(const std::string_view ipAddress, const std::uint16_t port);
+	Client();
 
 	Client(const Client&) = delete;
 	Client(Client&&) = default;
@@ -55,6 +51,13 @@ public:
 
 	/// Closes the WebSocket stream used to communicate with the server.
 	~Client() { m_stream.close(beast::websocket::close_code::normal); }
+
+	struct CameraInfo final
+	{
+		std::string id;
+		std::string name;
+	};
+	CameraInfo cameraInfo();
 
 	/**
 	 * @brief Retrieve metadata regarding frames fed by the server.
