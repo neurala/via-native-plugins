@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include <neurala/meta/enum.h>
+#include <neurala/video/VideoSourceStatus.h>
 
 namespace neurala::plug::ws
 {
@@ -78,7 +79,7 @@ Client::metadata()
 	return {width, height, colorSpace, layout, dataType};
 }
 
-bool
+std::error_code
 Client::frame(std::byte* const location, const std::size_t capacity)
 {
 	net::const_buffer buffer = response("frame");
@@ -87,7 +88,17 @@ Client::frame(std::byte* const location, const std::size_t capacity)
 	{
 		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), location);
 	}
-	return sufficientCapacity;
+	return make_error_code(sufficientCapacity ? VideoSourceStatus::success
+	                                          : VideoSourceStatus::overflow);
+}
+
+std::error_code
+Client::execute(const std::string_view action)
+{
+	boost::json::object body;
+	body["action"] = action.data();
+	response("execute", body);
+	return {};
 }
 
 net::const_buffer

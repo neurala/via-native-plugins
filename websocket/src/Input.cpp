@@ -26,23 +26,16 @@ namespace neurala::plug::ws
 std::error_code
 Input::nextFrame() noexcept
 {
-	try
-	{
-		std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
-		m_client.frame(frameBuffer.data(), frameBuffer.size());
-		m_frame = std::move(frameBuffer);
-		return make_error_code(VideoSourceStatus::success);
-	}
-	catch (const beast::system_error& se)
-	{
-		return std::make_error_code(static_cast<std::errc>(se.code().value()));
-	}
+	std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
+	const std::error_code ec{m_client.frame(frameBuffer.data(), frameBuffer.size())};
+	m_frame = std::move(frameBuffer);
+	return ec;
 }
 
 ImageView
 Input::frame(std::byte* data, std::size_t size) noexcept
 {
-	const ImageMetadata& md = cachedMetadata();
+	const ImageMetadata& md{cachedMetadata()};
 	if (size < md.sizeBytes())
 	{
 		std::cerr << "Insufficient capacity in B4B buffer.\n";
@@ -54,8 +47,14 @@ Input::frame(std::byte* data, std::size_t size) noexcept
 	return {md, data};
 }
 
+std::error_code
+Input::execute(const std::string& action) noexcept
+{
+	return m_client.execute(action);
+}
+
 const ImageMetadata&
-Input::cachedMetadata() const
+Input::cachedMetadata() const noexcept
 {
 	if (!m_metadata)
 	{

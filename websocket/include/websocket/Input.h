@@ -77,11 +77,11 @@ public:
 	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) noexcept final;
 
 	// Executes an arbitrary action on the video source
-	[[nodiscard]] std::error_code execute(const std::string&) noexcept final { return {}; }
+	[[nodiscard]] std::error_code execute(const std::string& action) noexcept final;
 
 private:
 	// Access the image metadata. Only retrieve over the network if necessary.
-	const ImageMetadata& cachedMetadata() const;
+	const ImageMetadata& cachedMetadata() const noexcept;
 
 	mutable Client m_client;
 	mutable std::optional<ImageMetadata> m_metadata;
