@@ -74,7 +74,9 @@ public:
 	 * @param capacity capacity of the buffer at the given address
 	 * @return true if the capacity was sufficient, false otherwise
 	 */
-	bool frame(std::byte* const location, const std::size_t capacity);
+	std::error_code frame(std::byte* const location, const std::size_t capacity);
+
+	std::error_code execute(const std::string_view action);
 
 	/**
 	 * @brief Send the result of processing a frame back to the server.
