@@ -51,7 +51,7 @@ Client::CameraInfo
 Client::cameraInfo() noexcept
 {
 	std::error_code ec;
-	const const_buffer buffer{response("cameraInfo", {}, ec)};
+	const ConstBuffer buffer{response("cameraInfo", {}, ec)};
 	if (ec)
 	{
 		return {};
@@ -80,7 +80,7 @@ ImageMetadata
 Client::metadata() noexcept
 {
 	std::error_code ec;
-	const const_buffer buffer{response("metadata", {}, ec)};
+	const ConstBuffer buffer{response("metadata", {}, ec)};
 	if (ec)
 	{
 		return {};
@@ -115,7 +115,7 @@ std::error_code
 Client::frame(std::byte* const location, const std::size_t capacity) noexcept
 {
 	std::error_code ec;
-	const const_buffer buffer{response("frame", {}, ec)};
+	const ConstBuffer buffer{response("frame", {}, ec)};
 	if (ec)
 	{
 		return ec;
@@ -144,7 +144,7 @@ Client::sendResult(boost::json::object&& result) noexcept
 	response("result", std::move(result), ec);
 }
 
-Client::const_buffer
+Client::ConstBuffer
 Client::response(const std::string_view requestType,
                  boost::json::object&& body,
                  std::error_code& ec) noexcept

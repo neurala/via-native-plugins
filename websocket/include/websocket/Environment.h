@@ -24,6 +24,7 @@
 namespace neurala::websocket
 {
 inline const std::string_view ipAddress{std::getenv("NEURALA_SERVER_IP_ADDRESS")};
+
 inline const std::uint16_t port{
  static_cast<std::uint16_t>(std::atoi(std::getenv("NEURALA_SERVER_PORT")))};
 

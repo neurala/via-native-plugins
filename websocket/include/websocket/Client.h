@@ -49,6 +49,13 @@ public:
 	/// Closes the WebSocket stream used to communicate with the server.
 	~Client() { m_stream.close(boost::beast::websocket::close_code::normal); }
 
+	/**
+	 * @brief Retrieve information about the simulated camera.
+	 *
+	 * While connection details and the assigned name of the video source are fixed before a connection
+	 * to the server can be established, information such as the ID and display name are left up for
+	 * customization.
+	 */
 	struct CameraInfo final
 	{
 		std::string id;
@@ -68,10 +75,13 @@ public:
 	 * @brief Retrieve the next frame and copy data to the specified location.
 	 * @param location address to which the frame data must be copied
 	 * @param capacity capacity of the buffer at the given address
-	 * @return true if the capacity was sufficient, false otherwise
 	 */
 	std::error_code frame(std::byte* const location, const std::size_t capacity) noexcept;
 
+	/**
+	 * @brief Executes an arbitrary action on the video source.
+	 * @param action label assigned to the commanded action
+	 */
 	std::error_code execute(const std::string_view action) noexcept;
 
 	/**
@@ -81,7 +91,7 @@ public:
 	void sendResult(boost::json::object&& result) noexcept;
 
 private:
-	using const_buffer = boost::asio::const_buffer;
+	using ConstBuffer = boost::asio::const_buffer;
 
 	/**
 	 * @brief Retrieve the response for a given request.
@@ -89,9 +99,9 @@ private:
 	 * Requests used the JSON format. The request type is set as the "request" element. If a body
 	 * object is specified, a "body" element is also included in the message.
 	 */
-	const_buffer response(const std::string_view requestType,
-	                      boost::json::object&& body,
-	                      std::error_code& ec) noexcept;
+	ConstBuffer response(const std::string_view requestType,
+	                     boost::json::object&& body,
+	                     std::error_code& ec) noexcept;
 
 	boost::asio::io_context m_ioContext;
 	boost::asio::ip::tcp::socket m_socket;
