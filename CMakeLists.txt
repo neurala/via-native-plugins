@@ -17,4 +17,4 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
 endforeach()
 
 add_subdirectory(stub)
-add_subdirectory(plugins)
+add_subdirectory(websocket)

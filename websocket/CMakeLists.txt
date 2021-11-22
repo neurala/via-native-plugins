@@ -11,6 +11,9 @@ else()
 	set(CONAN_BUILD_TYPE "Release")
 endif()
 
+# marks debug dlls
+set(CMAKE_DEBUG_POSTFIX _d)
+
 # Load Boost libraries through Conan.
 conan_cmake_run(
 	REQUIRES
