@@ -1,5 +1,5 @@
 CSC := csc
-CSCFLAGS := /langversion:latest /nologo /optimize
+CSCFLAGS := /langversion:preview /nologo /optimize
 
 BINARIES := Binaries
 SOURCES := Sources

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -15,13 +16,9 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 
 namespace Neurala.VIA {
-    public delegate Bitmap BitmapProducer();
-
     public class WebSocket {
         private readonly WebSocketServer Server;
-        private readonly BitmapProducer BitmapProducer;
-
-        private Bitmap CurrentFrame;
+        private readonly IEnumerator<Bitmap> BitmapProducer;
 
         private sealed class ConnectionHandler : WebSocketBehavior {
             private readonly WebSocket Server;
@@ -36,46 +33,57 @@ namespace Neurala.VIA {
                 var message = JObject.Parse(@event.Data);
 
                 lock (Server) {
-                    if (message.TryGetValue("metadata", out token)) {
-                        var currentFrame = Server.CurrentFrame = Server.BitmapProducer();
+                    if (message.TryGetValue("request", out token)) {
+                        var request = token.ToObject<string>();
 
-                        message = new JObject();
-                        message["width"] = currentFrame.Width;
-                        message["height"] = currentFrame.Height;
-                        message["layout"] = "interleaved";
-                        message["dataType"] = "uint8";
-                        message["colorSpace"] = currentFrame.PixelFormat switch
-                          { PixelFormat.Format24bppRgb => "BGR",
-                            PixelFormat.Format32bppArgb => "BGRA",
-                            _ => "unknown" };
+                        if (request == "metadata") {
+                            Server.BitmapProducer.MoveNext();
 
-                        var json = message.ToString();
+                            var currentFrame = Server.BitmapProducer.Current;
 
-                        Send(json);
-                    } else if (message.TryGetValue("frame", out token)) {
-                        var currentFrame = Server.CurrentFrame;
-                        var roi = new Rectangle(0, 0, currentFrame.Width, currentFrame.Height);
-                        var data = currentFrame.LockBits(new Rectangle(0, 0, currentFrame.Width, currentFrame.Height),
-                                                         ImageLockMode.ReadOnly,
-                                                         currentFrame.PixelFormat);
+                            message = new JObject();
+                            message["width"] = currentFrame.Width;
+                            message["height"] = currentFrame.Height;
+                            message["layout"] = "interleaved";
+                            message["dataType"] = "uint8";
+                            message["colorSpace"] = currentFrame.PixelFormat switch
+                              { PixelFormat.Format24bppRgb => "BGR",
+                                PixelFormat.Format32bppArgb => "BGRA",
+                                _ => "unknown" };
 
-                        try {
-                            var count = Math.Abs(data.Stride) * data.Height;
-                            var bytes = new byte[count];
+                            var json = message.ToString();
 
-                            Marshal.Copy(data.Scan0, bytes, 0, count);
-                            Send(bytes);
-                        } finally {
-                            currentFrame.UnlockBits(data);
+                            Send(json);
+                        } else if (request == "frame") {
+                            var currentFrame = Server.BitmapProducer.Current;
+                            var data = currentFrame.LockBits(new Rectangle(0, 0, currentFrame.Width, currentFrame.Height),
+                                                             ImageLockMode.ReadOnly,
+                                                             currentFrame.PixelFormat);
+
+                            try {
+                                var count = Math.Abs(data.Stride) * data.Height;
+                                var bytes = new byte[count];
+
+                                Marshal.Copy(data.Scan0, bytes, 0, count);
+                                Send(bytes);
+                            } finally {
+                                currentFrame.UnlockBits(data);
+                            }
+                        } else if (request == "cameraInfo") {
+                            Send("{\"id\":\"whatever\",\"name\":\"whatever\"}");
+                        } else if (request == "execute") {
+                            Send("{}");
+                        } else if (request == "result") {
+                            Send("{}");
                         }
                     }
                 }
             }
         }
 
-        public WebSocket(string prefix, int port, BitmapProducer bitmapProducer) {
+        public WebSocket(int port, IEnumerable<Bitmap> bitmapProducer) {
             Server = new WebSocketServer(port);
-            BitmapProducer = bitmapProducer;
+            BitmapProducer = bitmapProducer.GetEnumerator();
             Server.AddWebSocketService("/", MakeConnectionHandler);
         }
 
