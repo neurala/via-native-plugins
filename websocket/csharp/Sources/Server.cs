@@ -15,9 +15,15 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 
 namespace Neurala.VIA {
+    public interface IRequestHandler {
+        void HandleResults(string results);
+        void ExecuteAction(string action);
+    }
+
     public class WebSocket {
         private readonly HttpServer Server;
         private readonly IEnumerator<Bitmap> BitmapProducer;
+        private readonly IRequestHandler RequestHandler;
 
         private sealed class ConnectionHandler : WebSocketBehavior {
             private readonly WebSocket Server;
@@ -73,22 +79,29 @@ namespace Neurala.VIA {
                                 currentFrame.UnlockBits(data);
                                 Server.BitmapProducer.MoveNext();
                             }
-                        } else if (request == "cameraInfo") {
-                            Console.WriteLine("Got camera information request.");
-                            Send("{\"id\":\"whatever\",\"name\":\"whatever\"}");
                         } else if (request == "execute") {
+                            var body = GetBodyOrEmpty(message);
                             Console.WriteLine("Got execute request.");
+                            Server.RequestHandler.ExecuteAction(body);
                             Send("{}");
                         } else if (request == "result") {
+                            var body = GetBodyOrEmpty(message);
                             Console.WriteLine("Got result request.");
+                            Server.RequestHandler.HandleResults(body);
                             Send("{}");
                         }
                     }
                 }
             }
+
+            private string GetBodyOrEmpty(JObject @object) {
+                JToken body;
+
+                return @object.TryGetValue("body", out body) ? body.ToString() : "{}";
+            }
         }
 
-        public WebSocket(int port, IEnumerable<Bitmap> bitmapProducer) {
+        public WebSocket(int port, IEnumerable<Bitmap> bitmapProducer, IRequestHandler requestHandler) {
             Server = new HttpServer(port);
             Server.AddWebSocketService("/", MakeConnectionHandler);
             Server.AddWebSocketService("/via", MakeConnectionHandler);
@@ -96,6 +109,8 @@ namespace Neurala.VIA {
 
             BitmapProducer = bitmapProducer.GetEnumerator();
             BitmapProducer.MoveNext();
+
+            RequestHandler = requestHandler;
         }
 
         public void Start() => Server.Start();
