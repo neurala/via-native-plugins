@@ -23,6 +23,7 @@ public static class Program {
         Console.CancelKeyPress += (_, _) => Canceler.Cancel();
 
         Canceler.Token.WaitHandle.WaitOne();
+        Console.WriteLine("Stopping server.");
         Server.Stop();
     }
 
@@ -30,8 +31,10 @@ public static class Program {
         while (true) {
             var files = Directory.EnumerateFiles(directory);
 
-            foreach (var file in files)
+            foreach (var file in files) {
+                Console.WriteLine($"Trying to load image file \"{file}\".");
                 yield return new Bitmap(file);
+            }
         }
     }
 }

@@ -36,6 +36,7 @@ namespace Neurala.VIA {
                         var request = token.ToObject<string>();
 
                         if (request == "metadata") {
+                            Console.WriteLine("Got metadata request.");
                             Server.BitmapProducer.MoveNext();
 
                             var currentFrame = Server.BitmapProducer.Current;
@@ -52,8 +53,11 @@ namespace Neurala.VIA {
 
                             var json = message.ToString();
 
+                            Console.WriteLine(json);
                             Send(json);
                         } else if (request == "frame") {
+                            Console.WriteLine("Got frame request.");
+
                             var currentFrame = Server.BitmapProducer.Current;
                             var data = currentFrame.LockBits(new Rectangle(0, 0, currentFrame.Width, currentFrame.Height),
                                                              ImageLockMode.ReadOnly,
@@ -64,15 +68,19 @@ namespace Neurala.VIA {
                                 var bytes = new byte[count];
 
                                 Marshal.Copy(data.Scan0, bytes, 0, count);
+                                Console.WriteLine($"Sending {count} bytes of image data.");
                                 Send(bytes);
                             } finally {
                                 currentFrame.UnlockBits(data);
                             }
                         } else if (request == "cameraInfo") {
+                            Console.WriteLine("Got camera information request.");
                             Send("{\"id\":\"whatever\",\"name\":\"whatever\"}");
                         } else if (request == "execute") {
+                            Console.WriteLine("Got execute request.");
                             Send("{}");
                         } else if (request == "result") {
+                            Console.WriteLine("Got result request.");
                             Send("{}");
                         }
                     }
