@@ -28,7 +28,6 @@
 #include <neurala/video/CameraDiscoverer.h>
 #include <neurala/video/CameraInfo.h>
 
-#include "websocket/Client.h"
 #include "websocket/Environment.h"
 
 namespace neurala::websocket
@@ -64,15 +63,11 @@ public:
 	/// Return information for the camera emulated by the plugin.
 	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept final
 	{
-		Client::CameraInfo cameraInfo{m_client.cameraInfo()};
-		return {{std::move(cameraInfo.id),
+		return {{"websocket_plugin",
 		         "websocketInput",
-		         std::move(cameraInfo.name),
+		         "WebSocket Plugin",
 		         std::string{ipAddress} + ':' + std::to_string(port)}};
 	}
-
-private:
-	mutable Client m_client;
 };
 
 } // namespace neurala::websocket

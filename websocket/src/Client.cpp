@@ -47,35 +47,6 @@ Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 	}
 }
 
-Client::CameraInfo
-Client::cameraInfo() noexcept
-{
-	std::error_code ec;
-	const ConstBuffer buffer{response("cameraInfo", {}, ec)};
-	if (ec)
-	{
-		return {};
-	}
-	try
-	{
-		using namespace boost::json;
-		const value jsonValue{
-		 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
-		const object& jsonObject{jsonValue.as_object()};
-		CameraInfo cameraInfo;
-		const string& id{jsonObject.at("id").as_string()};
-		cameraInfo.id = std::string{id.data(), id.size()};
-		const string& name{jsonObject.at("name").as_string()};
-		cameraInfo.name = std::string{name.data(), name.size()};
-		return cameraInfo;
-	}
-	catch (...)
-	{
-		std::cerr << "Error while parsing 'cameraInfo' response\n";
-	}
-	return {};
-}
-
 ImageMetadata
 Client::metadata() noexcept
 {

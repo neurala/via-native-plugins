@@ -50,19 +50,6 @@ public:
 	~Client() { m_stream.close(boost::beast::websocket::close_code::normal); }
 
 	/**
-	 * @brief Retrieve information about the simulated camera.
-	 *
-	 * While connection details and the assigned name of the video source are fixed before a connection
-	 * to the server can be established, information such as the ID and display name are left up for
-	 * customization.
-	 */
-	struct CameraInfo final
-	{
-		std::string id;
-		std::string name;
-	} cameraInfo() noexcept;
-
-	/**
 	 * @brief Retrieve metadata regarding frames fed by the server.
 	 *
 	 * The client parses a sequence of five attributes (width, height, color space, layout, data type)
