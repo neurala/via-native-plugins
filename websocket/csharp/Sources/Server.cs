@@ -37,7 +37,6 @@ namespace Neurala.VIA {
 
                         if (request == "metadata") {
                             Console.WriteLine("Got metadata request.");
-                            Server.BitmapProducer.MoveNext();
 
                             var currentFrame = Server.BitmapProducer.Current;
 
@@ -72,6 +71,7 @@ namespace Neurala.VIA {
                                 Send(bytes);
                             } finally {
                                 currentFrame.UnlockBits(data);
+                                Server.BitmapProducer.MoveNext();
                             }
                         } else if (request == "cameraInfo") {
                             Console.WriteLine("Got camera information request.");
@@ -95,6 +95,7 @@ namespace Neurala.VIA {
             Server.Log.Level = LogLevel.Debug;
 
             BitmapProducer = bitmapProducer.GetEnumerator();
+            BitmapProducer.MoveNext();
         }
 
         public void Start() => Server.Start();
