@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Net;
-using System.Net.WebSockets;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +16,7 @@ using WebSocketSharp.Server;
 
 namespace Neurala.VIA {
     public class WebSocket {
-        private readonly WebSocketServer Server;
+        private readonly HttpServer Server;
         private readonly IEnumerator<Bitmap> BitmapProducer;
 
         private sealed class ConnectionHandler : WebSocketBehavior {
@@ -82,7 +81,7 @@ namespace Neurala.VIA {
         }
 
         public WebSocket(int port, IEnumerable<Bitmap> bitmapProducer) {
-            Server = new WebSocketServer(port);
+            Server = new HttpServer(port);
             Server.AddWebSocketService("/via", MakeConnectionHandler);
             Server.Log.Level = LogLevel.Debug;
 
