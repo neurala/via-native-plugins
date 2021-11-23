@@ -66,7 +66,7 @@ public:
 	{
 		Client::CameraInfo cameraInfo{m_client.cameraInfo()};
 		return {{std::move(cameraInfo.id),
-		         "WebsocketInput",
+		         "websocketInput",
 		         std::move(cameraInfo.name),
 		         std::string{ipAddress} + ':' + std::to_string(port)}};
 	}
