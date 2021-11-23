@@ -82,6 +82,7 @@ namespace Neurala.VIA {
 
         public WebSocket(int port, IEnumerable<Bitmap> bitmapProducer) {
             Server = new HttpServer(port);
+            Server.AddWebSocketService("/", MakeConnectionHandler);
             Server.AddWebSocketService("/via", MakeConnectionHandler);
             Server.Log.Level = LogLevel.Debug;
 
