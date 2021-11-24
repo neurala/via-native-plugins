@@ -1,0 +1,12 @@
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/bin/Debug/net6.0/VIAWS.deps.json
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/bin/Debug/net6.0/VIAWS.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/bin/Debug/net6.0/ref/VIAWS.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/bin/Debug/net6.0/VIAWS.pdb
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net6.0/VIAWS.csproj.AssemblyReference.cache
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net6.0/VIAWS.GeneratedMSBuildEditorConfig.editorconfig
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net6.0/VIAWS.AssemblyInfoInputs.cache
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net6.0/VIAWS.AssemblyInfo.cs
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net6.0/VIAWS.csproj.CoreCompileInputs.cache
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net6.0/VIAWS.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net6.0/ref/VIAWS.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net6.0/VIAWS.pdb
