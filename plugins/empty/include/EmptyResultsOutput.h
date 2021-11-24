@@ -16,60 +16,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NEURALA_PLUG_WS_DISCOVERER_H
-#define NEURALA_PLUG_WS_DISCOVERER_H
-
-#include <string>
-#include <vector>
+#ifndef NEURALA_EMPTY_RESULTS_OUTPUT_H
+#define NEURALA_EMPTY_RESULTS_OUTPUT_H
 
 #include <neurala/plugin/PluginArguments.h>
-#include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginErrorCallback.h>
-#include <neurala/video/CameraDiscoverer.h>
-#include <neurala/video/CameraInfo.h>
+#include <neurala/utils/ResultsOutput.h>
 
-#include "websocket/Environment.h"
-
-namespace neurala::websocket
+namespace neurala::plug::empty
 {
-/**
- * @brief Implementation of the CameraDiscoverer interface that provides connection information.
- */
-class PLUGIN_API Discoverer final : public CameraDiscoverer
+class ResultsOutput final : public neurala::ResultsOutput
 {
 public:
-	static void* create(PluginArguments&, PluginErrorCallback& ec)
-	{
-		try
-		{
-			return new Discoverer;
-		}
-		catch (const std::system_error& se)
-		{
-			ec(se.code(), se.what());
-		}
-		catch (const std::exception& e)
-		{
-			ec(e.what());
-		}
-		catch (...)
-		{
-			ec("Could not create camera discoverer");
-		}
-		return nullptr;
-	}
-	static void destroy(void* p) { delete reinterpret_cast<Discoverer*>(p); }
+	static void* create(PluginArguments&, PluginErrorCallback&) { return new ResultsOutput; }
+	static void destroy(void* p) { delete reinterpret_cast<ResultsOutput*>(p); }
 
-	/// Return information for the camera emulated by the plugin.
-	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept final
-	{
-		return {{"websocket_plugin",
-		         "websocketInput",
-		         "WebSocket Plugin",
-		         std::string{ipAddress} + ':' + std::to_string(port)}};
-	}
+	/**
+	 * @brief Function call operator for invoking the output action.
+	 *
+	 * @param metadata A JSON document containing information about the result.
+	 * @param image A pointer to an image view, which may be null if no frame
+	 *              is available or could be retrieved.
+	 */
+	void operator()(const std::string&, const ImageView*) noexcept final { }
 };
 
-} // namespace neurala::websocket
+} // namespace neurala::plug::empty
 
-#endif // NEURALA_STREAM_PLUGIN_DISCOVERER_H
+#endif // NEURALA_EMPTY_RESULTS_OUTPUT_H

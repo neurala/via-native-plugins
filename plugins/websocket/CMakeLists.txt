@@ -11,9 +11,6 @@ else()
 	set(CONAN_BUILD_TYPE "Release")
 endif()
 
-# marks debug dlls
-set(CMAKE_DEBUG_POSTFIX _d)
-
 # Load Boost libraries through Conan.
 conan_cmake_run(
 	REQUIRES
@@ -38,3 +35,6 @@ target_compile_definitions(websocket PRIVATE NEURALA_EXPORT_PLUGIN)
 target_include_directories(websocket PUBLIC include)
 
 target_link_libraries(websocket PUBLIC stub CONAN_PKG::boost)
+
+add_subdirectory(servers)
+add_subdirectory(test)

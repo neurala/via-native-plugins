@@ -26,7 +26,7 @@
 #include <neurala/meta/enum.h>
 #include <neurala/video/VideoSourceStatus.h>
 
-namespace neurala::websocket
+namespace neurala::plug::ws
 {
 Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 {
@@ -34,16 +34,16 @@ Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 	{
 		boost::asio::ip::tcp::endpoint endpoint{boost::asio::ip::make_address(ipAddress), port};
 		m_socket.connect(endpoint);
-		std::clog << "Websocket client connected.\n";
+		std::clog << "WebSocket client connected.\n";
 		m_stream.handshake(ipAddress.data(), "/");
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << "Error while initializing websocket connection: " << e.what() << '\n';
+		std::cerr << "Error while initializing WebSocket connection: " << e.what() << '\n';
 	}
 	catch (...)
 	{
-		std::cerr << "Unknown error while initializing websocket connection.\n";
+		std::cerr << "Unknown error while initializing WebSocket connection.\n";
 	}
 }
 
@@ -147,4 +147,4 @@ Client::response(const std::string_view requestType,
 	return m_buffer.cdata();
 }
 
-} // namespace neurala::websocket
+} // namespace neurala::plug::ws

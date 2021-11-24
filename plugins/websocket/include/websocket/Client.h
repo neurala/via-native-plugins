@@ -31,10 +31,10 @@
 #include <neurala/image/ImageMetadata.h>
 #include <neurala/plugin/PluginBindings.h>
 
-namespace neurala::websocket
+namespace neurala::plug::ws
 {
 /**
- * @brief Websocket client that receives input frames from a specified server.
+ * @brief WebSocket client that receives input frames from a specified server.
  */
 class PLUGIN_API Client final
 {
@@ -96,6 +96,6 @@ private:
 	boost::beast::flat_buffer m_buffer;
 };
 
-} // namespace neurala::websocket
+} // namespace neurala::plug::ws
 
 #endif // NEURALA_PLUG_WS_CLIENT_H

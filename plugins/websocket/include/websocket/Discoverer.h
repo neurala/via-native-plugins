@@ -16,34 +16,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NEURALA_PLUG_WS_OUTPUT_H
-#define NEURALA_PLUG_WS_OUTPUT_H
+#ifndef NEURALA_PLUG_WS_DISCOVERER_H
+#define NEURALA_PLUG_WS_DISCOVERER_H
 
 #include <string>
-#include <utility>
+#include <vector>
 
-#include <boost/json.hpp>
-#include <neurala/image/views/ImageView.h>
 #include <neurala/plugin/PluginArguments.h>
 #include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginErrorCallback.h>
-#include <neurala/utils/ResultsOutput.h>
+#include <neurala/video/CameraDiscoverer.h>
+#include <neurala/video/CameraInfo.h>
 
-#include "websocket/Client.h"
+#include "websocket/Environment.h"
 
-namespace neurala::websocket
+namespace neurala::plug::ws
 {
 /**
- * @brief Implementation of the ResultsOutput interface that handles resulting data.
+ * @brief Implementation of the CameraDiscoverer interface that provides connection information.
  */
-class PLUGIN_API Output final : public ResultsOutput
+class PLUGIN_API Discoverer final : public CameraDiscoverer
 {
 public:
 	static void* create(PluginArguments&, PluginErrorCallback& ec)
 	{
 		try
 		{
-			return new Output;
+			return new Discoverer;
 		}
 		catch (const std::system_error& se)
 		{
@@ -55,31 +54,22 @@ public:
 		}
 		catch (...)
 		{
-			ec("Could not create output interface");
+			ec("Could not create camera discoverer");
 		}
-
 		return nullptr;
 	}
+	static void destroy(void* p) { delete reinterpret_cast<Discoverer*>(p); }
 
-	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
-
-	/**
-	 * @brief Send a result JSON to the output server.
-	 *
-	 * @param metadata A JSON document containing information about the result.
-	 * @param image A pointer to an image view, which may be null if no frame
-	 *              is available or could be retrieved.
-	 */
-	void operator()(const std::string& metadata, const ImageView*) noexcept final
+	/// Return information for the camera emulated by the plugin.
+	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept final
 	{
-		using namespace boost::json;
-		m_client.sendResult(std::move(parse(string_view{metadata.data(), metadata.size()}).as_object()));
+		return {{"websocket_plugin",
+		         "websocketInput",
+		         "WebSocket Plugin",
+		         std::string{ipAddress} + ':' + std::to_string(port)}};
 	}
-
-private:
-	Client m_client;
 };
 
-} // namespace neurala::websocket
+} // namespace neurala::plug::ws
 
-#endif // NEURALA_PLUG_WS_OUTPUT_H
+#endif // NEURALA_STREAM_PLUGIN_DISCOVERER_H

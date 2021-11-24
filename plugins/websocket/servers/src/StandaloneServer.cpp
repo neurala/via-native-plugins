@@ -16,51 +16,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "websocket/Input.h"
-#include "neurala/video/VideoSourceStatus.h"
+#include <chrono>
+#include <thread>
 
-#include <iostream>
+#include "websocket/IOServer.h"
 
-namespace neurala::websocket
+int
+main()
 {
-std::error_code
-Input::nextFrame() noexcept
-{
-	std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
-	const std::error_code ec{m_client.frame(frameBuffer.data(), frameBuffer.size())};
-	m_frame = std::move(frameBuffer);
-	return ec;
-}
+	neurala::plug::ws::IOServer ioServer{"127.0.0.1", 54321};
 
-ImageView
-Input::frame(std::byte* data, std::size_t size) noexcept
-{
-	const ImageMetadata& md{cachedMetadata()};
-	if (size < md.sizeBytes())
+	for (;;)
 	{
-		std::cerr << "Insufficient capacity in B4B buffer.\n";
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
-	else
-	{
-		std::copy(cbegin(m_frame), cend(m_frame), data);
-	}
-	return {md, data};
 }
-
-std::error_code
-Input::execute(const std::string& action) noexcept
-{
-	return m_client.execute(action);
-}
-
-const ImageMetadata&
-Input::cachedMetadata() const noexcept
-{
-	if (!m_metadata)
-	{
-		m_metadata = m_client.metadata();
-	}
-	return *m_metadata;
-}
-
-} // namespace neurala::websocket

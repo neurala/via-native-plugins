@@ -32,7 +32,7 @@
 
 #include "websocket/Client.h"
 
-namespace neurala::websocket
+namespace neurala::plug::ws
 {
 /**
  * @brief Implementation of the VideoSource interface that retrieves frame data.
@@ -88,6 +88,6 @@ private:
 	std::vector<std::byte> m_frame;
 };
 
-} // namespace neurala::websocket
+} // namespace neurala::plug::ws
 
 #endif // NEURALA_PLUG_WS_INPUT_H

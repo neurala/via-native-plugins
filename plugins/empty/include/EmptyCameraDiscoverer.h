@@ -16,36 +16,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <system_error>
+#ifndef NEURALA_EMPTY_CAMERA_DISCOVERER_H
+#define NEURALA_EMPTY_CAMERA_DISCOVERER_H
 
+#include <vector>
+
+#include <neurala/plugin/PluginArguments.h>
 #include <neurala/plugin/PluginBindings.h>
-#include <neurala/plugin/PluginManager.h>
-#include <neurala/plugin/PluginStatus.h>
-#include <neurala/utils/Version.h>
+#include <neurala/plugin/PluginErrorCallback.h>
 
-#include "websocket/Discoverer.h"
-#include "websocket/Input.h"
-#include "websocket/Output.h"
+#include <neurala/video/CameraDiscoverer.h>
+#include <neurala/video/CameraInfo.h>
 
-extern "C" PLUGIN_API NeuralaPluginExitFunction
-initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
+namespace neurala::plug::empty
 {
-	using namespace neurala;
-	auto& pm = *dynamic_cast<PluginRegistrar*>(pluginManager);
-	*status = pm.registerPlugin<websocket::Discoverer>("websocketDiscoverer", Version(1, 0));
-	if (*status != PluginStatus::success)
-	{
-		return nullptr;
-	}
-	*status = pm.registerPlugin<websocket::Input>("websocketInput", Version(1, 0));
-	if (*status != PluginStatus::success)
-	{
-		return nullptr;
-	}
-	*status = pm.registerPlugin<websocket::Output>("websocketOutput", Version(1, 0));
-	if (*status != PluginStatus::success)
-	{
-		return nullptr;
-	}
-	return [] { return 0; };
-}
+class CameraDiscoverer final : public neurala::CameraDiscoverer
+{
+public:
+	static void* create(PluginArguments&, PluginErrorCallback&) { return new CameraDiscoverer; }
+	static void destroy(void* p) { delete reinterpret_cast<CameraDiscoverer*>(p); }
+
+	/// Return information for the camera emulated by the plugin.
+	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept final { return {}; }
+};
+
+} // namespace neurala::plug::empty
+
+#endif // NEURALA_EMPTY_CAMERA_DISCOVERER_H
