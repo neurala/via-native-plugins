@@ -1,0 +1,17 @@
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/obj/Debug/net4.6.1/Test.csproj.AssemblyReference.cache
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/obj/Debug/net4.6.1/Test.csproj.SuggestedBindingRedirects.cache
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/obj/Debug/net4.6.1/Test.GeneratedMSBuildEditorConfig.editorconfig
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/obj/Debug/net4.6.1/Test.AssemblyInfoInputs.cache
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/obj/Debug/net4.6.1/Test.AssemblyInfo.cs
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/obj/Debug/net4.6.1/Test.csproj.CoreCompileInputs.cache
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/bin/Debug/net4.6.1/Test.exe.config
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/bin/Debug/net4.6.1/Test.exe
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/bin/Debug/net4.6.1/Test.pdb
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/bin/Debug/net4.6.1/Newtonsoft.Json.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/bin/Debug/net4.6.1/System.Drawing.Common.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/bin/Debug/net4.6.1/websocket-sharp.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/bin/Debug/net4.6.1/VIAWS.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/bin/Debug/net4.6.1/VIAWS.pdb
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/obj/Debug/net4.6.1/Test.csproj.CopyComplete
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/obj/Debug/net4.6.1/Test.exe
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/Test/obj/Debug/net4.6.1/Test.pdb
