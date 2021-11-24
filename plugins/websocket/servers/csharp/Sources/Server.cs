@@ -94,6 +94,14 @@ namespace Neurala.VIA {
                 }
             }
 
+            protected sealed override void OnOpen() {
+                Console.WriteLine("Connection opened.");
+            }
+
+            protected sealed override void OnClose(CloseEventArgs @event) {
+                Console.WriteLine("Connection closed.");
+            }
+
             private string GetBodyOrEmpty(JObject @object) {
                 JToken body;
 
