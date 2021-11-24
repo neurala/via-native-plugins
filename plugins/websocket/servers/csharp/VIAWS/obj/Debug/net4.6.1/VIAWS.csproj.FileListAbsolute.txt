@@ -1,0 +1,13 @@
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net4.6.1/VIAWS.csproj.AssemblyReference.cache
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net4.6.1/VIAWS.GeneratedMSBuildEditorConfig.editorconfig
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net4.6.1/VIAWS.AssemblyInfoInputs.cache
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net4.6.1/VIAWS.AssemblyInfo.cs
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net4.6.1/VIAWS.csproj.CoreCompileInputs.cache
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/bin/Debug/net4.6.1/VIAWS.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/bin/Debug/net4.6.1/VIAWS.pdb
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/bin/Debug/net4.6.1/Newtonsoft.Json.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/bin/Debug/net4.6.1/System.Drawing.Common.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/bin/Debug/net4.6.1/websocket-sharp.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net4.6.1/VIAWS.csproj.CopyComplete
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net4.6.1/VIAWS.dll
+/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/obj/Debug/net4.6.1/VIAWS.pdb

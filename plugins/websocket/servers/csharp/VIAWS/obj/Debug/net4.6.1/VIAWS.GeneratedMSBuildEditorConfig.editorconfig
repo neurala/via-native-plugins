@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = VIAWS
+build_property.ProjectDir = /home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/

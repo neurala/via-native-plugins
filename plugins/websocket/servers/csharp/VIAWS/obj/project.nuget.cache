@@ -1,24 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "vLlA+ew3jULkiadvqT9FCtRz6sv1sQRi2Ia1oukMEtDQvZ5azc1kyT3aFRTfRoCluZVM/d4XlyZF2N6VZ//3hg==",
+  "dgSpecHash": "ZdFuNHZT6qaErZRd9L5/Dw1Wc0EtsCCGuPl6EZhcl9doqptQjb7P3uWvT0HQCnjMYlE7mcuUjHcpMMK3U5EWmA==",
   "success": true,
   "projectFilePath": "/home/dlam/GitHub/via-native-plugins/plugins/websocket/servers/csharp/VIAWS/VIAWS.csproj",
   "expectedPackageFiles": [
-    "/home/dlam/.nuget/packages/microsoft.win32.systemevents/6.0.0/microsoft.win32.systemevents.6.0.0.nupkg.sha512",
+    "/home/dlam/.nuget/packages/microsoft.netframework.referenceassemblies/1.0.2/microsoft.netframework.referenceassemblies.1.0.2.nupkg.sha512",
+    "/home/dlam/.nuget/packages/microsoft.netframework.referenceassemblies.net461/1.0.2/microsoft.netframework.referenceassemblies.net461.1.0.2.nupkg.sha512",
     "/home/dlam/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512",
     "/home/dlam/.nuget/packages/system.drawing.common/6.0.0/system.drawing.common.6.0.0.nupkg.sha512",
     "/home/dlam/.nuget/packages/websocketsharp/1.0.3-rc11/websocketsharp.1.0.3-rc11.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'WebSocketSharp 1.0.3-rc11' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
-      "libraryId": "WebSocketSharp",
-      "targetGraphs": [
-        "net6.0"
-      ]
-    }
-  ]
+  "logs": []
 }
