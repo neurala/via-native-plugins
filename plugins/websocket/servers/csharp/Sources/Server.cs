@@ -80,12 +80,12 @@ namespace Neurala.VIA {
                                 Server.BitmapProducer.MoveNext();
                             }
                         } else if (request == "execute") {
-                            var body = GetBodyOrEmpty(message);
+                            var action = message["body"]["action"].ToString();
                             Console.WriteLine("Got execute request.");
-                            Server.RequestHandler.ExecuteAction(body);
+                            Server.RequestHandler.ExecuteAction(action);
                             Send("{}");
                         } else if (request == "result") {
-                            var body = GetBodyOrEmpty(message);
+                            var body = message["body"].ToString();
                             Console.WriteLine("Got result request.");
                             Server.RequestHandler.HandleResults(body);
                             Send("{}");
@@ -100,12 +100,6 @@ namespace Neurala.VIA {
 
             protected sealed override void OnClose(CloseEventArgs @event) {
                 Console.WriteLine("Connection closed.");
-            }
-
-            private string GetBodyOrEmpty(JObject @object) {
-                JToken body;
-
-                return @object.TryGetValue("body", out body) ? body.ToString() : "{}";
             }
         }
 
