@@ -34,6 +34,10 @@ Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 	{
 		boost::asio::ip::tcp::endpoint endpoint{boost::asio::ip::make_address(ipAddress), port};
 		m_socket.connect(endpoint);
+		// Set buffer limit to just above 4k images
+		const auto previousMax = m_stream.read_message_max();
+		m_stream.read_message_max(280000000);
+		std::clog << "Changed max message: " << previousMax << " -> " << m_stream.read_message_max() << '\n';
 		m_stream.handshake(ipAddress.data(), "/");
 		std::clog << "WebSocket client connected.\n";
 	}
