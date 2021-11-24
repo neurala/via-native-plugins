@@ -47,7 +47,11 @@ public:
 	Client& operator=(Client&&) = delete; // the stream is not move-assignable
 
 	/// Closes the WebSocket stream used to communicate with the server.
-	~Client() { m_stream.close(boost::beast::websocket::close_code::normal); }
+	~Client()
+	{
+		boost::system::error_code ec;
+		m_stream.close(boost::beast::websocket::close_code::normal, ec);
+	}
 
 	/**
 	 * @brief Retrieve metadata regarding frames fed by the server.
