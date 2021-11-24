@@ -4,9 +4,14 @@
 
 This is a minimal .NET interface for VIA native plugins, such that plugins can be implemented in a .NET language environment such as C#, F#, or Visual Basic. This library provides a WebSocket server that communicates with the native WebSocket plugin for providing image frames to it and retrieving results from it.
 
-## Building (TEMPORARY)
+## Building
 
-On platforms where GNU Make is available, `make` will suffice. CMake is supported, but it requires Visual Studio for building C# projects. Otherwise, you can simply add `Sources/Server.cs` directly into your project and reference `Binaries/Newtonsoft.Json.dll` and `Binaries/websocket-sharp.dll` (or your own compatible versions thereof), or directly use the provided pre-built library `Binaries/Neurala.VIA.WebSocket.dll`.
+For convenience, the plugin and an executable for testing are provided in pre-built form. The library `Binaries/Neurala.VIA.WebSocket.dll` can be directly referenced in any existing project. You can also simply add `Sources/Server.cs` directly into your project and reference `Binaries/Newtonsoft.Json.dll` and `Binaries/websocket-sharp.dll` (or your own compatible versions thereof). Otherwise, the plugin can be built in a couple of ways.
+
+- `dotnet`
+  - `dotnet build VIAWS`
+- GNU Make + `csc`
+  - `make`
 
 ## Synopsis
 
