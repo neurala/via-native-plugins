@@ -34,8 +34,8 @@ Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 	{
 		boost::asio::ip::tcp::endpoint endpoint{boost::asio::ip::make_address(ipAddress), port};
 		m_socket.connect(endpoint);
-		std::clog << "WebSocket client connected.\n";
 		m_stream.handshake(ipAddress.data(), "/");
+		std::clog << "WebSocket client connected.\n";
 	}
 	catch (const std::exception& e)
 	{
@@ -91,13 +91,12 @@ Client::frame(std::byte* const location, const std::size_t capacity) noexcept
 	{
 		return ec;
 	}
-	const bool sufficientCapacity{buffer.size() <= capacity};
-	if (sufficientCapacity)
+	if (buffer.size() > capacity)
 	{
-		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), location);
-		return make_error_code(VideoSourceStatus::success);
+		return make_error_code(VideoSourceStatus::overflow);
 	}
-	return make_error_code(VideoSourceStatus::overflow);
+	std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), location);
+	return make_error_code(VideoSourceStatus::success);
 }
 
 std::error_code
@@ -131,10 +130,10 @@ Client::response(const std::string_view requestType,
 		m_stream.write(boost::asio::buffer(serialize(request)));
 		m_stream.read(m_buffer);
 	}
-	catch (const boost::beast::system_error& bse)
+	catch (const boost::beast::system_error& se)
 	{
-		ec = std::make_error_code(static_cast<std::errc>(bse.code().value()));
-		std::cerr << "Error while processing request: " << bse.what() << '\n';
+		ec = std::make_error_code(static_cast<std::errc>(se.code().value()));
+		std::cerr << "Error while processing request: " << se.what() << '\n';
 	}
 	catch (const std::exception& e)
 	{
