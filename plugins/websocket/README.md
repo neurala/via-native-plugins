@@ -41,45 +41,49 @@ This plugin will be built with the rest in this repository. See the root-level `
 
 ```json
 {
-  "request": "metadata"
+  "request": "frame"
 }
 ```
 
 ### Frame Response (Plugin ← Server)
 
-Instead of responding with a JSON, the server should respond with the raw pixel data of the current frame. For example, if the images were in interleaved `uint8` BGR format, the response would look resemble the following, where each triplet of letters represents one pixel containing a blue value, a green value, and a red value.
+Instead of responding with a JSON, the server should respond with the raw pixel data of the current frame. For example, if the images were in interleaved `uint8` BGR format, the response would resemble the following, where each triplet of letters represents one pixel containing a blue value, a green value, and a red value.
 
 ```
 BGRBGRBGRBGRBGR...
 ```
 
-### Results Request (Plugin → Server)
+### Result Request (Plugin → Server)
 
 ```json
 {
-  "request": "metadata",
-  "body": "(see ResultsOutput.h)"
+  "request": "result",
+  "body":
+  {
+    // see ResultsOutput::operator()
+  }
 }
 ```
 
-### Results Response (Plugin ← Server)
+### Result Response (Plugin ← Server)
 
 ```json
 {}
 ```
 
-### Results Request (Plugin → Server)
+### Execute Request (Plugin → Server)
 
 ```json
 {
   "request": "execute",
-  "body": {
-    "action": "(see ResultsOutput.h)"
+  "body":
+  {
+    "action": "(see VideoSource::execute)"
   }
 }
 ```
 
-### Results Response (Plugin ← Server)
+### Execute Response (Plugin ← Server)
 
 ```json
 {}
