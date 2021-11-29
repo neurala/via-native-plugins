@@ -6,13 +6,11 @@ This is a minimal .NET interface for VIA native plugins, such that plugins can b
 
 ## Building
 
-For convenience, the plugin and an executable for testing are provided in pre-built form. The library `Binaries/Neurala.VIA.WebSocket.dll` can be directly referenced in any existing project. You can also simply add `Sources/Server.cs` directly into your project and reference `Binaries/Newtonsoft.Json.dll` and `Binaries/websocket-sharp.dll` (or your own compatible versions thereof). Otherwise, the plugin can be built in a couple of ways.
+For convenience, the plugin and an executable for testing are provided in pre-built form. The library `Binaries/Neurala.VIA.WebSocket.dll` can be directly referenced in any existing project. You can also simply add `Sources/Server.cs` directly into your project and reference `Binaries/Newtonsoft.Json.dll` and `Binaries/websocket-sharp.dll` (or your own compatible versions thereof). Otherwise, the plugin can be built via `dotnet` or by loading `VIAWS.sln` into Visual Studio.
 
-- `dotnet`
+- `dotnet build VIAWS.sln` to build everything
   - `dotnet build VIAWS` for the library itself
   - `dotnet build Test` for the sample program (see below for usage)
-- GNU Make + `csc`
-  - `make`
 
 ## Synopsis
 
