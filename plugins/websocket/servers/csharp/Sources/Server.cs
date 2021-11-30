@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -103,6 +104,8 @@ namespace Neurala.VIA {
             }
         }
 
+        public WebSocket(int port, IRequestHandler requestHandler) : this(port, new SynchronousBitmapProducer(), requestHandler) { }
+
         public WebSocket(int port, IEnumerable<Bitmap> bitmapProducer, IRequestHandler requestHandler) {
             Server = new HttpServer(port);
             Server.AddWebSocketService("/", MakeConnectionHandler);
@@ -118,6 +121,65 @@ namespace Neurala.VIA {
         public void Start() => Server.Start();
         public void Stop() => Server.Stop();
 
+        public void SendImage(string path) {
+            var bitmap = new Bitmap(path);
+
+            SendImage(bitmap);
+        }
+
+        public void SendImage(Bitmap bitmap) {
+            if (BitmapProducer is SynchronousBitmapProducer producer)
+                producer.AddImage(bitmap);
+            else throw new InvalidOperationException("This operation is available only when a custom bitmap producer is not provided.");
+        }
+
         private ConnectionHandler MakeConnectionHandler() => new ConnectionHandler(this);
+    }
+
+    /// <summary>Synchronous adaptor for producing images.</summary>
+    internal class SynchronousBitmapProducer : IEnumerable<Bitmap> {
+        private readonly Queue<Bitmap> BitmapQueue;
+
+        public SynchronousBitmapProducer() {
+            BitmapQueue = new Queue<Bitmap>();
+        }
+
+        public void AddImage(string path) {
+            var bitmap = new Bitmap(path);
+
+            AddImage(bitmap);
+        }
+
+        public void AddImage(Bitmap bitmap) {
+            lock (BitmapQueue) {
+                BitmapQueue.Enqueue(bitmap);
+
+                if (BitmapQueue.Count == 1)
+                    Monitor.Pulse(BitmapQueue);
+            }
+        }
+
+        private IEnumerable<Bitmap> Enumerate() {
+            lock (BitmapQueue) {
+                while (true) {
+                    if (BitmapQueue.Count == 0)
+                        Monitor.Wait(BitmapQueue);
+
+                    var next = BitmapQueue.Dequeue();
+
+                    if (next == null)
+                        break;
+
+                    Monitor.Exit(BitmapQueue);
+
+                    yield return next;
+
+                    Monitor.Enter(BitmapQueue);
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => Enumerate().GetEnumerator();
+        IEnumerator<Bitmap> IEnumerable<Bitmap>.GetEnumerator() => Enumerate().GetEnumerator();
     }
 }

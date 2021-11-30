@@ -7,7 +7,6 @@ using System.Threading;
 using Neurala.VIA;
 
 public static class Program {
-    private static CancellationTokenSource Canceler;
     private static WebSocket Server;
 
     private sealed class DummyHandler : IRequestHandler {
@@ -21,31 +20,36 @@ public static class Program {
     }
 
     public static void Main(string[] arguments) {
+        // Get port and image directory.
         var portString = arguments[0];
         var port = Int32.Parse(portString);
         var imageDirectory = arguments[1];
-        var imageProvider = IterateImageDirectoryForever(imageDirectory);
+
+        // This is where you control how to send images and what to do with results.
+        // All you need is a way to provide images, and a way to handle results.
         var requestHandler = new DummyHandler();
 
-        Canceler = new CancellationTokenSource();
-        Server = new WebSocket(port, imageProvider, requestHandler);
+        // Create and start the WebSocket.
+        Server = new WebSocket(port, requestHandler);
         Server.Start();
 
-        Console.CancelKeyPress += (_, _) => Canceler.Cancel();
+        // Have a way to stop this test program.
+        var running = true;
+        Console.CancelKeyPress += (_, _) => running = false;
 
-        Canceler.Token.WaitHandle.WaitOne();
-        Console.WriteLine("Stopping server.");
-        Server.Stop();
-    }
+        // This example program repeatedly iterates over the files in a given directory
+        // and sends them.
+        while (running) {
+            var images = Directory.EnumerateFiles(imageDirectory);
 
-    private static IEnumerable<Bitmap> IterateImageDirectoryForever(string directory) {
-        while (true) {
-            var files = Directory.EnumerateFiles(directory);
-
-            foreach (var file in files) {
-                Console.WriteLine($"Trying to load image file \"{file}\".");
-                yield return new Bitmap(file);
+            foreach (var image in images) {
+                Console.WriteLine($"Trying to load image file \"{image}\".");
+                Server.SendImage(image);
+                Thread.Sleep(1000);
             }
         }
+
+        Console.WriteLine("Stopping server.");
+        Server.Stop();
     }
 }

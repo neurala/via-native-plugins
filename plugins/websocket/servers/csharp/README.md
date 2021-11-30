@@ -46,6 +46,41 @@ namespace Neurala.VIA {
 public static class Program {
     public static void Main() {
         var port = 1234;
+        var handler = new MyHandler();
+        var server = new Neurala.VIA.WebServer(port, handler);
+
+        server.Start();
+
+        while (/* ... */) {
+            /* ... */
+            server.SendImage(image); // Can be a path or a Bitmap object.
+            /* ... */
+        }
+
+        server.Stop();
+    }
+}
+
+class MyHandler : IRequestHandler {
+    void HandleResults(string results) {
+        // Handle inspection results.
+        // See ResultsOutput for the results format.
+    }
+
+    void ExecuteAction(string action) {
+        // Execute a user-defined action.
+    }
+}
+```
+
+If used in this way, beware that `SendImage(...)` is actually an enqueueing operation, so take caution to not push images faster than they can be processed.
+
+## Example Usage via `IEnumerable<Bitmap>`
+
+```csharp
+public static class Program {
+    public static void Main() {
+        var port = 1234;
         var images = GetImages();
         var handler = new MyHandler();
         var server = new Neurala.VIA.WebServer(port, images, handler);
