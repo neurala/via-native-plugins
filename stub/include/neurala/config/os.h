@@ -32,4 +32,8 @@
 #define NEURALA_OS_APPLE
 #endif
 
+#if !defined(NEURALA_OS_ANDROID) && defined(__ANDROID__)
+#define NEURALA_OS_ANDROID
+#endif
+
 #endif // NEURALA_CONFIG_OS_H
