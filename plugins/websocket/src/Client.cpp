@@ -37,7 +37,8 @@ Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 		// Set buffer limit to just above 4k images
 		const auto previousMax = m_stream.read_message_max();
 		m_stream.read_message_max(280000000);
-		std::clog << "Changed max message: " << previousMax << " -> " << m_stream.read_message_max() << '\n';
+		std::clog << "Changed max message: " << previousMax << " -> " << m_stream.read_message_max()
+		          << '\n';
 		m_stream.handshake(ipAddress.data(), "/");
 		std::clog << "WebSocket client connected.\n";
 	}
@@ -48,6 +49,16 @@ Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
 	catch (...)
 	{
 		std::cerr << "Unknown error while initializing WebSocket connection.\n";
+	}
+}
+
+Client::~Client()
+{
+	boost::system::error_code ec;
+	m_stream.close(boost::beast::websocket::close_code::normal, ec);
+	if (ec)
+	{
+		std::cerr << "Error while disconnecting from the server: " << ec.message() << '\n';
 	}
 }
 
