@@ -115,7 +115,7 @@ ImageView
 Source::frame(std::byte* data, std::size_t size) noexcept
 {
 	std::cout << "Copying frame to [" << data << "]\n";
-	std::copy_n(reinterpret_cast<const std::byte*>(frame().data()), frame().sizeBytes(), data);
+	std::copy_n(reinterpret_cast<const std::byte*>(frame().imageData()), frame().sizeBytes(), data);
 	return ImageView{metadata(), data};
 }
 

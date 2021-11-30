@@ -41,6 +41,6 @@ main()
 	{
 		// Retrieve and print the image view's metadata
 		const ImageView view = dummyVideoSource.frame();
-		std::cout << "Image view metadata: " << view.metadata() << std::endl;
+		std::cout << "Image view metadata: " << view.imageMetadata() << std::endl;
 	}
 }

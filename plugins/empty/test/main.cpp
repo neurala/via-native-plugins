@@ -37,7 +37,7 @@ main()
 	{
 		// Retrieve and print the image view's metadata
 		const ImageView view = emptyVideoSource.frame();
-		std::cout << "Image view metadata: " << view.metadata() << std::endl;
+		std::cout << "Image view metadata: " << view.imageMetadata() << std::endl;
 	}
 
 	// Trigger a fake output action

@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(ManagedFrame)
 	plug::ws::Input input{"127.0.0.1", 54321};
 	BOOST_TEST(input.nextFrame().value() == 0);
 	const ImageView view{input.frame()};
-	BOOST_TEST(view.data() != nullptr);
+	BOOST_TEST(view.imageData() != nullptr);
 	BOOST_TEST(view.width() == 800);
 	BOOST_TEST(view.height() == 600);
 	BOOST_TEST(view.colorSpace() == EColorSpace::RGB);
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(UnmanagedFrame)
 	BOOST_TEST(input.nextFrame().value() == 0);
 	std::vector<std::byte> frameBuffer(800 * 600 * 3);
 	const ImageView view{input.frame(frameBuffer.data(), frameBuffer.size())};
-	BOOST_TEST(view.data() == frameBuffer.data());
+	BOOST_TEST(view.imageData() == frameBuffer.data());
 	BOOST_TEST(view.width() == 800);
 	BOOST_TEST(view.height() == 600);
 	BOOST_TEST(view.colorSpace() == EColorSpace::RGB);
