@@ -15,6 +15,7 @@ endif()
 conan_cmake_run(
 	REQUIRES
 		boost/1.76.0
+		libjpeg/9d
 	BASIC_SETUP
 		CMAKE_TARGETS
 		KEEP_RPATHS
@@ -34,7 +35,7 @@ target_compile_definitions(websocket PRIVATE NEURALA_EXPORT_PLUGIN)
 
 target_include_directories(websocket PUBLIC include)
 
-target_link_libraries(websocket PUBLIC stub CONAN_PKG::boost)
+target_link_libraries(websocket PUBLIC stub CONAN_PKG::boost CONAN_PKG::libjpeg)
 
 add_subdirectory(servers)
 add_subdirectory(test)
