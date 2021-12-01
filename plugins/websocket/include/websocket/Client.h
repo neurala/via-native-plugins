@@ -103,6 +103,7 @@ private:
 	boost::beast::flat_buffer m_buffer;
 	std::string m_frameFormat;
 	std::vector<std::byte> m_frame;
+	neurala::ImageMetadata m_frameMetadata;
 };
 
 } // namespace neurala::plug::ws

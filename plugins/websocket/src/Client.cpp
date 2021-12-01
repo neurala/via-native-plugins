@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <utility>
+#include <iterator>
 
 #include <neurala/meta/enum.h>
 #include <neurala/video/VideoSourceStatus.h>
@@ -78,30 +79,34 @@ Client::metadata() noexcept
 		const value jsonValue{
 		 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
 		const object& jsonObject{jsonValue.as_object()};
+
 		if (jsonObject.contains("format"))
 		{
-			const string& frameFormatStr{jsonObject.at("colorSpace").as_string()};
-			m_frameFormat = std::string_view{frameFormatStr.data(), frameFormatStr.size()};
-			return metadataFromFrame();
+			const auto& s = jsonObject.at("format").as_string();
+			m_frameFormat = std::string(s.data(), s.size());
+			m_frameMetadata = metadataFromFrame();
 		}
-		const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
-		const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
-		const string& colorSpaceStr{jsonObject.at("colorSpace").as_string()};
-		const EColorSpace colorSpace{
-		 stringToEnum<EColorSpace>(std::string_view{colorSpaceStr.data(), colorSpaceStr.size()})};
-		const string& layoutStr{jsonObject.at("layout").as_string()};
-		const EImageDataLayout layout{
-		 stringToEnum<EImageDataLayout>(std::string_view{layoutStr.data(), layoutStr.size()})};
-		const string& dataTypeStr{jsonObject.at("dataType").as_string()};
-		const EDatatype dataType{
-		 stringToEnum<EDatatype>(std::string_view{dataTypeStr.data(), dataTypeStr.size()})};
-		return {width, height, colorSpace, layout, dataType};
+		else
+		{
+			const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
+			const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
+			const string& colorSpaceStr{jsonObject.at("colorSpace").as_string()};
+			const EColorSpace colorSpace{
+			 stringToEnum<EColorSpace>(std::string_view{colorSpaceStr.data(), colorSpaceStr.size()})};
+			const string& layoutStr{jsonObject.at("layout").as_string()};
+			const EImageDataLayout layout{
+			 stringToEnum<EImageDataLayout>(std::string_view{layoutStr.data(), layoutStr.size()})};
+			const string& dataTypeStr{jsonObject.at("dataType").as_string()};
+			const EDatatype dataType{
+			 stringToEnum<EDatatype>(std::string_view{dataTypeStr.data(), dataTypeStr.size()})};
+			m_frameMetadata = {width, height, colorSpace, layout, dataType};
+		}
 	}
 	catch (...)
 	{
 		std::cerr << "Error while parsing 'metadata' response\n";
 	}
-	return {};
+	return m_frameMetadata;
 }
 
 std::error_code
@@ -116,12 +121,12 @@ Client::nextFrame() noexcept
 	if (m_frameFormat.empty())
 	{
 		m_frame.resize(buffer.size());
-		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), m_frame);
+		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), std::back_inserter(m_frame));
 		return make_error_code(VideoSourceStatus::success);
 	}
 	if (m_frameFormat == "jpg")
 	{
-		return jpg::read(buffer.data(), buffer.size(), m_frame);
+		auto [m_frameMetadata, error] = jpg::read(buffer.data(), buffer.size(), m_frame);
 	}
 	return make_error_code(VideoSourceStatus::pixelFormatNotSupported);
 }
@@ -182,11 +187,20 @@ Client::metadataFromFrame() noexcept
 	{
 		return {};
 	}
+
 	if (m_frameFormat == "jpg")
 	{
-		return jpg::metadata(buffer.data(), buffer.size());
+		std::vector<std::byte> tmp;
+		auto [metadata, error] = jpg::read(buffer.data(), buffer.size(), tmp);
+		if (error)
+		{
+			return {};
+		}
 	}
-	std::cerr << "Unknown frame format: " << m_frameFormat << ".\n";
+	else
+	{
+		std::cerr << "Unknown frame format: " << m_frameFormat << ".\n";
+	}
 	return {};
 }
 
