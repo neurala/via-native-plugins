@@ -182,8 +182,15 @@ namespace Neurala.VIA {
             RequestHandler = requestHandler;
         }
 
-        public void Start() => Server.Start();
-        public void Stop() => Server.Stop();
+        public void Start() {
+            Server.Start();
+        }
+
+        public void Stop() {
+            var stream = null as Stream;
+            SendImage(stream);
+            Server.Stop();
+        }
 
         public void SendImage(string path) {
             var imageData = File.OpenRead(path);
