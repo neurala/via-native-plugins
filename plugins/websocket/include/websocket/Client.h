@@ -21,8 +21,10 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include <string_view>
 #include <system_error>
+#include <vector>
 
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
@@ -59,11 +61,14 @@ public:
 	ImageMetadata metadata() noexcept;
 
 	/**
-	 * @brief Retrieve the next frame and copy data to the specified location.
-	 * @param location address to which the frame data must be copied
-	 * @param capacity capacity of the buffer at the given address
+	 * @brief Retrieve the next frame.
 	 */
-	std::error_code frame(std::byte* const location, const std::size_t capacity) noexcept;
+	std::error_code nextFrame() noexcept;
+
+	/**
+	 * @brief Returns the buffer holding the last frame retrieved.
+	 */
+	const std::vector<std::byte>& frame() noexcept { return m_frame; }
 
 	/**
 	 * @brief Executes an arbitrary action on the video source.
@@ -90,10 +95,14 @@ private:
 	                     boost::json::object&& body,
 	                     std::error_code& ec) noexcept;
 
+	ImageMetadata metadataFromFrame() noexcept;
+
 	boost::asio::io_context m_ioContext;
 	boost::asio::ip::tcp::socket m_socket;
 	boost::beast::websocket::stream<boost::asio::ip::tcp::socket&> m_stream;
 	boost::beast::flat_buffer m_buffer;
+	std::string m_frameFormat;
+	std::vector<std::byte> m_frame;
 };
 
 } // namespace neurala::plug::ws

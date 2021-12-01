@@ -68,16 +68,22 @@ public:
 	[[nodiscard]] ImageMetadata metadata() const noexcept final { return cachedMetadata(); }
 
 	// Query new frames​
-	[[nodiscard]] std::error_code nextFrame() noexcept final;
+	[[nodiscard]] std::error_code nextFrame() noexcept final { return m_client.nextFrame(); }
 
 	// Get a frame from host memory, data needs to be valid until the end of processing​
-	[[nodiscard]] ImageView frame() noexcept final { return {cachedMetadata(), m_frame.data()}; }
+	[[nodiscard]] ImageView frame() noexcept final
+	{
+		return {cachedMetadata(), m_client.frame().data()};
+	}
 
 	// Copy a frame into the buffer provided as argument
 	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) noexcept final;
 
 	// Executes an arbitrary action on the video source
-	[[nodiscard]] std::error_code execute(const std::string& action) noexcept final;
+	[[nodiscard]] std::error_code execute(const std::string& action) noexcept final
+	{
+		return m_client.execute(action);
+	}
 
 private:
 	// Access the image metadata. Only retrieve over the network if necessary.
@@ -85,7 +91,6 @@ private:
 
 	mutable Client m_client;
 	mutable std::optional<ImageMetadata> m_metadata;
-	std::vector<std::byte> m_frame;
 };
 
 } // namespace neurala::plug::ws

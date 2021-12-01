@@ -18,6 +18,7 @@
 
 #include "websocket/Client.h"
 #include "websocket/Environment.h"
+#include "websocket/JPG.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -28,7 +29,7 @@
 
 namespace neurala::plug::ws
 {
-Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
+Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}, m_frameFormat{}
 {
 	try
 	{
@@ -77,6 +78,12 @@ Client::metadata() noexcept
 		const value jsonValue{
 		 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
 		const object& jsonObject{jsonValue.as_object()};
+		if (jsonObject.contains("format"))
+		{
+			const string& frameFormatStr{jsonObject.at("colorSpace").as_string()};
+			m_frameFormat = std::string_view{frameFormatStr.data(), frameFormatStr.size()};
+			return metadataFromFrame();
+		}
 		const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
 		const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
 		const string& colorSpaceStr{jsonObject.at("colorSpace").as_string()};
@@ -98,7 +105,7 @@ Client::metadata() noexcept
 }
 
 std::error_code
-Client::frame(std::byte* const location, const std::size_t capacity) noexcept
+Client::nextFrame() noexcept
 {
 	std::error_code ec;
 	const ConstBuffer buffer{response("frame", {}, ec)};
@@ -106,12 +113,17 @@ Client::frame(std::byte* const location, const std::size_t capacity) noexcept
 	{
 		return ec;
 	}
-	if (buffer.size() > capacity)
+	if (m_frameFormat.empty())
 	{
-		return make_error_code(VideoSourceStatus::overflow);
+		m_frame.resize(buffer.size());
+		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), m_frame);
+		return make_error_code(VideoSourceStatus::success);
 	}
-	std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), location);
-	return make_error_code(VideoSourceStatus::success);
+	if (m_frameFormat == "jpg")
+	{
+		return jpg::read(buffer.data(), buffer.size(), m_frame);
+	}
+	return make_error_code(VideoSourceStatus::pixelFormatNotSupported);
 }
 
 std::error_code
@@ -159,6 +171,23 @@ Client::response(const std::string_view requestType,
 		std::cerr << "Unknown error while processing request.\n";
 	}
 	return m_buffer.cdata();
+}
+
+ImageMetadata
+Client::metadataFromFrame() noexcept
+{
+	std::error_code ec;
+	const ConstBuffer buffer{response("frame", {}, ec)};
+	if (ec)
+	{
+		return {};
+	}
+	if (m_frameFormat == "jpg")
+	{
+		return jpg::metadata(buffer.data(), buffer.size());
+	}
+	std::cerr << "Unknown frame format: " << m_frameFormat << ".\n";
+	return {};
 }
 
 } // namespace neurala::plug::ws

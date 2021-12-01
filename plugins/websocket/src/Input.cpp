@@ -23,34 +23,19 @@
 
 namespace neurala::plug::ws
 {
-std::error_code
-Input::nextFrame() noexcept
-{
-	std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
-	const std::error_code ec{m_client.frame(frameBuffer.data(), frameBuffer.size())};
-	m_frame = std::move(frameBuffer);
-	return ec;
-}
-
 ImageView
 Input::frame(std::byte* data, std::size_t size) noexcept
 {
-	const ImageMetadata& md{cachedMetadata()};
-	if (size < md.sizeBytes())
+	const std::vector<std::byte>& buffer{m_client.frame()};
+	if (size < buffer.size())
 	{
 		std::cerr << "Insufficient capacity in B4B buffer.\n";
 	}
 	else
 	{
-		std::copy(cbegin(m_frame), cend(m_frame), data);
+		std::copy(cbegin(buffer), cend(buffer), data);
 	}
-	return {md, data};
-}
-
-std::error_code
-Input::execute(const std::string& action) noexcept
-{
-	return m_client.execute(action);
+	return {cachedMetadata(), data};
 }
 
 const ImageMetadata&
