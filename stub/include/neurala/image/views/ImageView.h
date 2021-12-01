@@ -152,9 +152,18 @@ public:
 		return static_cast<const T*>(imageData());
 	}
 
-	virtual bool operator==(const ImageView& im) const noexcept
+	friend bool operator==(const ImageView& x, const ImageView& y) noexcept
 	{
-		if (viewStrategy() != im.viewStrategy() || imageMetadata() != im.imageMetadata())
+		// choose the correct implementation for non-trivial views
+		return x.viewStrategy() == "identity" ? y.isEqualTo(x) : x.isEqualTo(y);
+	}
+
+	friend bool operator!=(const ImageView& x, const ImageView& y) noexcept { return !(x == y); }
+
+private:
+	virtual bool isEqualTo(const ImageView& im) const noexcept
+	{
+		if (imageMetadata() != im.imageMetadata())
 		{
 			return false;
 		}
@@ -192,8 +201,6 @@ public:
 				return false;
 		}
 	}
-
-	friend bool operator!=(const ImageView& x, const ImageView& y) noexcept { return !(x == y); }
 };
 
 constexpr const ImageView&
