@@ -23,11 +23,31 @@ namespace Neurala.VIA {
 
     public class WebSocket {
         private readonly HttpServer Server;
-        private readonly IEnumerator<byte[]> ImageDataProducer;
+        private readonly IEnumerator<Stream> ImageDataProducer;
         private readonly IRequestHandler RequestHandler;
 
         private sealed class ConnectionHandler : WebSocketBehavior {
+            private const int exifOrientationID = 0x112; // 274
+
             private readonly WebSocket Server;
+
+            private Image currentImage;
+
+            private Image CurrentImage {
+                get {
+                    if (currentImage == null)
+                        currentImage = Image.FromStream(CurrentStream);
+                    return currentImage;
+                }
+            }
+
+            private Stream CurrentStream {
+                get {
+                    var imageStream = Server.ImageDataProducer.Current;
+                    imageStream.Seek(0L, SeekOrigin.Begin);
+                    return imageStream;
+                }
+            }
 
             public ConnectionHandler(WebSocket server) {
                 Server = server;
@@ -45,10 +65,10 @@ namespace Neurala.VIA {
                         if (request == "metadata") {
                             Console.WriteLine("Got metadata request.");
 
-                            var currentFrame = Server.ImageDataProducer.Current;
+                            var currentFrame = CurrentImage;
 
                             message = new JObject();
-#if _
+                            message["format"] = "jpg";
                             message["width"] = currentFrame.Width;
                             message["height"] = currentFrame.Height;
                             message["layout"] = "interleaved";
@@ -57,8 +77,6 @@ namespace Neurala.VIA {
                               { PixelFormat.Format24bppRgb => "BGR",
                                 PixelFormat.Format32bppArgb => "BGRA",
                                 _ => "unknown" };
-#endif
-                            message["format"] = "jpg";
 
                             var json = message.ToString();
 
@@ -67,7 +85,7 @@ namespace Neurala.VIA {
                         } else if (request == "frame") {
                             Console.WriteLine("Got frame request.");
 
-                            var currentFrame = Server.ImageDataProducer.Current;
+                            var currentFrame = CurrentImage;
 #if _
                             var data = currentFrame.LockBits(new Rectangle(0, 0, currentFrame.Width, currentFrame.Height),
                                                              ImageLockMode.ReadOnly,
@@ -82,10 +100,16 @@ namespace Neurala.VIA {
                                 Send(bytes);
                             } finally {
                                 currentFrame.UnlockBits(data);
-                                Server.ImageDataProducer.MoveNext();
+                                MoveNext();
                             }
 #endif
-                            Send(currentFrame);
+                            var outputStream = ExifRotate(currentFrame);
+                            var length = (int) outputStream.Length;
+                            var bytes = new byte[length];
+
+                            outputStream.Read(bytes, 0, length);
+                            Send(bytes);
+                            MoveNext();
                         } else if (request == "execute") {
                             var action = message["body"]["action"].ToString();
                             Console.WriteLine("Got execute request.");
@@ -108,11 +132,45 @@ namespace Neurala.VIA {
             protected sealed override void OnClose(CloseEventArgs @event) {
                 Console.WriteLine("Connection closed.");
             }
+
+            private void MoveNext() {
+                currentImage = null;
+                Server.ImageDataProducer.MoveNext();
+            }
+
+            // Adapted from https://stackoverflow.com/questions/27835064/get-image-orientation-and-rotate-as-per-orientation
+            private Stream ExifRotate(Image img) {
+                if (!Array.Exists<int>(img.PropertyIdList, value => value == exifOrientationID))
+                    return CurrentStream;
+
+                var prop = img.GetPropertyItem(exifOrientationID);
+                int val = BitConverter.ToUInt16(prop.Value, 0);
+                var rot = RotateFlipType.RotateNoneFlipNone;
+
+                if (val == 3 || val == 4)
+                    rot = RotateFlipType.Rotate180FlipNone;
+                else if (val == 5 || val == 6)
+                    rot = RotateFlipType.Rotate90FlipNone;
+                else if (val == 7 || val == 8)
+                    rot = RotateFlipType.Rotate270FlipNone;
+
+                if (val == 2 || val == 4 || val == 5 || val == 7)
+                    rot |= RotateFlipType.RotateNoneFlipX;
+
+                if (rot != RotateFlipType.RotateNoneFlipNone) {
+                    var stream = new MemoryStream(64 * 1024);
+                    img.RotateFlip(rot);
+                    img.Save(stream, ImageFormat.Jpeg);
+                    return stream;
+                }
+
+                return CurrentStream;
+            }
         }
 
         public WebSocket(int port, IRequestHandler requestHandler) : this(port, new SynchronousImageDataProducer(), requestHandler) { }
 
-        public WebSocket(int port, IEnumerable<byte[]> imageDataProducer, IRequestHandler requestHandler) {
+        public WebSocket(int port, IEnumerable<Stream> imageDataProducer, IRequestHandler requestHandler) {
             Server = new HttpServer(port);
             Server.AddWebSocketService("/", MakeConnectionHandler);
             Server.AddWebSocketService("/via", MakeConnectionHandler);
@@ -128,15 +186,12 @@ namespace Neurala.VIA {
         public void Stop() => Server.Stop();
 
         public void SendImage(string path) {
-#if _
-            var imageData = new ImageData(path);
-#endif
-            var imageData = File.ReadAllBytes(path);
+            var imageData = File.OpenRead(path);
 
             SendImage(imageData);
         }
 
-        public void SendImage(byte[] imageData) {
+        public void SendImage(Stream imageData) {
             if (ImageDataProducer is SynchronousImageDataProducer producer)
                 producer.AddImage(imageData);
             else throw new InvalidOperationException("This operation is available only when a custom imageData producer is not provided.");
@@ -146,14 +201,14 @@ namespace Neurala.VIA {
     }
 
     /// <summary>Synchronous adaptor for producing images.</summary>
-    internal class SynchronousImageDataProducer : IEnumerable<byte[]> {
-        private readonly Queue<byte[]> ImageDataQueue;
+    internal class SynchronousImageDataProducer : IEnumerable<Stream> {
+        private readonly Queue<Stream> ImageDataQueue;
 
         public SynchronousImageDataProducer() {
-            ImageDataQueue = new Queue<byte[]>();
+            ImageDataQueue = new Queue<Stream>();
         }
 
-        public void AddImage(byte[] imageData) {
+        public void AddImage(Stream imageData) {
             lock (ImageDataQueue) {
                 ImageDataQueue.Enqueue(imageData);
 
@@ -162,7 +217,7 @@ namespace Neurala.VIA {
             }
         }
 
-        private IEnumerable<byte[]> Enumerate() {
+        private IEnumerable<Stream> Enumerate() {
             lock (ImageDataQueue) {
                 while (true) {
                     if (ImageDataQueue.Count == 0)
@@ -183,6 +238,6 @@ namespace Neurala.VIA {
         }
 
         IEnumerator IEnumerable.GetEnumerator() => Enumerate().GetEnumerator();
-        IEnumerator<byte[]> IEnumerable<byte[]>.GetEnumerator() => Enumerate().GetEnumerator();
+        IEnumerator<Stream> IEnumerable<Stream>.GetEnumerator() => Enumerate().GetEnumerator();
     }
 }
