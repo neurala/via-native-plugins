@@ -23,7 +23,7 @@ namespace Neurala.VIA {
 
     public class WebSocket {
         private readonly HttpServer Server;
-        private readonly IEnumerator<Bitmap> BitmapProducer;
+        private readonly IEnumerator<byte[]> ImageDataProducer;
         private readonly IRequestHandler RequestHandler;
 
         private sealed class ConnectionHandler : WebSocketBehavior {
@@ -45,9 +45,10 @@ namespace Neurala.VIA {
                         if (request == "metadata") {
                             Console.WriteLine("Got metadata request.");
 
-                            var currentFrame = Server.BitmapProducer.Current;
+                            var currentFrame = Server.ImageDataProducer.Current;
 
                             message = new JObject();
+#if _
                             message["width"] = currentFrame.Width;
                             message["height"] = currentFrame.Height;
                             message["layout"] = "interleaved";
@@ -56,6 +57,8 @@ namespace Neurala.VIA {
                               { PixelFormat.Format24bppRgb => "BGR",
                                 PixelFormat.Format32bppArgb => "BGRA",
                                 _ => "unknown" };
+#endif
+                            message["format"] = "jpg";
 
                             var json = message.ToString();
 
@@ -64,7 +67,8 @@ namespace Neurala.VIA {
                         } else if (request == "frame") {
                             Console.WriteLine("Got frame request.");
 
-                            var currentFrame = Server.BitmapProducer.Current;
+                            var currentFrame = Server.ImageDataProducer.Current;
+#if _
                             var data = currentFrame.LockBits(new Rectangle(0, 0, currentFrame.Width, currentFrame.Height),
                                                              ImageLockMode.ReadOnly,
                                                              currentFrame.PixelFormat);
@@ -78,8 +82,10 @@ namespace Neurala.VIA {
                                 Send(bytes);
                             } finally {
                                 currentFrame.UnlockBits(data);
-                                Server.BitmapProducer.MoveNext();
+                                Server.ImageDataProducer.MoveNext();
                             }
+#endif
+                            Send(currentFrame);
                         } else if (request == "execute") {
                             var action = message["body"]["action"].ToString();
                             Console.WriteLine("Got execute request.");
@@ -104,16 +110,16 @@ namespace Neurala.VIA {
             }
         }
 
-        public WebSocket(int port, IRequestHandler requestHandler) : this(port, new SynchronousBitmapProducer(), requestHandler) { }
+        public WebSocket(int port, IRequestHandler requestHandler) : this(port, new SynchronousImageDataProducer(), requestHandler) { }
 
-        public WebSocket(int port, IEnumerable<Bitmap> bitmapProducer, IRequestHandler requestHandler) {
+        public WebSocket(int port, IEnumerable<byte[]> imageDataProducer, IRequestHandler requestHandler) {
             Server = new HttpServer(port);
             Server.AddWebSocketService("/", MakeConnectionHandler);
             Server.AddWebSocketService("/via", MakeConnectionHandler);
             Server.Log.Level = LogLevel.Debug;
 
-            BitmapProducer = bitmapProducer.GetEnumerator();
-            BitmapProducer.MoveNext();
+            ImageDataProducer = imageDataProducer.GetEnumerator();
+            ImageDataProducer.MoveNext();
 
             RequestHandler = requestHandler;
         }
@@ -122,64 +128,61 @@ namespace Neurala.VIA {
         public void Stop() => Server.Stop();
 
         public void SendImage(string path) {
-            var bitmap = new Bitmap(path);
+#if _
+            var imageData = new ImageData(path);
+#endif
+            var imageData = File.ReadAllBytes(path);
 
-            SendImage(bitmap);
+            SendImage(imageData);
         }
 
-        public void SendImage(Bitmap bitmap) {
-            if (BitmapProducer is SynchronousBitmapProducer producer)
-                producer.AddImage(bitmap);
-            else throw new InvalidOperationException("This operation is available only when a custom bitmap producer is not provided.");
+        public void SendImage(byte[] imageData) {
+            if (ImageDataProducer is SynchronousImageDataProducer producer)
+                producer.AddImage(imageData);
+            else throw new InvalidOperationException("This operation is available only when a custom imageData producer is not provided.");
         }
 
         private ConnectionHandler MakeConnectionHandler() => new ConnectionHandler(this);
     }
 
     /// <summary>Synchronous adaptor for producing images.</summary>
-    internal class SynchronousBitmapProducer : IEnumerable<Bitmap> {
-        private readonly Queue<Bitmap> BitmapQueue;
+    internal class SynchronousImageDataProducer : IEnumerable<byte[]> {
+        private readonly Queue<byte[]> ImageDataQueue;
 
-        public SynchronousBitmapProducer() {
-            BitmapQueue = new Queue<Bitmap>();
+        public SynchronousImageDataProducer() {
+            ImageDataQueue = new Queue<byte[]>();
         }
 
-        public void AddImage(string path) {
-            var bitmap = new Bitmap(path);
+        public void AddImage(byte[] imageData) {
+            lock (ImageDataQueue) {
+                ImageDataQueue.Enqueue(imageData);
 
-            AddImage(bitmap);
-        }
-
-        public void AddImage(Bitmap bitmap) {
-            lock (BitmapQueue) {
-                BitmapQueue.Enqueue(bitmap);
-
-                if (BitmapQueue.Count == 1)
-                    Monitor.Pulse(BitmapQueue);
+                if (ImageDataQueue.Count == 1)
+                    Monitor.Pulse(ImageDataQueue);
             }
         }
 
-        private IEnumerable<Bitmap> Enumerate() {
-            lock (BitmapQueue) {
+        private IEnumerable<byte[]> Enumerate() {
+            lock (ImageDataQueue) {
                 while (true) {
-                    if (BitmapQueue.Count == 0)
-                        Monitor.Wait(BitmapQueue);
+                    if (ImageDataQueue.Count == 0)
+                        Monitor.Wait(ImageDataQueue);
 
-                    var next = BitmapQueue.Dequeue();
+                    var next = ImageDataQueue.Dequeue();
 
                     if (next == null)
                         break;
 
-                    Monitor.Exit(BitmapQueue);
+                    Monitor.Exit(ImageDataQueue);
 
                     yield return next;
 
-                    Monitor.Enter(BitmapQueue);
+                    Monitor.Enter(ImageDataQueue);
                 }
             }
         }
 
         IEnumerator IEnumerable.GetEnumerator() => Enumerate().GetEnumerator();
-        IEnumerator<Bitmap> IEnumerable<Bitmap>.GetEnumerator() => Enumerate().GetEnumerator();
+        IEnumerator<byte[]> IEnumerable<byte[]>.GetEnumerator() => Enumerate().GetEnumerator();
     }
 }
