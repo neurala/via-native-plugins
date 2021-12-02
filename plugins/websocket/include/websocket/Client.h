@@ -68,7 +68,7 @@ public:
 	/**
 	 * @brief Returns the buffer holding the last frame retrieved.
 	 */
-	const std::vector<std::byte>& frame() noexcept { return m_frame; }
+	const std::vector<std::byte>& frame() const noexcept { return m_frame; }
 
 	/**
 	 * @brief Executes an arbitrary action on the video source.
