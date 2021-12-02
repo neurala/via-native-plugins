@@ -44,23 +44,12 @@ BOOST_AUTO_TEST_CASE(Metadata)
 	BOOST_TEST(metadata.datatype() == EDatatype::uint8);
 }
 
-BOOST_AUTO_TEST_CASE(InsufficientBufferFrame)
+BOOST_AUTO_TEST_CASE(Frame)
 {
 	const ImageMetadata metadata{client.metadata()};
 	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
-
-	const auto& frameBuffer = client.frame();
-	BOOST_CHECK_EQUAL(frameBuffer.size(), metadata.width() * metadata.height() * 3 - 1);
-	BOOST_TEST(std::all_of(cbegin(frameBuffer), cend(frameBuffer), [](std::byte b) {
-		return static_cast<char>(b) == 0;
-	}));
-}
-
-BOOST_AUTO_TEST_CASE(SufficientBufferFrame)
-{
-	const ImageMetadata metadata{client.metadata()};
-	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
-	const auto& frameBuffer = client.frame();
+	BOOST_TEST(client.nextFrame().value() == 0);
+	const std::vector<std::byte>& frameBuffer{client.frame()};
 	BOOST_CHECK_EQUAL(frameBuffer.size(), metadata.width() * metadata.height() * 3);
 }
 

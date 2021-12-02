@@ -22,8 +22,8 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <utility>
 #include <iterator>
+#include <utility>
 
 #include <neurala/meta/enum.h>
 #include <neurala/video/VideoSourceStatus.h>
@@ -121,7 +121,7 @@ Client::nextFrame() noexcept
 	if (m_frameFormat.empty())
 	{
 		m_frame.resize(buffer.size());
-		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), std::back_inserter(m_frame));
+		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), begin(m_frame));
 		return make_error_code(VideoSourceStatus::success);
 	}
 	if (m_frameFormat == "jpg")
