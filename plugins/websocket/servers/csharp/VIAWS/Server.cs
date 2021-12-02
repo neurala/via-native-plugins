@@ -35,8 +35,11 @@ namespace Neurala.VIA {
 
             private Image CurrentImage {
                 get {
-                    if (currentImage == null)
+                    if (currentImage == null) {
+                        Server.ImageDataProducer.MoveNext();
                         currentImage = Image.FromStream(CurrentStream);
+                    }
+
                     return currentImage;
                 }
             }
@@ -100,7 +103,7 @@ namespace Neurala.VIA {
                                 Send(bytes);
                             } finally {
                                 currentFrame.UnlockBits(data);
-                                MoveNext();
+                                ResetCurrent();
                             }
 #endif
                             var outputStream = ExifRotate(currentFrame);
@@ -109,7 +112,7 @@ namespace Neurala.VIA {
 
                             outputStream.Read(bytes, 0, length);
                             Send(bytes);
-                            MoveNext();
+                            ResetCurrent();
                         } else if (request == "execute") {
                             var action = message["body"]["action"].ToString();
                             Console.WriteLine("Got execute request.");
@@ -133,9 +136,8 @@ namespace Neurala.VIA {
                 Console.WriteLine("Connection closed.");
             }
 
-            private void MoveNext() {
+            private void ResetCurrent() {
                 currentImage = null;
-                Server.ImageDataProducer.MoveNext();
             }
 
             // Adapted from https://stackoverflow.com/questions/27835064/get-image-orientation-and-rotate-as-per-orientation
@@ -177,8 +179,6 @@ namespace Neurala.VIA {
             Server.Log.Level = LogLevel.Debug;
 
             ImageDataProducer = imageDataProducer.GetEnumerator();
-            ImageDataProducer.MoveNext();
-
             RequestHandler = requestHandler;
         }
 
