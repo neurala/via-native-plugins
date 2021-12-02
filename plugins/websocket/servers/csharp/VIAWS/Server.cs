@@ -23,20 +23,21 @@ namespace Neurala.VIA {
 
     public class WebSocket {
         private readonly HttpServer Server;
-        private readonly IEnumerator<Stream> ImageDataProducer;
+        private readonly IEnumerable<Stream> ImageDataProducer;
         private readonly IRequestHandler RequestHandler;
 
         private sealed class ConnectionHandler : WebSocketBehavior {
             private const int exifOrientationID = 0x112; // 274
 
-            private readonly WebSocket Server;
+            private readonly IEnumerator<Stream> ImageEnumerator;
+            private readonly IRequestHandler RequestHandler;
 
             private Image currentImage;
 
             private Image CurrentImage {
                 get {
                     if (currentImage == null) {
-                        Server.ImageDataProducer.MoveNext();
+                        ImageEnumerator.MoveNext();
                         currentImage = Image.FromStream(CurrentStream);
                     }
 
@@ -46,14 +47,15 @@ namespace Neurala.VIA {
 
             private Stream CurrentStream {
                 get {
-                    var imageStream = Server.ImageDataProducer.Current;
+                    var imageStream = ImageEnumerator.Current;
                     imageStream.Seek(0L, SeekOrigin.Begin);
                     return imageStream;
                 }
             }
 
-            public ConnectionHandler(WebSocket server) {
-                Server = server;
+            public ConnectionHandler(IEnumerable<Stream> imageDataProducer, IRequestHandler requestHandler) {
+                ImageEnumerator = imageDataProducer.GetEnumerator();
+                RequestHandler = requestHandler;
             }
 
             protected sealed override void OnMessage(MessageEventArgs @event) {
@@ -61,7 +63,7 @@ namespace Neurala.VIA {
 
                 var message = JObject.Parse(@event.Data);
 
-                lock (Server) {
+                lock (ImageEnumerator) {
                     if (message.TryGetValue("request", out token)) {
                         var request = token.ToObject<string>();
 
@@ -116,12 +118,12 @@ namespace Neurala.VIA {
                         } else if (request == "execute") {
                             var action = message["body"]["action"].ToString();
                             Console.WriteLine("Got execute request.");
-                            Server.RequestHandler.ExecuteAction(action);
+                            RequestHandler.ExecuteAction(action);
                             Send("{}");
                         } else if (request == "result") {
                             var body = message["body"].ToString();
                             Console.WriteLine("Got result request.");
-                            Server.RequestHandler.HandleResults(body);
+                            RequestHandler.HandleResults(body);
                             Send("{}");
                         }
                     }
@@ -178,7 +180,7 @@ namespace Neurala.VIA {
             Server.AddWebSocketService("/via", MakeConnectionHandler);
             Server.Log.Level = LogLevel.Debug;
 
-            ImageDataProducer = imageDataProducer.GetEnumerator();
+            ImageDataProducer = imageDataProducer;
             RequestHandler = requestHandler;
         }
 
@@ -204,7 +206,7 @@ namespace Neurala.VIA {
             else throw new InvalidOperationException("This operation is available only when a custom imageData producer is not provided.");
         }
 
-        private ConnectionHandler MakeConnectionHandler() => new ConnectionHandler(this);
+        private ConnectionHandler MakeConnectionHandler() => new ConnectionHandler(ImageDataProducer, RequestHandler);
     }
 
     /// <summary>Synchronous adaptor for producing images.</summary>
