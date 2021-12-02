@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <iterator>
+#include <tuple>
 #include <utility>
 
 #include <neurala/meta/enum.h>
@@ -30,7 +31,8 @@
 
 namespace neurala::plug::ws
 {
-Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}, m_frameFormat{}
+Client::Client()
+ : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}, m_buffer{}, m_frameFormat{}, m_frameMetadata{}, m_frame{}
 {
 	try
 	{
@@ -83,7 +85,7 @@ Client::metadata() noexcept
 		if (jsonObject.contains("format"))
 		{
 			const auto& s = jsonObject.at("format").as_string();
-			m_frameFormat = std::string(s.data(), s.size());
+			m_frameFormat = std::string{s.data(), s.size()};
 			m_frameMetadata = metadataFromFrame();
 		}
 		else
@@ -126,7 +128,8 @@ Client::nextFrame() noexcept
 	}
 	if (m_frameFormat == "jpg")
 	{
-		auto [m_frameMetadata, error] = jpg::read(buffer.data(), buffer.size(), m_frame);
+		std::tie(m_frameMetadata, ec) = jpg::read(buffer.data(), buffer.size(), m_frame);
+		return ec;
 	}
 	return make_error_code(VideoSourceStatus::pixelFormatNotSupported);
 }
@@ -191,11 +194,7 @@ Client::metadataFromFrame() noexcept
 	if (m_frameFormat == "jpg")
 	{
 		std::vector<std::byte> tmp;
-		auto [metadata, error] = jpg::read(buffer.data(), buffer.size(), tmp);
-		if (error)
-		{
-			return {};
-		}
+		return jpg::read(buffer.data(), buffer.size(), tmp).first;
 	}
 	else
 	{

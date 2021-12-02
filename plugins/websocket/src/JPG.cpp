@@ -17,17 +17,17 @@
  */
 
 #include <cstddef>
+#include <cstdint>
 #include <iostream>
 #include <system_error>
 
 #include <jpeglib.h>
 #include <neurala/video/VideoSourceStatus.h>
-#include <websocket/JPG.h>
 
+#include "websocket/JPG.h"
 
 namespace neurala::plug::ws::jpg
 {
-
 namespace
 {
 /**
@@ -100,7 +100,7 @@ public:
 	/// @brief A configured jpeg_error_mgr to use with libjpeg
 	auto& manager() noexcept { return m_manager; }
 };
-}
+} // namespace
 
 std::pair<neurala::ImageMetadata, std::error_code>
 read(const void* const data, const std::size_t size, std::vector<std::byte>& output)
@@ -116,7 +116,7 @@ read(const void* const data, const std::size_t size, std::vector<std::byte>& out
 	{
 		std::cerr << "Failed to read JPG header.\n";
 		jpeg_destroy_decompress(&decompress);
-		return {neurala::ImageMetadata{}, make_error_code(VideoSourceStatus::error)};
+		return {{}, make_error_code(VideoSourceStatus::error)};
 	}
 
 	decompress.out_color_space = JCS_RGB;
@@ -124,12 +124,12 @@ read(const void* const data, const std::size_t size, std::vector<std::byte>& out
 	{
 		std::cerr << "Failed to decompress JPG.\n";
 		jpeg_destroy_decompress(&decompress);
-		return {neurala::ImageMetadata{}, make_error_code(VideoSourceStatus::error)};
+		return {{}, make_error_code(VideoSourceStatus::error)};
 	}
 
 	const auto stride{decompress.out_color_components * decompress.output_width};
 	output.resize(stride * decompress.image_height);
-	auto* ptr{reinterpret_cast<unsigned char*>(output.data())};
+	auto* ptr{reinterpret_cast<std::uint8_t*>(output.data())};
 	while (decompress.output_scanline < decompress.output_height)
 	{
 		jpeg_read_scanlines(&decompress, &ptr, 1);

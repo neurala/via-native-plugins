@@ -102,8 +102,8 @@ private:
 	boost::beast::websocket::stream<boost::asio::ip::tcp::socket&> m_stream;
 	boost::beast::flat_buffer m_buffer;
 	std::string m_frameFormat;
-	std::vector<std::byte> m_frame;
 	neurala::ImageMetadata m_frameMetadata;
+	std::vector<std::byte> m_frame;
 };
 
 } // namespace neurala::plug::ws

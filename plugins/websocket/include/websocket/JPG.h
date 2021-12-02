@@ -23,6 +23,7 @@
 #include <system_error>
 #include <utility>
 #include <vector>
+
 #include <neurala/image/ImageMetadata.h>
 
 namespace neurala::plug::ws::jpg
