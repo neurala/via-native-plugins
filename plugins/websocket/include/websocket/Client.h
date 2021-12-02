@@ -60,6 +60,9 @@ public:
 	 */
 	ImageMetadata metadata() noexcept;
 
+	/// @brief return cached frame metadata
+	const ImageMetadata& frameMetadata() const noexcept { return m_frameMetadata; }
+
 	/**
 	 * @brief Retrieve the next frame.
 	 */

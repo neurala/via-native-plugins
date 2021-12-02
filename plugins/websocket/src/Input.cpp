@@ -41,11 +41,7 @@ Input::frame(std::byte* data, std::size_t size) noexcept
 const ImageMetadata&
 Input::cachedMetadata() const noexcept
 {
-	if (!m_metadata)
-	{
-		m_metadata = m_client.metadata();
-	}
-	return *m_metadata;
+	return m_client.frameMetadata();
 }
 
 } // namespace neurala::plug::ws

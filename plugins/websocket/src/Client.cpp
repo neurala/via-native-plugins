@@ -114,6 +114,10 @@ Client::metadata() noexcept
 std::error_code
 Client::nextFrame() noexcept
 {
+	if (m_frameMetadata.empty())
+	{
+		m_frameMetadata = metadata();
+	}
 	std::error_code ec;
 	const ConstBuffer buffer{response("frame", {}, ec)};
 	if (ec)
