@@ -35,7 +35,7 @@ namespace neurala::plug::ws::jpg
  * @param output The buffer to fill
  */
 std::pair<neurala::ImageMetadata, std::error_code>
-read(const void* const data, const std::size_t size, std::vector<std::byte>& output);
+read(const void* const data, const std::size_t size, std::vector<std::byte>& output) noexcept;
 } // namespace neurala::plug::ws::jpg
 
 #endif // NEURALA_PLUG_WS_JPG_H

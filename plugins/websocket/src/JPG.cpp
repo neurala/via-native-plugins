@@ -103,47 +103,55 @@ public:
 } // namespace
 
 std::pair<neurala::ImageMetadata, std::error_code>
-read(const void* const data, const std::size_t size, std::vector<std::byte>& output)
+read(const void* const data, const std::size_t size, std::vector<std::byte>& output) noexcept
 {
-	JPEGErrorManager error{};
-	jpeg_decompress_struct decompress{};
-	decompress.err = &error.manager();
-	jpeg_create_decompress(&decompress);
-
-	jpeg_mem_src(&decompress, static_cast<const unsigned char*>(data), size);
-
-	if (!jpeg_read_header(&decompress, TRUE) == JPEG_HEADER_OK)
+	try
 	{
-		std::cerr << "Failed to read JPG header.\n";
+		JPEGErrorManager error{};
+		jpeg_decompress_struct decompress{};
+		decompress.err = &error.manager();
+		jpeg_create_decompress(&decompress);
+
+		jpeg_mem_src(&decompress, static_cast<const unsigned char*>(data), size);
+
+		if (!jpeg_read_header(&decompress, TRUE) == JPEG_HEADER_OK)
+		{
+			std::cerr << "Failed to read JPG header.\n";
+			jpeg_destroy_decompress(&decompress);
+			return {{}, make_error_code(VideoSourceStatus::error)};
+		}
+
+		decompress.out_color_space = JCS_RGB;
+		if (!jpeg_start_decompress(&decompress))
+		{
+			std::cerr << "Failed to decompress JPG.\n";
+			jpeg_destroy_decompress(&decompress);
+			return {{}, make_error_code(VideoSourceStatus::error)};
+		}
+
+		const auto stride{decompress.out_color_components * decompress.output_width};
+		output.resize(stride * decompress.image_height);
+		auto* ptr{reinterpret_cast<std::uint8_t*>(output.data())};
+		while (decompress.output_scanline < decompress.output_height)
+		{
+			jpeg_read_scanlines(&decompress, &ptr, 1);
+			ptr += stride;
+		}
+		jpeg_finish_decompress(&decompress);
+
 		jpeg_destroy_decompress(&decompress);
-		return {{}, make_error_code(VideoSourceStatus::error)};
+		return {neurala::ImageMetadata{decompress.output_width,
+		                               decompress.output_height,
+		                               EColorSpace::RGB,
+		                               EImageDataLayout::interleaved,
+		                               EDatatype::uint8},
+		        make_error_code(VideoSourceStatus::success)};
 	}
-
-	decompress.out_color_space = JCS_RGB;
-	if (!jpeg_start_decompress(&decompress))
+	catch (...)
 	{
-		std::cerr << "Failed to decompress JPG.\n";
-		jpeg_destroy_decompress(&decompress);
-		return {{}, make_error_code(VideoSourceStatus::error)};
+		std::cerr << "Error while parsing JPG\n";
 	}
-
-	const auto stride{decompress.out_color_components * decompress.output_width};
-	output.resize(stride * decompress.image_height);
-	auto* ptr{reinterpret_cast<std::uint8_t*>(output.data())};
-	while (decompress.output_scanline < decompress.output_height)
-	{
-		jpeg_read_scanlines(&decompress, &ptr, 1);
-		ptr += stride;
-	}
-	jpeg_finish_decompress(&decompress);
-
-	jpeg_destroy_decompress(&decompress);
-	return {neurala::ImageMetadata{decompress.output_width,
-	                               decompress.output_height,
-	                               EColorSpace::RGB,
-	                               EImageDataLayout::interleaved,
-	                               EDatatype::uint8},
-	        make_error_code(VideoSourceStatus::success)};
+	return {{}, make_error_code(VideoSourceStatus::error)};
 }
 
 } // namespace neurala::plug::ws::jpg
