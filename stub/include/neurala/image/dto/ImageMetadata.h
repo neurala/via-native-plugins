@@ -16,21 +16,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NEURALA_IMAGE_IMAGE_METADATA_H
-#define NEURALA_IMAGE_IMAGE_METADATA_H
+#ifndef NEURALA_IMAGE_DTO_IMAGE_METADATA_H
+#define NEURALA_IMAGE_DTO_IMAGE_METADATA_H
 
 #include <cstddef>
 #include <ostream>
-
-#include "neurala/image/ColorSpace.h"
-#include "neurala/image/ImageDataLayout.h"
-#include "neurala/meta/Datatype.h"
-#include "neurala/neural/DataRange.h"
+#include <string>
 
 namespace neurala
 {
+namespace dto
+{
 /**
- * @brief Image metadata class.
+ * @brief Image metadata transfer class.
  *
  * Describes an image using dimensions, color space, data layout and data type.
  */
@@ -42,10 +40,9 @@ public:
 private:
 	size_type m_width{};
 	size_type m_height{};
-	EColorSpace m_colorSpace{EColorSpace::unknown};
-	EImageDataLayout m_layout{EImageDataLayout::unknown};
-	EDatatype m_datatype{EDatatype::unknown};
-	EDataRange m_dataRange{EDataRange::unknown};
+	std::string m_colorSpace;
+	std::string m_layout;
+	std::string m_datatype;
 
 public:
 	ImageMetadata() = default;
@@ -61,33 +58,11 @@ public:
 	 */
 	constexpr ImageMetadata(size_type width,
 	                        size_type height,
-	                        EColorSpace colorSpace,
-	                        EImageDataLayout layout,
-	                        EDatatype datatype) noexcept
+	                        const std::string& colorSpace,
+	                        const std::string& layout,
+	                        const std::string& datatype) noexcept
 	 : m_width{width}, m_height{height}, m_colorSpace{colorSpace}, m_layout{layout}, m_datatype{datatype}
-	{
-		switch (m_datatype)
-		{
-			case EDatatype::uint8:
-			case EDatatype::uint16:
-				m_dataRange = EDataRange::normalizedScaled;
-				return;
-			case EDatatype::binary32:
-			case EDatatype::binary64:
-				m_dataRange = EDataRange::normalized;
-				return;
-			default:
-				m_dataRange = EDataRange::unknown;
-		}
-	}
-
-	/**
-	 * @brief Returns if the image has no pixels.
-	 */
-	constexpr bool empty() const noexcept
-	{
-		return width() == 0u || height() == 0u || channels() == 0u;
-	}
+	{ }
 
 	/**
 	 * @brief Returns the image width in pixels.
@@ -112,73 +87,40 @@ public:
 	/**
 	 * @brief Returns the image color model.
 	 */
-	constexpr EColorSpace colorSpace() const noexcept { return m_colorSpace; }
+	constexpr const std::string& colorSpace() const noexcept { return m_colorSpace; }
 
 	/**
 	 * @brief Sets the image color model.
 	 */
-	constexpr void colorSpace(EColorSpace c) noexcept { m_colorSpace = c; }
+	constexpr void colorSpace(const std::string& c) noexcept { m_colorSpace = c; }
 
 	/**
 	 * @brief Returns the image data layout.
 	 */
-	constexpr EImageDataLayout layout() const noexcept { return m_layout; }
+	constexpr const std::string& layout() const noexcept { return m_layout; }
 
 	/**
 	 * @brief Sets the image data layout.
 	 */
-	constexpr void layout(EImageDataLayout l) noexcept { m_layout = l; }
+	constexpr void layout(const std::string& l) noexcept { m_layout = l; }
 
 	/**
 	 * @brief Returns the image data type.
 	 */
-	constexpr EDatatype datatype() const noexcept { return m_datatype; }
+	constexpr const std::string& datatype() const noexcept { return m_datatype; }
 
 	/**
 	 * @brief Sets the image data layout.
 	 */
-	constexpr void datatype(EDatatype d) noexcept { m_datatype = d; }
+	constexpr void datatype(const std::string& d) noexcept { m_datatype = d; }
 
-	/**
-	 * @brief Returns the image data range.
-	 */
-	constexpr EDataRange datarange() const noexcept { return m_dataRange; }
-
-	/**
-	 * @brief Sets the image data range.
-	 */
-	constexpr void datarange(EDataRange d) noexcept { m_dataRange = d; }
-
-	/**
-	 * @brief Returns the number of channels.
-	 */
-	constexpr size_type channels() const noexcept { return colorSpaceChannelCount(m_colorSpace); }
-
-	/**
-	 * @brief Returns the number of pixel components in this image.
-	 */
-	constexpr size_type pixelComponentCount() const noexcept { return pixelCount() * channels(); }
-
-	/**
-	 * @brief Returns the number of pixels in this image.
-	 */
-	constexpr size_type pixelCount() const noexcept { return width() * height(); }
-
-	/**
-	 * @brief Returns the number of bytes in this image.
-	 */
-	constexpr size_type sizeBytes() const noexcept
-	{
-		return pixelComponentCount() * sizeofDatatype(datatype());
-	}
-
-// NOTE:20210927:jgerity:SWIG does not support `friend constexpr` (https://github.com/swig/swig/issues/2079)
+// NOTE:20210927:jgerity:SWIG does not support `friend constexpr`
+// (https://github.com/swig/swig/issues/2079)
 #ifndef SWIG
 	friend constexpr bool operator==(const ImageMetadata& x, const ImageMetadata& y) noexcept
 	{
 		return x.width() == y.width() && x.height() == y.height() && x.colorSpace() == y.colorSpace()
-		       && x.datatype() == y.datatype() && x.datarange() == y.datarange()
-		       && x.layout() == y.layout();
+		       && x.datatype() == y.datatype() && x.layout() == y.layout();
 	}
 
 	friend constexpr bool operator!=(const ImageMetadata& x, const ImageMetadata& y) noexcept
@@ -189,11 +131,12 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const ImageMetadata& metadata)
 	{
 		return os << metadata.width() << 'x' << metadata.height() << ',' << metadata.colorSpace() << ','
-		          << metadata.datatype() << ',' << metadata.datarange() << ',' << metadata.layout();
+		          << metadata.datatype() << ',' << metadata.layout();
 	}
 #endif // SWIG
 };
 
+} // namespace dto
 } // namespace neurala
 
-#endif // NEURALA_IMAGE_IMAGE_METADATA_H
+#endif // NEURALA_IMAGE_DTO_IMAGE_METADATA_H

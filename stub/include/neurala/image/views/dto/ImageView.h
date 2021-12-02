@@ -16,13 +16,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NEURALA_IMAGE_VIEWS_IMAGE_VIEW_H
-#define NEURALA_IMAGE_VIEWS_IMAGE_VIEW_H
+#ifndef NEURALA_IMAGE_VIEWS_DTO_IMAGE_VIEW_H
+#define NEURALA_IMAGE_VIEWS_DTO_IMAGE_VIEW_H
 
-#include "neurala/algorithms/math/utils.h"
-#include "neurala/image/ImageMetadata.h"
+#include "neurala/image/dto/ImageMetadata.h"
 
 namespace neurala
+{
+namespace dto
 {
 /**
  * @brief View over an image.
@@ -33,7 +34,7 @@ namespace neurala
 class ImageView
 {
 public:
-	using size_type = std::size_t;
+	using size_type = ImageMetadata::size_type;
 
 private:
 	const void* m_data{};
@@ -131,63 +132,9 @@ public:
 	{
 		return static_cast<const T*>(data());
 	}
-
-	friend constexpr bool operator==(const ImageView& x, const ImageView& y) noexcept
-	{
-		if (x.metadata() != y.metadata())
-		{
-			return false;
-		}
-
-		if (x.data() == y.data())
-		{
-			return true;
-		}
-
-		switch (x.datatype())
-		{
-			case EDatatype::binary32:
-			{
-				const auto xdata = static_cast<const float*>(x.data());
-				const auto ydata = static_cast<const float*>(y.data());
-				return approxEqual(xdata, xdata + x.pixelComponentCount(), ydata);
-			}
-			case EDatatype::binary64:
-			{
-				const auto xdata = static_cast<const double*>(x.data());
-				const auto ydata = static_cast<const double*>(y.data());
-				return approxEqual(xdata, xdata + x.pixelComponentCount(), ydata);
-			}
-			case EDatatype::uint8:
-			{
-				const auto xdata = static_cast<const std::uint8_t*>(x.data());
-				const auto ydata = static_cast<const std::uint8_t*>(y.data());
-				return approxEqual(xdata, xdata + x.pixelComponentCount(), ydata);
-			}
-			case EDatatype::boolean:
-			{
-				const auto xdata = static_cast<const bool*>(x.data());
-				const auto ydata = static_cast<const bool*>(y.data());
-				return approxEqual(xdata, xdata + x.pixelComponentCount(), ydata);
-			}
-			default:
-				return false;
-		}
-		return true;
-	}
-
-	friend constexpr bool operator!=(const ImageView& x, const ImageView& y) noexcept
-	{
-		return !(x == y);
-	}
 };
 
-constexpr ImageView
-makeImageView(const ImageView& im) noexcept
-{
-	return im;
-}
-
+} // namespace dto
 } // namespace neurala
 
-#endif // NEURALA_IMAGE_VIEWS_IMAGE_VIEW_H
+#endif // NEURALA_IMAGE_VIEWS_DTO_IMAGE_VIEW_H
