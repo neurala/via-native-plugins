@@ -32,9 +32,7 @@ Input::nextFrame() noexcept
 {
 	try
 	{
-		std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
-		m_client.frame(frameBuffer.data(), frameBuffer.size());
-		m_frame = std::move(frameBuffer);
+		m_frame = m_client.frame();
 		return make_error_code(VideoSourceStatus::success);
 	}
 	catch (const beast::system_error& se)
@@ -43,11 +41,10 @@ Input::nextFrame() noexcept
 	}
 }
 
-ImageView
+dto::ImageView
 Input::frame(std::byte* data, std::size_t size) noexcept
 {
-	const ImageMetadata& md = cachedMetadata();
-	if (size < md.sizeBytes())
+	if (size < m_frame.size())
 	{
 		std::cerr << "Insufficient capacity in B4B buffer.\n";
 	}
@@ -55,10 +52,10 @@ Input::frame(std::byte* data, std::size_t size) noexcept
 	{
 		std::copy(cbegin(m_frame), cend(m_frame), data);
 	}
-	return {md, data};
+	return {cachedMetadata(), data};
 }
 
-const ImageMetadata&
+const dto::ImageMetadata&
 Input::cachedMetadata() const
 {
 	if (!m_metadata)

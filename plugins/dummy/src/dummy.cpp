@@ -21,6 +21,7 @@
 #include <iostream>
 #include <numeric>
 #include <system_error>
+#include <utility>
 
 #include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginBindings.h"
@@ -106,17 +107,19 @@ Source::Source(const CameraInfo& cameraInfo, const Options& options)
 	std::cout << "Initiating VideoSource connection with " << cameraInfo << '\n';
 	std::cout << "With options: " << options << '\n';
 
-	const auto frameBufferSize = metadata().pixelComponentCount();
+	const dto::ImageMetadata md{metadata()};
+	const auto frameBufferSize{md.width() * md.height() * 3};
 	m_frame = std::make_unique<std::uint8_t[]>(frameBufferSize);
 	std::iota(&(m_frame[0]), &(m_frame[frameBufferSize]), 0);
 }
 
-ImageView
+dto::ImageView
 Source::frame(std::byte* data, std::size_t size) noexcept
 {
 	std::cout << "Copying frame to [" << data << "]\n";
-	std::copy_n(reinterpret_cast<const std::byte*>(frame().data()), frame().sizeBytes(), data);
-	return ImageView{metadata(), data};
+	dto::ImageMetadata md{metadata()};
+	std::copy_n(reinterpret_cast<const std::byte*>(m_frame.get()), md.width() * md.height() * 3, data);
+	return {std::move(metadata()), data};
 }
 
 std::error_code

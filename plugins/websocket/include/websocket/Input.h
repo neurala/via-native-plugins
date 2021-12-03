@@ -75,26 +75,26 @@ public:
 	Input(const std::string_view ipAddress, const std::uint16_t port);
 
 	// Image dimension information
-	[[nodiscard]] ImageMetadata metadata() const noexcept final { return cachedMetadata(); }
+	[[nodiscard]] dto::ImageMetadata metadata() const noexcept final { return cachedMetadata(); }
 
 	// Query new frames​
 	[[nodiscard]] std::error_code nextFrame() noexcept final;
 
 	// Get a frame from host memory, data needs to be valid until the end of processing​
-	[[nodiscard]] ImageView frame() noexcept final { return {cachedMetadata(), m_frame.data()}; }
+	[[nodiscard]] dto::ImageView frame() noexcept final { return {cachedMetadata(), m_frame.data()}; }
 
 	// Copy a frame into the buffer provided as argument
-	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) noexcept final;
+	[[nodiscard]] dto::ImageView frame(std::byte* data, std::size_t size) noexcept final;
 
 	// Executes an arbitrary action on the video source
 	[[nodiscard]] std::error_code execute(const std::string&) noexcept final { return {}; }
 
 private:
 	// Access the image metadata. Only retrieve over the network if necessary.
-	const ImageMetadata& cachedMetadata() const;
+	const dto::ImageMetadata& cachedMetadata() const;
 
 	mutable Client m_client;
-	mutable std::optional<ImageMetadata> m_metadata;
+	mutable std::optional<dto::ImageMetadata> m_metadata;
 	std::vector<std::byte> m_frame;
 };
 

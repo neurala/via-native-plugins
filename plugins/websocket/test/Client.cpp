@@ -36,31 +36,12 @@ BOOST_FIXTURE_TEST_SUITE(Client, ClientFixture)
 
 BOOST_AUTO_TEST_CASE(Metadata)
 {
-	const ImageMetadata metadata{client.metadata()};
+	const dto::ImageMetadata metadata{client.metadata()};
 	BOOST_TEST(metadata.width() == 800);
 	BOOST_TEST(metadata.height() == 600);
-	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
-	BOOST_TEST(metadata.layout() == EImageDataLayout::planar);
-	BOOST_TEST(metadata.datatype() == EDatatype::uint8);
-}
-
-BOOST_AUTO_TEST_CASE(InsufficientBufferFrame)
-{
-	const ImageMetadata metadata{client.metadata()};
-	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
-	std::vector<std::byte> frameBuffer(metadata.width() * metadata.height() * 3 - 1);
-	BOOST_TEST(!client.frame(frameBuffer.data(), frameBuffer.size()));
-	BOOST_TEST(std::all_of(cbegin(frameBuffer), cend(frameBuffer), [](std::byte b) {
-		return static_cast<char>(b) == 0;
-	}));
-}
-
-BOOST_AUTO_TEST_CASE(SufficientBufferFrame)
-{
-	const ImageMetadata metadata{client.metadata()};
-	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
-	std::vector<std::byte> frameBuffer(metadata.width() * metadata.height() * 3);
-	BOOST_TEST(client.frame(frameBuffer.data(), frameBuffer.size()));
+	BOOST_TEST(metadata.colorSpace() == "RGB");
+	BOOST_TEST(metadata.layout() == "planar");
+	BOOST_TEST(metadata.datatype() == "uint8");
 }
 
 BOOST_AUTO_TEST_CASE(Response)

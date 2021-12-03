@@ -40,7 +40,7 @@ Client::Client(const std::string_view ipAddress, const std::uint16_t port)
 	m_stream.handshake(ipAddress.data(), "/");
 }
 
-ImageMetadata
+dto::ImageMetadata
 Client::metadata()
 {
 	const net::const_buffer buffer{response("metadata")};
@@ -48,30 +48,23 @@ Client::metadata()
 	const value jsonValue{
 	 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
 	const object& jsonObject{jsonValue.as_object()};
-	const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
-	const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
-	const string& colorSpaceStr{jsonObject.at("colorSpace").as_string()};
-	const EColorSpace colorSpace{
-	 stringToEnum<EColorSpace>(std::string_view{colorSpaceStr.data(), colorSpaceStr.size()})};
-	const string& layoutStr{jsonObject.at("layout").as_string()};
-	const EImageDataLayout layout{
-	 stringToEnum<EImageDataLayout>(std::string_view{layoutStr.data(), layoutStr.size()})};
-	const string& dataTypeStr{jsonObject.at("dataType").as_string()};
-	const EDatatype dataType{
-	 stringToEnum<EDatatype>(std::string_view{dataTypeStr.data(), dataTypeStr.size()})};
-	return {width, height, colorSpace, layout, dataType};
+	const string& colorSpace{jsonObject.at("colorSpace").as_string()};
+	const string& layout{jsonObject.at("layout").as_string()};
+	const string& dataType{jsonObject.at("dataType").as_string()};
+	return {static_cast<std::size_t>(jsonObject.at("width").as_int64()),
+	        static_cast<std::size_t>(jsonObject.at("height").as_int64()),
+	        std::string{colorSpace.data(), colorSpace.size()},
+	        std::string{layout.data(), layout.size()},
+	        std::string{dataType.data(), dataType.size()}};
 }
 
-bool
-Client::frame(std::byte* const location, const std::size_t capacity)
+std::vector<std::byte>
+Client::frame()
 {
 	net::const_buffer buffer = response("frame");
-	const bool sufficientCapacity{buffer.size() <= capacity};
-	if (sufficientCapacity)
-	{
-		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), location);
-	}
-	return sufficientCapacity;
+	std::vector<std::byte> ret(buffer.size());
+	std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), begin(ret));
+	return ret;
 }
 
 net::const_buffer

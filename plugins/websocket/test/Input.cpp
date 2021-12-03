@@ -29,12 +29,12 @@ BOOST_AUTO_TEST_SUITE(Input)
 
 BOOST_AUTO_TEST_CASE(Metadata)
 {
-	const ImageMetadata metadata{plug::ws::Input{"127.0.0.1", 54321}.metadata()};
+	const dto::ImageMetadata metadata{plug::ws::Input{"127.0.0.1", 54321}.metadata()};
 	BOOST_TEST(metadata.width() == 800);
 	BOOST_TEST(metadata.height() == 600);
-	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
-	BOOST_TEST(metadata.layout() == EImageDataLayout::planar);
-	BOOST_TEST(metadata.datatype() == EDatatype::uint8);
+	BOOST_TEST(metadata.colorSpace() == "RGB");
+	BOOST_TEST(metadata.layout() == "planar");
+	BOOST_TEST(metadata.datatype() == "uint8");
 }
 
 BOOST_AUTO_TEST_CASE(NextFrame)
@@ -46,13 +46,13 @@ BOOST_AUTO_TEST_CASE(ManagedFrame)
 {
 	plug::ws::Input input{"127.0.0.1", 54321};
 	BOOST_TEST(input.nextFrame().value() == 0);
-	const ImageView view{input.frame()};
+	const dto::ImageView view{input.frame()};
 	BOOST_TEST(view.data() != nullptr);
 	BOOST_TEST(view.width() == 800);
 	BOOST_TEST(view.height() == 600);
-	BOOST_TEST(view.colorSpace() == EColorSpace::RGB);
-	BOOST_TEST(view.layout() == EImageDataLayout::planar);
-	BOOST_TEST(view.datatype() == EDatatype::uint8);
+	BOOST_TEST(view.colorSpace() == "RGB");
+	BOOST_TEST(view.layout() == "planar");
+	BOOST_TEST(view.datatype() == "uint8");
 }
 
 BOOST_AUTO_TEST_CASE(UnmanagedFrame)
@@ -60,13 +60,13 @@ BOOST_AUTO_TEST_CASE(UnmanagedFrame)
 	plug::ws::Input input{"127.0.0.1", 54321};
 	BOOST_TEST(input.nextFrame().value() == 0);
 	std::vector<std::byte> frameBuffer(800 * 600 * 3);
-	const ImageView view{input.frame(frameBuffer.data(), frameBuffer.size())};
+	const dto::ImageView view{input.frame(frameBuffer.data(), frameBuffer.size())};
 	BOOST_TEST(view.data() == frameBuffer.data());
 	BOOST_TEST(view.width() == 800);
 	BOOST_TEST(view.height() == 600);
-	BOOST_TEST(view.colorSpace() == EColorSpace::RGB);
-	BOOST_TEST(view.layout() == EImageDataLayout::planar);
-	BOOST_TEST(view.datatype() == EDatatype::uint8);
+	BOOST_TEST(view.colorSpace() == "RGB");
+	BOOST_TEST(view.layout() == "planar");
+	BOOST_TEST(view.datatype() == "uint8");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

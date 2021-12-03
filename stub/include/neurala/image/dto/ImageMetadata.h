@@ -22,6 +22,7 @@
 #include <cstddef>
 #include <ostream>
 #include <string>
+#include <utility>
 
 namespace neurala
 {
@@ -56,74 +57,78 @@ public:
 	 * @param layout     image data layout
 	 * @param datatype   image data type
 	 */
-	constexpr ImageMetadata(size_type width,
-	                        size_type height,
-	                        const std::string& colorSpace,
-	                        const std::string& layout,
-	                        const std::string& datatype) noexcept
-	 : m_width{width}, m_height{height}, m_colorSpace{colorSpace}, m_layout{layout}, m_datatype{datatype}
+	ImageMetadata(size_type width,
+	              size_type height,
+	              std::string&& colorSpace,
+	              std::string&& layout,
+	              std::string&& datatype) noexcept
+	 : m_width{width},
+	   m_height{height},
+	   m_colorSpace{std::move(colorSpace)},
+	   m_layout{std::move(layout)},
+	   m_datatype{std::move(datatype)}
 	{ }
 
 	/**
 	 * @brief Returns the image width in pixels.
 	 */
-	constexpr size_type width() const noexcept { return m_width; }
+	size_type width() const noexcept { return m_width; }
 
 	/**
 	 * @brief Sets the image width in pixels.
 	 */
-	constexpr void width(size_type n) noexcept { m_width = n; }
+	void width(size_type n) noexcept { m_width = n; }
 
 	/**
 	 * @brief Returns the image height in pixels.
 	 */
-	constexpr size_type height() const noexcept { return m_height; }
+	size_type height() const noexcept { return m_height; }
 
 	/**
 	 * @brief Sets the image height in pixels.
 	 */
-	constexpr void height(size_type n) noexcept { m_height = n; }
+	void height(size_type n) noexcept { m_height = n; }
 
 	/**
 	 * @brief Returns the image color model.
 	 */
-	constexpr const std::string& colorSpace() const noexcept { return m_colorSpace; }
+	const std::string& colorSpace() const noexcept { return m_colorSpace; }
 
 	/**
 	 * @brief Sets the image color model.
 	 */
-	constexpr void colorSpace(const std::string& c) noexcept { m_colorSpace = c; }
+	void colorSpace(const std::string& c) noexcept { m_colorSpace = c; }
 
 	/**
 	 * @brief Returns the image data layout.
 	 */
-	constexpr const std::string& layout() const noexcept { return m_layout; }
+	const std::string& layout() const noexcept { return m_layout; }
 
 	/**
 	 * @brief Sets the image data layout.
 	 */
-	constexpr void layout(const std::string& l) noexcept { m_layout = l; }
+	void layout(const std::string& l) noexcept { m_layout = l; }
 
 	/**
 	 * @brief Returns the image data type.
 	 */
-	constexpr const std::string& datatype() const noexcept { return m_datatype; }
+	const std::string& datatype() const noexcept { return m_datatype; }
 
 	/**
 	 * @brief Sets the image data layout.
 	 */
-	constexpr void datatype(const std::string& d) noexcept { m_datatype = d; }
+	void datatype(const std::string& d) noexcept { m_datatype = d; }
 
 // NOTE:20210927:jgerity:SWIG does not support `friend constexpr`
 // (https://github.com/swig/swig/issues/2079)
 #ifndef SWIG
-	friend constexpr bool operator==(const ImageMetadata& x, const ImageMetadata& y) noexcept
+	friend bool operator==(const ImageMetadata& x, const ImageMetadata& y) noexcept
 	{
 		return x.width() == y.width() && x.height() == y.height() && x.colorSpace() == y.colorSpace()
 		       && x.datatype() == y.datatype() && x.layout() == y.layout();
 	}
 
-	friend constexpr bool operator!=(const ImageMetadata& x, const ImageMetadata& y) noexcept
+	friend bool operator!=(const ImageMetadata& x, const ImageMetadata& y) noexcept
 	{
 		return !(x == y);
 	}

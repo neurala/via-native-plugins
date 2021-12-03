@@ -24,7 +24,7 @@
 #include <string_view>
 
 #include "neurala/exports.h"
-#include "neurala/image/views/ImageView.h"
+#include "neurala/image/views/dto/ImageView.h"
 #include "neurala/utils/Options.h"
 
 namespace neurala
@@ -83,7 +83,7 @@ public:
 	 * @param image A pointer to an image view, which may be null if no frame
 	 *              is available or could be retrieved.
 	 */
-	virtual void operator()(const std::string& metadata, const ImageView* image) noexcept = 0;
+	virtual void operator()(const std::string& metadata, const dto::ImageView* image) noexcept = 0;
 };
 
 } // namespace neurala

@@ -49,9 +49,9 @@ class PLUGIN_API Source : public VideoSource
 public:
 	explicit Source(const CameraInfo& cameraInfo, const Options& cameraOptions = {});
 
-	[[nodiscard]] ImageMetadata metadata() const noexcept override
+	[[nodiscard]] dto::ImageMetadata metadata() const noexcept override
 	{
-		return ImageMetadata(200, 200, EColorSpace::RGB, EImageDataLayout::planar, EDatatype::uint8);
+		return {200, 200, "RGB", "planar", "uint8"};
 	}
 
 	[[nodiscard]] std::error_code nextFrame() noexcept override
@@ -59,9 +59,9 @@ public:
 		return make_error_code(VideoSourceStatus::success);
 	}
 
-	[[nodiscard]] ImageView frame() noexcept override { return ImageView(metadata(), m_frame.get()); }
+	[[nodiscard]] dto::ImageView frame() noexcept override { return {metadata(), m_frame.get()}; }
 
-	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) noexcept override;
+	[[nodiscard]] dto::ImageView frame(std::byte* data, std::size_t size) noexcept override;
 
 	std::error_code execute(const std::string& action) noexcept override;
 

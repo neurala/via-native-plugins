@@ -19,6 +19,8 @@
 #ifndef NEURALA_IMAGE_VIEWS_DTO_IMAGE_VIEW_H
 #define NEURALA_IMAGE_VIEWS_DTO_IMAGE_VIEW_H
 
+#include <string>
+
 #include "neurala/image/dto/ImageMetadata.h"
 
 namespace neurala
@@ -54,81 +56,40 @@ public:
 	 * @param metadata image metadata
 	 * @param data     image data
 	 */
-	constexpr ImageView(const ImageMetadata& metadata, const void* data) noexcept
+	ImageView(const ImageMetadata& metadata, const void* data) noexcept
 	 : m_data{data}, m_metadata{metadata}
 	{ }
 
-	/**
-	 * @brief Constructs a new @ref ImageView with the provided arguments.
-	 *
-	 * The data type is derived from the type of @p data.
-	 *
-	 * @warning It is the user's responsibility to give a pointer to adequate data as described by
-	 *          the rest of the parameters.
-	 *
-	 * @param width      image width
-	 * @param height     image height
-	 * @param colorSpace image color space
-	 * @param layout     image data layout
-	 * @param data       image data
-	 */
-	template<class T>
-	constexpr ImageView(size_type width,
-	                    size_type height,
-	                    EColorSpace colorSpace,
-	                    EImageDataLayout layout,
-	                    const T* data) noexcept
-	 : m_data{data}, m_metadata{width, height, colorSpace, layout, DatatypeTraits<T>::datatype}
-	{ }
-
-	/// @copydoc ImageMetadata::empty() const
-	constexpr bool empty() const noexcept { return m_metadata.empty(); }
-
 	/// @copydoc ImageMetadata::width() const
-	constexpr size_type width() const noexcept { return m_metadata.width(); }
+	size_type width() const noexcept { return m_metadata.width(); }
 
 	/// @copydoc ImageMetadata::height() const
-	constexpr size_type height() const noexcept { return m_metadata.height(); }
-
-	/// @copydoc ImageMetadata::channels() const
-	constexpr size_type channels() const noexcept { return m_metadata.channels(); }
-
-	/// @copydoc ImageMetadata::pixelComponentCount() const
-	constexpr size_type pixelComponentCount() const noexcept
-	{
-		return m_metadata.pixelComponentCount();
-	}
-
-	/// @copydoc ImageMetadata::pixelCount() const
-	constexpr size_type pixelCount() const noexcept { return m_metadata.pixelCount(); }
+	size_type height() const noexcept { return m_metadata.height(); }
 
 	/// @copydoc ImageMetadata::colorSpace() const
-	constexpr EColorSpace colorSpace() const noexcept { return m_metadata.colorSpace(); }
+	const std::string& colorSpace() const noexcept { return m_metadata.colorSpace(); }
 
 	/// @copydoc ImageMetadata::layout() const
-	constexpr EImageDataLayout layout() const noexcept { return m_metadata.layout(); }
+	const std::string& layout() const noexcept { return m_metadata.layout(); }
 
 	/// @copydoc ImageMetadata::datatype() const
-	constexpr EDatatype datatype() const noexcept { return m_metadata.datatype(); }
-
-	/// @copydoc ImageMetadata::sizeBytes() const
-	constexpr size_type sizeBytes() const noexcept { return m_metadata.sizeBytes(); }
+	const std::string& datatype() const noexcept { return m_metadata.datatype(); }
 
 	/**
 	 * @brief Returns the metadata associated with this view.
 	 */
-	constexpr const ImageMetadata& metadata() const noexcept { return m_metadata; }
+	const ImageMetadata& metadata() const noexcept { return m_metadata; }
 
 	/**
 	 * @brief Returns the data associated with this view.
 	 */
-	constexpr const void* data() const noexcept { return m_data; }
+	const void* data() const noexcept { return m_data; }
 
 	/**
 	 * @brief Returns the data associated with this view as @p T.
 	 */
 	template<class T>
-	constexpr const T* dataAs() const noexcept
+	const T* dataAs() const noexcept
 	{
 		return static_cast<const T*>(data());
 	}
