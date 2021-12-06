@@ -16,21 +16,36 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 
 namespace Neurala.VIA {
-    public interface IRequestHandler {
-        void HandleResults(string results);
-        void ExecuteAction(string action);
+    public delegate void ActionHandler(string action);
+
+    internal sealed class ImageInformation {
+        public readonly Stream Stream;
+        public readonly TaskCompletionSource<string> Future;
+
+        public string Result {
+            set => Future.SetResult(value);
+        }
+
+        public Task<string> Task {
+            get => Future.Task;
+        }
+
+        public ImageInformation(Stream stream) {
+            Stream = stream;
+            Future = new TaskCompletionSource<string>();
+        }
     }
 
     public class WebSocket {
         private readonly HttpServer Server;
-        private readonly IEnumerable<Stream> ImageDataProducer;
-        private readonly IRequestHandler RequestHandler;
+        private readonly IEnumerable<ImageInformation> ImageDataProducer;
+        private readonly ActionHandler ActionHandler;
 
         private sealed class ConnectionHandler : WebSocketBehavior {
             private const int exifOrientationID = 0x112; // 274
 
-            private readonly IEnumerator<Stream> ImageEnumerator;
-            private readonly IRequestHandler RequestHandler;
+            private readonly IEnumerator<ImageInformation> ImageEnumerator;
+            private readonly ActionHandler ActionHandler;
 
             private Image currentImage;
 
@@ -47,15 +62,19 @@ namespace Neurala.VIA {
 
             private Stream CurrentStream {
                 get {
-                    var imageStream = ImageEnumerator.Current;
+                    var imageStream = ImageEnumerator.Current.Stream;
                     imageStream.Seek(0L, SeekOrigin.Begin);
                     return imageStream;
                 }
             }
 
-            public ConnectionHandler(IEnumerable<Stream> imageDataProducer, IRequestHandler requestHandler) {
+            public string Result {
+                set => ImageEnumerator.Current.Result = value;
+            }
+
+            public ConnectionHandler(IEnumerable<ImageInformation> imageDataProducer, ActionHandler requestHandler) {
                 ImageEnumerator = imageDataProducer.GetEnumerator();
-                RequestHandler = requestHandler;
+                ActionHandler = requestHandler;
             }
 
             protected sealed override void OnMessage(MessageEventArgs @event) {
@@ -118,12 +137,12 @@ namespace Neurala.VIA {
                         } else if (request == "execute") {
                             var action = message["body"]["action"].ToString();
                             Console.WriteLine("Got execute request.");
-                            RequestHandler.ExecuteAction(action);
+                            ActionHandler(action);
                             Send("{}");
                         } else if (request == "result") {
                             var body = message["body"].ToString();
                             Console.WriteLine("Got result request.");
-                            RequestHandler.HandleResults(body);
+                            Result = body;
                             Send("{}");
                         }
                     }
@@ -172,16 +191,16 @@ namespace Neurala.VIA {
             }
         }
 
-        public WebSocket(int port, IRequestHandler requestHandler) : this(port, new SynchronousImageDataProducer(), requestHandler) { }
+        public WebSocket(int port, ActionHandler requestHandler) : this(port, new SynchronousImageDataProducer(), requestHandler) { }
 
-        public WebSocket(int port, IEnumerable<Stream> imageDataProducer, IRequestHandler requestHandler) {
+        internal WebSocket(int port, IEnumerable<ImageInformation> imageDataProducer, ActionHandler requestHandler) {
             Server = new HttpServer(port);
             Server.AddWebSocketService("/", MakeConnectionHandler);
             Server.AddWebSocketService("/via", MakeConnectionHandler);
             Server.Log.Level = LogLevel.Debug;
 
             ImageDataProducer = imageDataProducer;
-            RequestHandler = requestHandler;
+            ActionHandler = requestHandler;
         }
 
         public void Start() {
@@ -194,39 +213,51 @@ namespace Neurala.VIA {
             Server.Stop();
         }
 
-        public void SendImage(string path) {
-            var imageData = File.OpenRead(path);
-
-            SendImage(imageData);
+        public string SendImage(string path) {
+            return SendImageAsync(path).Result;
         }
 
-        public void SendImage(Stream imageData) {
+        public string SendImage(Stream imageData) {
+            return SendImageAsync(imageData).Result;
+        }
+
+        public Task<string> SendImageAsync(string path) {
+            var imageData = File.OpenRead(path);
+
+            return SendImageAsync(imageData);
+        }
+
+        public Task<string> SendImageAsync(Stream imageData) {
             if (ImageDataProducer is SynchronousImageDataProducer producer)
-                producer.AddImage(imageData);
+                return producer.AddImageAsync(imageData);
             else throw new InvalidOperationException("This operation is available only when a custom imageData producer is not provided.");
         }
 
-        private ConnectionHandler MakeConnectionHandler() => new ConnectionHandler(ImageDataProducer, RequestHandler);
+        private ConnectionHandler MakeConnectionHandler() => new ConnectionHandler(ImageDataProducer, ActionHandler);
     }
 
     /// <summary>Synchronous adaptor for producing images.</summary>
-    internal class SynchronousImageDataProducer : IEnumerable<Stream> {
-        private readonly Queue<Stream> ImageDataQueue;
+    internal class SynchronousImageDataProducer : IEnumerable<ImageInformation> {
+        private readonly Queue<ImageInformation> ImageDataQueue;
 
         public SynchronousImageDataProducer() {
-            ImageDataQueue = new Queue<Stream>();
+            ImageDataQueue = new Queue<ImageInformation>();
         }
 
-        public void AddImage(Stream imageData) {
+        public Task<string> AddImageAsync(Stream imageData) {
             lock (ImageDataQueue) {
-                ImageDataQueue.Enqueue(imageData);
+                var information = new ImageInformation(imageData);
+
+                ImageDataQueue.Enqueue(information);
 
                 if (ImageDataQueue.Count == 1)
                     Monitor.Pulse(ImageDataQueue);
+
+                return information.Task;
             }
         }
 
-        private IEnumerable<Stream> Enumerate() {
+        private IEnumerable<ImageInformation> Enumerate() {
             lock (ImageDataQueue) {
                 while (true) {
                     if (ImageDataQueue.Count == 0)
@@ -247,6 +278,6 @@ namespace Neurala.VIA {
         }
 
         IEnumerator IEnumerable.GetEnumerator() => Enumerate().GetEnumerator();
-        IEnumerator<Stream> IEnumerable<Stream>.GetEnumerator() => Enumerate().GetEnumerator();
+        IEnumerator<ImageInformation> IEnumerable<ImageInformation>.GetEnumerator() => Enumerate().GetEnumerator();
     }
 }

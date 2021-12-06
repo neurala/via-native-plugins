@@ -16,20 +16,14 @@ For convenience, the plugin and an executable for testing are provided in pre-bu
 
 ```csharp
 namespace Neurala.VIA {
-    public interface IRequestHandler {
-        /// <summary>Handles the results of an inspection (see <c>ResultsOutput::operator()</c>).</summary>
-        void HandleResults(string results);
-
-        /// <summary>Executes a given action (see <c>VideoSource::execute</c>).</summary>
-        void ExecuteAction(string action);
-    }
+    public delegate void ActionHandler(string action);
 
     public class WebSocket {
         /// <summary>Constructs a VIA WebSocket.</summary>
         /// <param name="port">The port on which the server should listen.</param>
         /// <param name="bitmapProducer">A user-provided source of image frames.</param>
-        /// <param name="requestHandler">An interface for handling actions and inspection results.</param>
-        public WebSocket(int port, IEnumerable<Bitmap> bitmapProducer, IRequestHandler requestHandler);
+        /// <param name="actionHandler">An delegate for handling actions.</param>
+        public WebSocket(int port, IEnumerable<Bitmap> bitmapProducer, ActionHandler actionHandler);
 
         /// <summary>Starts the server. This method does not block.</summary>
         public void Start();
@@ -46,29 +40,21 @@ namespace Neurala.VIA {
 public static class Program {
     public static void Main() {
         var port = 1234;
-        var handler = new MyHandler();
         var server = new Neurala.VIA.WebServer(port, handler);
 
         server.Start();
 
         while (/* ... */) {
             /* ... */
-            server.SendImage(image); // Can be a path or a Bitmap object.
+            var results = server.SendImage(image);
             /* ... */
         }
 
         server.Stop();
     }
-}
 
-class MyHandler : IRequestHandler {
-    void HandleResults(string results) {
-        // Handle inspection results.
-        // See ResultsOutput for the results format.
-    }
-
-    void ExecuteAction(string action) {
-        // Execute a user-defined action.
+    private static void HandleAction(string action) {
+        /* ... */
     }
 }
 ```

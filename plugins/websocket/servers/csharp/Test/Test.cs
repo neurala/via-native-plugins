@@ -7,31 +7,15 @@ using System.Threading;
 using Neurala.VIA;
 
 public static class Program {
-    private static WebSocket Server;
-
-    private sealed class DummyHandler : IRequestHandler {
-        void IRequestHandler.HandleResults(string results) {
-            Console.WriteLine(results);
-        }
-
-        void IRequestHandler.ExecuteAction(string action) {
-            Console.WriteLine(action);
-        }
-    }
-
     public static void Main(string[] arguments) {
         // Get port and image directory.
         var portString = arguments[0];
         var port = Int32.Parse(portString);
         var imageDirectory = arguments[1];
 
-        // This is where you control how to send images and what to do with results.
-        // All you need is a way to provide images, and a way to handle results.
-        var requestHandler = new DummyHandler();
-
         // Create and start the WebSocket.
-        Server = new WebSocket(port, requestHandler);
-        Server.Start();
+        var server = new WebSocket(port, HandleAction);
+        server.Start();
 
         // Have a way to stop this test program.
         var running = true;
@@ -44,12 +28,19 @@ public static class Program {
 
             foreach (var image in images) {
                 Console.WriteLine($"Trying to load image file \"{image}\".");
-                Server.SendImage(image);
-                Thread.Sleep(1000);
+
+                var result = server.SendImage(image);
+
+                Console.WriteLine(result);
             }
         }
 
         Console.WriteLine("Stopping server.");
-        Server.Stop();
+        server.Stop();
+    }
+
+    // What to do upon receiving an action request.
+    private static void HandleAction(string action) {
+        Console.WriteLine(action);
     }
 }
