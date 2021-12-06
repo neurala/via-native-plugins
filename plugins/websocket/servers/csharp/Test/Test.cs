@@ -8,10 +8,11 @@ using Neurala.VIA;
 
 public static class Program {
     public static void Main(string[] arguments) {
-        // Get port and image directory.
+        // Get port, source image directory, and destination image directory (for processed images).
         var portString = arguments[0];
         var port = Int32.Parse(portString);
         var imageDirectory = arguments[1];
+        var processedDirectory = arguments[2];
 
         // Create and start the WebSocket.
         var server = new WebSocket(port, HandleAction);
@@ -21,8 +22,8 @@ public static class Program {
         var running = true;
         Console.CancelKeyPress += (_, _) => running = false;
 
-        // This example program repeatedly iterates over the files in a given directory
-        // and sends them.
+        // This example program repeatedly iterates over the files in a given directory,
+        // sends them, and then moves them to a different directory to mark as processed.
         while (running) {
             var images = Directory.EnumerateFiles(imageDirectory);
 
@@ -32,6 +33,11 @@ public static class Program {
                 var result = server.SendImage(image);
 
                 Console.WriteLine(result);
+
+                var fileName = Path.GetFileName(image);
+                var destination = Path.Join(processedDirectory, fileName);
+
+                File.Move(image, destination);
             }
         }
 

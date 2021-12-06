@@ -53,7 +53,7 @@ namespace Neurala.VIA {
                 get {
                     if (currentImage == null) {
                         ImageEnumerator.MoveNext();
-                        currentImage = Image.FromStream(CurrentStream);
+                        currentImage = Image.FromStream(CurrentStreamFromBeginning);
                     }
 
                     return currentImage;
@@ -61,6 +61,10 @@ namespace Neurala.VIA {
             }
 
             private Stream CurrentStream {
+                get => ImageEnumerator.Current.Stream;
+            }
+
+            private Stream CurrentStreamFromBeginning {
                 get {
                     var imageStream = ImageEnumerator.Current.Stream;
                     imageStream.Seek(0L, SeekOrigin.Begin);
@@ -132,8 +136,10 @@ namespace Neurala.VIA {
                             var bytes = new byte[length];
 
                             outputStream.Read(bytes, 0, length);
-                            Send(bytes);
+                            outputStream.Dispose();
+
                             ResetCurrent();
+                            Send(bytes);
                         } else if (request == "execute") {
                             var action = message["body"]["action"].ToString();
                             Console.WriteLine("Got execute request.");
@@ -158,13 +164,14 @@ namespace Neurala.VIA {
             }
 
             private void ResetCurrent() {
+                CurrentStream.Dispose();
                 currentImage = null;
             }
 
             // Adapted from https://stackoverflow.com/questions/27835064/get-image-orientation-and-rotate-as-per-orientation
             private Stream ExifRotate(Image img) {
                 if (!Array.Exists<int>(img.PropertyIdList, value => value == exifOrientationID))
-                    return CurrentStream;
+                    return CurrentStreamFromBeginning;
 
                 var prop = img.GetPropertyItem(exifOrientationID);
                 int val = BitConverter.ToUInt16(prop.Value, 0);
@@ -187,7 +194,7 @@ namespace Neurala.VIA {
                     return stream;
                 }
 
-                return CurrentStream;
+                return CurrentStreamFromBeginning;
             }
         }
 
