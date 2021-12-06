@@ -22,7 +22,7 @@
 #include "neurala/image/dto/ImageMetadata.h"
 #include "neurala/image/views/dto/ImageView.h"
 #include "neurala/utils/Options.h"
-#include "neurala/video/CameraInfo.h"
+#include "neurala/video/dto/CameraInfo.h"
 
 namespace neurala
 {
@@ -45,8 +45,8 @@ public:
 	/**
 	 * For VideoSource implementations, the call to void* create(PluginArguments&,
 	 * PluginErrorCallback&) will provide two plugin arguments:
-	 *  1. CameraInfo (information about the camera and how to connect to it, as provided through the
-	 * implementation of CameraDiscoverer)
+	 *  1. dto::CameraInfo (information about the camera and how to connect to it, as provided through
+	 * the implementation of CameraDiscoverer)
 	 *  2. Options (additional camera settings - not mandatory)
 	 */
 

@@ -70,7 +70,7 @@ Plugins have to be implemented in C++ using C++17 flags and need to be deployed 
 - `VideoSource` is used to retrieve image metadata and frames. In the call to `create()`, there are two `PluginArguments`, representing the `CameraInfo` retrieved through `CameraDiscoverer` and `Options` object.
 - `ResultsOutput` passes back the results of processing each frame as a string in JSON format and an `ImageView` to the associated input.
 
-### How are these types identified and loaded by the Neurala SDK?	
+### How are these types identified and loaded by the Neurala SDK?
 The DLL will be scanned for an `extern "C" PLUGIN_API NeuralaPluginExitFunction initMe(NeuralaPluginManager*, std::error_code*)`. Types derived from the three interfaces mentioned above must be registered through the `PluginManager` (`PluginRegistrar`).
 
 Each implementation must define two static functions through which instance lifetime is managed:

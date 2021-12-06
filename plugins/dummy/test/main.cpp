@@ -29,7 +29,7 @@ main()
 
 	// Discover the cameras exposed by this plugin
 	const auto connectedCameras = dummyDiscoverer();
-	CameraInfo dummyCameraInfo = connectedCameras[0];
+	dto::CameraInfo dummyCameraInfo = connectedCameras[0];
 	plug::dummy::Source dummyVideoSource(dummyCameraInfo);
 
 	// Retrieve dummy metadata

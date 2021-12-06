@@ -29,7 +29,7 @@
 #include "neurala/plugin/PluginManager.h"
 #include "neurala/plugin/PluginStatus.h"
 #include "neurala/utils/Version.h"
-#include "neurala/video/CameraInfo.h"
+#include "neurala/video/dto/CameraInfo.h"
 
 namespace
 {
@@ -65,18 +65,18 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 
 namespace neurala::plug::dummy
 {
-std::vector<CameraInfo>
+std::vector<dto::CameraInfo>
 Discoverer::operator()() const noexcept
 {
 	std::cout << "Discovering available cameras...\n";
-	return {CameraInfo("DummyNativePluginCameraId1",
-	                   kSourceTypeName,
-	                   "External Dummy Camera #1",
-	                   "DummyNativePluginCameraConnection1"),
-	        CameraInfo("DummyNativePluginCameraId1",
-	                   kSourceTypeName,
-	                   "External Dummy Camera #2",
-	                   "DummyNativePluginCameraConnection2")};
+	return {{"DummyNativePluginCameraId1",
+	         kSourceTypeName,
+	         "External Dummy Camera #1",
+	         "DummyNativePluginCameraConnection1"},
+	        {"DummyNativePluginCameraId1",
+	         kSourceTypeName,
+	         "External Dummy Camera #2",
+	         "DummyNativePluginCameraConnection2"}};
 }
 
 void*
@@ -102,7 +102,7 @@ Discoverer::destroy(void* p)
 	delete static_cast<Discoverer*>(p);
 }
 
-Source::Source(const CameraInfo& cameraInfo, const Options& options)
+Source::Source(const dto::CameraInfo& cameraInfo, const Options& options)
 {
 	std::cout << "Initiating VideoSource connection with " << cameraInfo << '\n';
 	std::cout << "With options: " << options << '\n';
@@ -136,7 +136,7 @@ Source::create(PluginArguments& arguments, PluginErrorCallback& error)
 
 	try
 	{
-		const auto& cameraInfo = arguments.get<0, const CameraInfo>();
+		const auto& cameraInfo = arguments.get<0, const dto::CameraInfo>();
 		const auto& cameraOptions = arguments.get<1, const Options>();
 
 		p = new Source(cameraInfo, cameraOptions);

@@ -42,7 +42,7 @@ class PLUGIN_API Input final : public VideoSource
 public:
 	static void* create(PluginArguments& args, PluginErrorCallback& ec)
 	{
-		const std::string& connection{args.get<0, const CameraInfo>().connection()};
+		const std::string& connection{args.get<0, const dto::CameraInfo>().connection()};
 		const std::size_t delimiterIndex = connection.find(':');
 
 		try

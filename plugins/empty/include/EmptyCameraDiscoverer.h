@@ -26,7 +26,7 @@
 #include <neurala/plugin/PluginErrorCallback.h>
 
 #include <neurala/video/CameraDiscoverer.h>
-#include <neurala/video/CameraInfo.h>
+#include <neurala/video/dto/CameraInfo.h>
 
 namespace neurala::plug::empty
 {
@@ -37,7 +37,7 @@ public:
 	static void destroy(void* p) { delete reinterpret_cast<CameraDiscoverer*>(p); }
 
 	/// Return information for the camera emulated by the plugin.
-	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept final { return {}; }
+	[[nodiscard]] std::vector<dto::CameraInfo> operator()() const noexcept final { return {}; }
 };
 
 } // namespace neurala::plug::empty

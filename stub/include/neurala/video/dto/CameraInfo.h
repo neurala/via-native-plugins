@@ -25,6 +25,8 @@
 
 namespace neurala
 {
+namespace dto
+{
 /**
  * @brief Camera information.
  */
@@ -108,6 +110,7 @@ public:
 	}
 };
 
+} // namespace dto
 } // namespace neurala
 
 #endif // NEURALA_VIDEO_CAMERA_INFO_H

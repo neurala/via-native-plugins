@@ -35,7 +35,7 @@ namespace plug::dummy
 class PLUGIN_API Discoverer : public CameraDiscoverer
 {
 public:
-	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept override;
+	[[nodiscard]] std::vector<dto::CameraInfo> operator()() const noexcept override;
 
 	static void* create(PluginArguments&, PluginErrorCallback&);
 	static void destroy(void* p);
@@ -47,7 +47,7 @@ public:
 class PLUGIN_API Source : public VideoSource
 {
 public:
-	explicit Source(const CameraInfo& cameraInfo, const Options& cameraOptions = {});
+	explicit Source(const dto::CameraInfo& cameraInfo, const Options& cameraOptions = {});
 
 	[[nodiscard]] dto::ImageMetadata metadata() const noexcept override
 	{
