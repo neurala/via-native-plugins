@@ -46,11 +46,10 @@ BOOST_AUTO_TEST_CASE(Metadata)
 
 BOOST_AUTO_TEST_CASE(Frame)
 {
-	const ImageMetadata metadata{client.metadata()};
-	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
 	BOOST_TEST(client.nextFrame().value() == 0);
-	const std::vector<std::byte>& frameBuffer{client.frame()};
-	BOOST_CHECK_EQUAL(frameBuffer.size(), metadata.width() * metadata.height() * 3);
+	const ImageView frame{client.frame()};
+	BOOST_TEST(frame.colorSpace() == EColorSpace::RGB);
+	BOOST_CHECK_EQUAL(client.frameSize(), frame.width() * frame.height() * 3);
 }
 
 BOOST_AUTO_TEST_CASE(Response)

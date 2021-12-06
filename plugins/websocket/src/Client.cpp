@@ -31,8 +31,7 @@
 
 namespace neurala::plug::ws
 {
-Client::Client()
- : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}, m_buffer{}, m_frameFormat{}, m_frameMetadata{}, m_frame{}
+Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}, m_frameCache{}
 {
 	try
 	{
@@ -45,6 +44,7 @@ Client::Client()
 		          << '\n';
 		m_stream.handshake(ipAddress.data(), "/");
 		std::clog << "WebSocket client connected.\n";
+		m_frameCache.metadata = metadata(); // ensure the cache is initialized
 	}
 	catch (const std::exception& e)
 	{
@@ -84,55 +84,57 @@ Client::metadata() noexcept
 
 		if (jsonObject.contains("format"))
 		{
-			const auto& s = jsonObject.at("format").as_string();
-			m_frameFormat = std::string{s.data(), s.size()};
-			m_frameMetadata = metadataFromFrame();
-		}
-		else
-		{
+			const auto& s{jsonObject.at("format").as_string()};
+			m_frameCache.format = std::string{s.data(), s.size()};
+			if (!(jsonObject.contains("width") && jsonObject.contains("height")))
+			{
+				return metadataFromFrame();
+			}
 			const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
 			const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
-			const string& colorSpaceStr{jsonObject.at("colorSpace").as_string()};
-			const EColorSpace colorSpace{
-			 stringToEnum<EColorSpace>(std::string_view{colorSpaceStr.data(), colorSpaceStr.size()})};
-			const string& layoutStr{jsonObject.at("layout").as_string()};
-			const EImageDataLayout layout{
-			 stringToEnum<EImageDataLayout>(std::string_view{layoutStr.data(), layoutStr.size()})};
-			const string& dataTypeStr{jsonObject.at("dataType").as_string()};
-			const EDatatype dataType{
-			 stringToEnum<EDatatype>(std::string_view{dataTypeStr.data(), dataTypeStr.size()})};
-			m_frameMetadata = {width, height, colorSpace, layout, dataType};
+			return {width, height, EColorSpace::RGB, EImageDataLayout::interleaved, EDatatype::uint8};
 		}
+
+		const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
+		const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
+		const string& colorSpaceStr{jsonObject.at("colorSpace").as_string()};
+		const EColorSpace colorSpace{
+		 stringToEnum<EColorSpace>(std::string_view{colorSpaceStr.data(), colorSpaceStr.size()})};
+		const string& layoutStr{jsonObject.at("layout").as_string()};
+		const EImageDataLayout layout{
+		 stringToEnum<EImageDataLayout>(std::string_view{layoutStr.data(), layoutStr.size()})};
+		const string& dataTypeStr{jsonObject.at("dataType").as_string()};
+		const EDatatype dataType{
+		 stringToEnum<EDatatype>(std::string_view{dataTypeStr.data(), dataTypeStr.size()})};
+		return {width, height, colorSpace, layout, dataType};
 	}
 	catch (...)
 	{
 		std::cerr << "Error while parsing 'metadata' response\n";
 	}
-	return m_frameMetadata;
+	return {};
 }
 
 std::error_code
 Client::nextFrame() noexcept
 {
-	if (m_frameMetadata.empty())
-	{
-		m_frameMetadata = metadata();
-	}
 	std::error_code ec;
 	const ConstBuffer buffer{response("frame", {}, ec)};
 	if (ec)
 	{
 		return ec;
 	}
-	if (m_frameFormat.empty())
+	if (m_frameCache.format.empty())
 	{
-		m_frame.resize(buffer.size());
-		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), begin(m_frame));
+		m_frameCache.data.resize(buffer.size());
+		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()),
+		            buffer.size(),
+		            begin(m_frameCache.data));
 		return make_error_code(VideoSourceStatus::success);
 	}
-	if (m_frameFormat == "jpg")
+	if (m_frameCache.format == "jpg")
 	{
-		std::tie(m_frameMetadata, ec) = jpg::read(buffer.data(), buffer.size(), m_frame);
+		std::tie(m_frameCache.metadata, ec) = jpg::read(buffer.data(), buffer.size(), m_frameCache.data);
 		return ec;
 	}
 	return make_error_code(VideoSourceStatus::pixelFormatNotSupported);
@@ -195,14 +197,14 @@ Client::metadataFromFrame() noexcept
 		return {};
 	}
 
-	if (m_frameFormat == "jpg")
+	if (m_frameCache.format == "jpg")
 	{
 		std::vector<std::byte> tmp;
 		return jpg::read(buffer.data(), buffer.size(), tmp).first;
 	}
 	else
 	{
-		std::cerr << "Unknown frame format: " << m_frameFormat << ".\n";
+		std::cerr << "Unknown frame format: " << m_frameCache.format << ".\n";
 	}
 	return {};
 }

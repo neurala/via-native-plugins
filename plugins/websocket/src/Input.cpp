@@ -19,6 +19,7 @@
 #include "websocket/Input.h"
 #include "neurala/video/VideoSourceStatus.h"
 
+#include <algorithm>
 #include <iostream>
 
 namespace neurala::plug::ws
@@ -26,22 +27,17 @@ namespace neurala::plug::ws
 ImageView
 Input::frame(std::byte* data, std::size_t size) noexcept
 {
-	const std::vector<std::byte>& buffer{m_client.frame()};
-	if (size < buffer.size())
+	const ImageView iv{frame()};
+	const std::size_t frameSize{m_client.frameSize()};
+	if (size < frameSize)
 	{
 		std::cerr << "Insufficient capacity in B4B buffer.\n";
 	}
 	else
 	{
-		std::copy(cbegin(buffer), cend(buffer), data);
+		std::copy_n(static_cast<const std::byte*>(iv.data()), frameSize, data);
 	}
-	return {cachedMetadata(), data};
-}
-
-const ImageMetadata&
-Input::cachedMetadata() const noexcept
-{
-	return m_client.frameMetadata();
+	return {iv.metadata(), data};
 }
 
 } // namespace neurala::plug::ws
