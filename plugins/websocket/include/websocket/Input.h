@@ -20,10 +20,8 @@
 #define NEURALA_PLUG_WS_INPUT_H
 
 #include <cstddef>
-#include <optional>
 #include <string>
 #include <system_error>
-#include <vector>
 
 #include <neurala/plugin/PluginArguments.h>
 #include <neurala/plugin/PluginBindings.h>
@@ -65,16 +63,13 @@ public:
 	static void destroy(void* p) { delete reinterpret_cast<Input*>(p); }
 
 	// Image dimension information
-	[[nodiscard]] ImageMetadata metadata() const noexcept final { return cachedMetadata(); }
+	[[nodiscard]] ImageMetadata metadata() const noexcept final { return m_client.metadata(); }
 
 	// Query new frames​
 	[[nodiscard]] std::error_code nextFrame() noexcept final { return m_client.nextFrame(); }
 
 	// Get a frame from host memory, data needs to be valid until the end of processing​
-	[[nodiscard]] ImageView frame() noexcept final
-	{
-		return {cachedMetadata(), m_client.frame().data()};
-	}
+	[[nodiscard]] ImageView frame() noexcept final { return m_client.frame(); }
 
 	// Copy a frame into the buffer provided as argument
 	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) noexcept final;
@@ -86,11 +81,7 @@ public:
 	}
 
 private:
-	// Access the image metadata. Only retrieve over the network if necessary.
-	const ImageMetadata& cachedMetadata() const noexcept;
-
 	mutable Client m_client;
-	mutable std::optional<ImageMetadata> m_metadata;
 };
 
 } // namespace neurala::plug::ws

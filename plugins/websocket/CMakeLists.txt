@@ -31,7 +31,7 @@ conan_cmake_install(
 	PATH_OR_REFERENCE .
 	UPDATE
 	REMOTE
-		conan-center
+		conancenter
 	BUILD
 		missing
 	SETTINGS

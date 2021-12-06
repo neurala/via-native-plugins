@@ -31,6 +31,7 @@
 #include <boost/config.hpp>
 #include <boost/json.hpp>
 #include <neurala/image/ImageMetadata.h>
+#include <neurala/image/views/ImageView.h>
 #include <neurala/plugin/PluginBindings.h>
 
 namespace neurala::plug::ws
@@ -66,9 +67,17 @@ public:
 	std::error_code nextFrame() noexcept;
 
 	/**
-	 * @brief Returns the buffer holding the last frame retrieved.
+	 * @brief Returns the a view of the last retrieved frame.
 	 */
-	const std::vector<std::byte>& frame() const noexcept { return m_frame; }
+	const ImageView frame() const noexcept
+	{
+		return {m_frameCache.metadata, m_frameCache.data.data()};
+	}
+
+	/**
+	 * @brief Returns the size of the last retrieved frame.
+	 */
+	const std::size_t frameSize() const noexcept { return m_frameCache.data.size(); }
 
 	/**
 	 * @brief Executes an arbitrary action on the video source.
@@ -101,9 +110,13 @@ private:
 	boost::asio::ip::tcp::socket m_socket;
 	boost::beast::websocket::stream<boost::asio::ip::tcp::socket&> m_stream;
 	boost::beast::flat_buffer m_buffer;
-	std::string m_frameFormat;
-	neurala::ImageMetadata m_frameMetadata;
-	std::vector<std::byte> m_frame;
+
+	struct FrameCache final
+	{
+		std::string format;
+		neurala::ImageMetadata metadata;
+		std::vector<std::byte> data;
+	} m_frameCache;
 };
 
 } // namespace neurala::plug::ws
