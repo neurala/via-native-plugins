@@ -68,8 +68,7 @@ public static class Program {
     public static void Main() {
         var port = 1234;
         var images = GetImages();
-        var handler = new MyHandler();
-        var server = new Neurala.VIA.WebServer(port, images, handler);
+        var server = new Neurala.VIA.WebServer(port, images, HandleAction);
 
         server.Start();
         /* ... */
@@ -82,16 +81,9 @@ public static class Program {
         foreach (var image in images)
             yield return new Bitmap(image);
     }
-}
 
-class MyHandler : IRequestHandler {
-    void HandleResults(string results) {
-        // Handle inspection results.
-        // See ResultsOutput for the results format.
-    }
-
-    void ExecuteAction(string action) {
-        // Execute a user-defined action.
+    private static void HandleAction(string action) {
+        /* ... */
     }
 }
 ```
@@ -99,5 +91,5 @@ class MyHandler : IRequestHandler {
 A test application like the above sample is currently provided in the `Binaries` directory. To use it, simply run it as in the following example before starting inspections with the native WebSocket plugin.
 
 ```bash
-Binaries/Test.exe $PORT $IMAGE_DIRECTORY
+Binaries/Test.exe $PORT $IMAGE_DIRECTORY $PROCESSED_IMAGE_DIRECTORY
 ```
