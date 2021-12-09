@@ -44,7 +44,7 @@ Input::nextFrame() noexcept
 }
 
 ImageView
-Input::frame(std::byte* data, std::size_t size) noexcept
+Input::frame(std::byte* data, std::size_t size) const noexcept
 {
 	const ImageMetadata& md = cachedMetadata();
 	if (size < md.sizeBytes())

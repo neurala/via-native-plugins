@@ -59,9 +59,12 @@ public:
 		return make_error_code(VideoSourceStatus::success);
 	}
 
-	[[nodiscard]] ImageView frame() noexcept override { return ImageView(metadata(), m_frame.get()); }
+	[[nodiscard]] ImageView frame() const noexcept override
+	{
+		return ImageView(metadata(), m_frame.get());
+	}
 
-	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) noexcept override;
+	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) const noexcept override;
 
 	std::error_code execute(const std::string& action) noexcept override;
 
