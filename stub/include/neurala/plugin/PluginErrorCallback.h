@@ -30,7 +30,7 @@ namespace neurala
  */
 class PluginErrorCallback
 {
-	std::error_code m_code{B4BError::ok};
+	std::error_code m_code{B4BError::ok()};
 	std::string m_exception;
 
 public:
@@ -38,7 +38,7 @@ public:
 	{
 		try
 		{
-			m_code = B4BError::genericError;
+			m_code = B4BError::genericError();
 			m_exception = s;
 		}
 		catch (...)

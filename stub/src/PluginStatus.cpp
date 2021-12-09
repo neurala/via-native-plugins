@@ -64,13 +64,13 @@ public:
 		switch (static_cast<neurala::PluginStatus>(code))
 		{
 			case neurala::PluginStatus::success:
-				return neurala::B4BError::ok == condition;
+				return neurala::B4BError::ok() == condition;
 
 			case neurala::PluginStatus::wrongVersion:
 			case neurala::PluginStatus::invalidName:
-				return neurala::B4BError::genericError == condition;
+				return neurala::B4BError::genericError() == condition;
 			case neurala::PluginStatus::unknown:
-				return neurala::B4BError::unknown == condition;
+				return neurala::B4BError::unknown() == condition;
 			default:
 				return false;
 		}
@@ -87,12 +87,12 @@ public:
 		switch (static_cast<neurala::PluginStatus>(condition))
 		{
 			case neurala::PluginStatus::success:
-				return code == neurala::B4BError::ok;
+				return code == neurala::B4BError::ok();
 			case neurala::PluginStatus::wrongVersion:
 			case neurala::PluginStatus::invalidName:
-				return code == neurala::B4BError::genericError;
+				return code == neurala::B4BError::genericError();
 			case neurala::PluginStatus::unknown:
-				return code == neurala::B4BError::unknown;
+				return code == neurala::B4BError::unknown();
 			default:
 				return false;
 		}

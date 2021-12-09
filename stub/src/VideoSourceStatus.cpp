@@ -66,11 +66,11 @@ public:
 		switch (code)
 		{
 			case VideoSourceStatus::success():
-				return B4BError::ok == condition;
+				return B4BError::ok() == condition;
 			case VideoSourceStatus::error():
-				return B4BError::genericError == condition;
+				return B4BError::genericError() == condition;
 			case VideoSourceStatus::unknown():
-				return B4BError::unknown == condition;
+				return B4BError::unknown() == condition;
 			default:
 				return false;
 		}
@@ -87,11 +87,11 @@ public:
 		switch (condition)
 		{
 			case VideoSourceStatus::success():
-				return code == B4BError::ok;
+				return code == B4BError::ok();
 			case VideoSourceStatus::error():
-				return code == B4BError::genericError;
+				return code == B4BError::genericError();
 			case VideoSourceStatus::unknown():
-				return code == B4BError::unknown;
+				return code == B4BError::unknown();
 			default:
 				return false;
 		}
