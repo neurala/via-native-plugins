@@ -47,14 +47,14 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
 	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
 	*status = pm.registerPlugin<neurala::plug::dummy::Source>(kSourceTypeName, neurala::Version(1, 0));
-	if (*status != neurala::PluginStatus::success)
+	if (*status != neurala::PluginStatus::success())
 	{
 		return nullptr;
 	}
 
 	*status = pm.registerPlugin<neurala::plug::dummy::Discoverer>("dummyDiscoverer",
 	                                                              neurala::Version(1, 0));
-	if (*status != neurala::PluginStatus::success)
+	if (*status != neurala::PluginStatus::success())
 	{
 		return nullptr;
 	}

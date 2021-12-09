@@ -30,14 +30,15 @@ pluginStatusToStr(neurala::PluginStatus status)
 {
 	switch (status)
 	{
-		case neurala::PluginStatus::success:
+		case neurala::PluginStatus::success():
 			return "success";
-		case neurala::PluginStatus::wrongVersion:
+		case neurala::PluginStatus::wrongVersion():
 			return "incompatible version";
-		case neurala::PluginStatus::invalidName:
+		case neurala::PluginStatus::invalidName():
 			return "invalid name";
-		case neurala::PluginStatus::alreadyRegistered:
+		case neurala::PluginStatus::alreadyRegistered():
 			return "already registered";
+		case neurala::PluginStatus::unknown():
 		default:
 			return "unknown";
 	}
@@ -48,10 +49,7 @@ class PluginStatusCategory : public std::error_category
 public:
 	const char* name() const noexcept override { return "neurala::PluginStatus"; }
 
-	std::string message(int c) const override
-	{
-		return pluginStatusToStr(static_cast<neurala::PluginStatus>(c));
-	}
+	std::string message(int c) const override { return pluginStatusToStr({c}); }
 
 	bool equivalent(int code, const std::error_condition& condition) const noexcept override
 	{
@@ -61,15 +59,14 @@ public:
 			return code == condition.value();
 		}
 
-		switch (static_cast<neurala::PluginStatus>(code))
+		switch (code)
 		{
-			case neurala::PluginStatus::success:
+			case neurala::PluginStatus::success():
 				return neurala::B4BError::ok() == condition;
-
-			case neurala::PluginStatus::wrongVersion:
-			case neurala::PluginStatus::invalidName:
+			case neurala::PluginStatus::wrongVersion():
+			case neurala::PluginStatus::invalidName():
 				return neurala::B4BError::genericError() == condition;
-			case neurala::PluginStatus::unknown:
+			case neurala::PluginStatus::unknown():
 				return neurala::B4BError::unknown() == condition;
 			default:
 				return false;
@@ -84,14 +81,14 @@ public:
 			return code.value() == condition;
 		}
 
-		switch (static_cast<neurala::PluginStatus>(condition))
+		switch (condition)
 		{
-			case neurala::PluginStatus::success:
+			case neurala::PluginStatus::success():
 				return code == neurala::B4BError::ok();
-			case neurala::PluginStatus::wrongVersion:
-			case neurala::PluginStatus::invalidName:
+			case neurala::PluginStatus::wrongVersion():
+			case neurala::PluginStatus::invalidName():
 				return code == neurala::B4BError::genericError();
-			case neurala::PluginStatus::unknown:
+			case neurala::PluginStatus::unknown():
 				return code == neurala::B4BError::unknown();
 			default:
 				return false;
