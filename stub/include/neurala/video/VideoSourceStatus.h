@@ -29,59 +29,45 @@
 namespace neurala
 {
 /**
- * @brief Enum that describes the status of a VideoSource
+ * @brief Type that describes the status of a VideoSource
  */
-enum class VideoSourceStatus
+struct VideoSourceStatus final
 {
 	/// Operation was successful.
-	success,
+	static constexpr VideoSourceStatus success() { return {0}; }
 	/// Fetching frames timed out.  This is considered an error.
-	timeout,
+	static constexpr VideoSourceStatus timeout() { return {1}; }
 	/*
 	 * Internal buffer overflow (e.g. frames not fetched in time).
 	 * Currently buffered frames may still be fetched, however,
 	 * so this may or may not be an error condition depending on
 	 * whether skipped frames are allowed.
 	 */
-	overflow,
+	static constexpr VideoSourceStatus overflow() { return {2}; }
 	/*
 	 * All other errors.  (E.x. Requested frame number is outside valid range, no frame data
 	 * available, VideoInput connection was closed...)
 	 */
-	error,
+	static constexpr VideoSourceStatus error() { return {3}; }
 	/// Input format is not understood by the converters
-	pixelFormatNotSupported,
+	static constexpr VideoSourceStatus pixelFormatNotSupported() { return {4}; }
 	/// Information provided is not correct
-	invalidParameter,
+	static constexpr VideoSourceStatus invalidParameter() { return {5}; }
 	/// Functionality is not implemented
-	notImplemented,
+	static constexpr VideoSourceStatus notImplemented() { return {6}; }
 	/// Functionality not supported
-	unsupportedAction,
+	static constexpr VideoSourceStatus unsupportedAction() { return {7}; }
 	/// Unknown state.
-	unknown
+	static constexpr VideoSourceStatus unknown() { return {8}; }
+
+	constexpr operator int() const noexcept { return m_value; }
+
+	int m_value;
 };
 
 NEURALA_PUBLIC const std::error_category& videoSourceStatusCategory() noexcept;
 NEURALA_PUBLIC std::error_code make_error_code(VideoSourceStatus res) noexcept;
 NEURALA_PUBLIC std::error_condition make_error_condition(VideoSourceStatus res) noexcept;
-
-template<>
-class MetaEnum<VideoSourceStatus> : public MetaEnumRegister<VideoSourceStatus>
-{
-public:
-	static constexpr const auto values = enumRegisterValues(
-	 NEURALA_META_ENUM_ENTRY(VideoSourceStatus, success),
-	 NEURALA_META_ENUM_ENTRY(VideoSourceStatus, timeout),
-	 NEURALA_META_ENUM_ENTRY(VideoSourceStatus, overflow),
-	 NEURALA_META_ENUM_ENTRY(VideoSourceStatus, error),
-	 NEURALA_META_ENUM_ENTRY(VideoSourceStatus, pixelFormatNotSupported),
-	 NEURALA_META_ENUM_ENTRY(VideoSourceStatus, invalidParameter),
-	 NEURALA_META_ENUM_ENTRY(VideoSourceStatus, notImplemented),
-	 NEURALA_META_ENUM_ENTRY(VideoSourceStatus, unsupportedAction),
-	 NEURALA_META_ENUM_ENTRY(VideoSourceStatus, unknown));
-
-	static constexpr const auto fallbackValue = values[0];
-};
 
 } // namespace neurala
 

@@ -56,7 +56,7 @@ public:
 
 	[[nodiscard]] std::error_code nextFrame() noexcept override
 	{
-		return make_error_code(VideoSourceStatus::success);
+		return make_error_code(VideoSourceStatus::success());
 	}
 
 	[[nodiscard]] ImageView frame() const noexcept override
