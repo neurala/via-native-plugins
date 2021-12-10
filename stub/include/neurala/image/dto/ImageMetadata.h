@@ -59,9 +59,9 @@ public:
 	 */
 	ImageMetadata(size_type width,
 	              size_type height,
-	              std::string&& colorSpace,
-	              std::string&& layout,
-	              std::string&& datatype) noexcept
+	              std::string colorSpace,
+	              std::string layout,
+	              std::string datatype) noexcept
 	 : m_width{width},
 	   m_height{height},
 	   m_colorSpace{std::move(colorSpace)},
