@@ -177,7 +177,7 @@ private:
 			{
 				const auto thisData = static_cast<const float*>(imageData());
 				const auto imData = static_cast<const float*>(im.imageData());
-				return approxEqual(imData, imData + pixelComponentCount(), imData);
+				return approxEqual(thisData, thisData + pixelComponentCount(), imData);
 			}
 			case EDatatype::binary64:
 			{
