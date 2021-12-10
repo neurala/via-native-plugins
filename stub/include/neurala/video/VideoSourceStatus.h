@@ -35,30 +35,30 @@ struct VideoSourceStatus final
 {
 	/// Operation was successful.
 	static constexpr VideoSourceStatus success() { return {0}; }
-	/// Fetching frames timed out.  This is considered an error.
-	static constexpr VideoSourceStatus timeout() { return {1}; }
+	/// Unknown state.
+	static constexpr VideoSourceStatus unknown() { return {1}; }
+	/// Fetching frames timed out. This is considered an error.
+	static constexpr VideoSourceStatus timeout() { return {2}; }
 	/*
 	 * Internal buffer overflow (e.g. frames not fetched in time).
 	 * Currently buffered frames may still be fetched, however,
 	 * so this may or may not be an error condition depending on
 	 * whether skipped frames are allowed.
 	 */
-	static constexpr VideoSourceStatus overflow() { return {2}; }
+	static constexpr VideoSourceStatus overflow() { return {3}; }
 	/*
-	 * All other errors.  (E.x. Requested frame number is outside valid range, no frame data
-	 * available, VideoInput connection was closed...)
+	 * All other errors (requested frame number is outside valid range, no frame data
+	 * available, VideoInput connection was closed, etc.).
 	 */
-	static constexpr VideoSourceStatus error() { return {3}; }
-	/// Input format is not understood by the converters
-	static constexpr VideoSourceStatus pixelFormatNotSupported() { return {4}; }
-	/// Information provided is not correct
-	static constexpr VideoSourceStatus invalidParameter() { return {5}; }
-	/// Functionality is not implemented
-	static constexpr VideoSourceStatus notImplemented() { return {6}; }
-	/// Functionality not supported
-	static constexpr VideoSourceStatus unsupportedAction() { return {7}; }
-	/// Unknown state.
-	static constexpr VideoSourceStatus unknown() { return {8}; }
+	static constexpr VideoSourceStatus error() { return {4}; }
+	/// Input format is not understood by the converters.
+	static constexpr VideoSourceStatus pixelFormatNotSupported() { return {5}; }
+	/// Information provided is not correct.
+	static constexpr VideoSourceStatus invalidParameter() { return {6}; }
+	/// Functionality is not implemented.
+	static constexpr VideoSourceStatus notImplemented() { return {7}; }
+	/// Functionality not supported.
+	static constexpr VideoSourceStatus unsupportedAction() { return {8}; }
 
 	constexpr operator int() const noexcept { return m_value; }
 
