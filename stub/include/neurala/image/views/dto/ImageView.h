@@ -60,6 +60,9 @@ public:
 	 : m_data{data}, m_metadata{metadata}
 	{ }
 
+	/// @copydoc ImageMetadata::empty() const
+	size_type empty() const noexcept { return m_metadata.empty(); }
+
 	/// @copydoc ImageMetadata::width() const
 	size_type width() const noexcept { return m_metadata.width(); }
 

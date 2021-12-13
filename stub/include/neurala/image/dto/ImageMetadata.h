@@ -70,6 +70,11 @@ public:
 	{ }
 
 	/**
+	 * @brief Returns if the image has no pixels.
+	 */
+	bool empty() const noexcept { return width() == 0 || height() == 0; }
+
+	/**
 	 * @brief Returns the image width in pixels.
 	 */
 	size_type width() const noexcept { return m_width; }
