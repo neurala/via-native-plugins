@@ -31,7 +31,28 @@ public:
 
 	std::string message(int c) const override
 	{
-		return enumToString(static_cast<VideoSourceStatus>(c));
+		switch (c)
+		{
+			case VideoSourceStatus::success():
+				return "success";
+			case VideoSourceStatus::timeout():
+				return "timeout";
+			case VideoSourceStatus::overflow():
+				return "overflow";
+			case VideoSourceStatus::error():
+				return "error";
+			case VideoSourceStatus::pixelFormatNotSupported():
+				return "pixelFormatNotSupported";
+			case VideoSourceStatus::invalidParameter():
+				return "invalidParameter";
+			case VideoSourceStatus::notImplemented():
+				return "notImplemented";
+			case VideoSourceStatus::unsupportedAction():
+				return "unsupportedAction";
+			case VideoSourceStatus::unknown():
+			default:
+				return "unknown";
+		}
 	}
 
 	bool equivalent(int code, const std::error_condition& condition) const noexcept override
@@ -42,14 +63,14 @@ public:
 			return code == condition.value();
 		}
 
-		switch (static_cast<VideoSourceStatus>(code))
+		switch (code)
 		{
-			case VideoSourceStatus::success:
-				return B4BError::ok == condition;
-			case VideoSourceStatus::error:
-				return B4BError::genericError == condition;
-			case VideoSourceStatus::unknown:
-				return B4BError::unknown == condition;
+			case VideoSourceStatus::success():
+				return B4BError::ok() == condition;
+			case VideoSourceStatus::error():
+				return B4BError::genericError() == condition;
+			case VideoSourceStatus::unknown():
+				return B4BError::unknown() == condition;
 			default:
 				return false;
 		}
@@ -63,14 +84,14 @@ public:
 			return code.value() == condition;
 		}
 
-		switch (static_cast<VideoSourceStatus>(condition))
+		switch (condition)
 		{
-			case VideoSourceStatus::success:
-				return code == B4BError::ok;
-			case VideoSourceStatus::error:
-				return code == B4BError::genericError;
-			case VideoSourceStatus::unknown:
-				return code == B4BError::unknown;
+			case VideoSourceStatus::success():
+				return code == B4BError::ok();
+			case VideoSourceStatus::error():
+				return code == B4BError::genericError();
+			case VideoSourceStatus::unknown():
+				return code == B4BError::unknown();
 			default:
 				return false;
 		}

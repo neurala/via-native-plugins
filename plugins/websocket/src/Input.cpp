@@ -35,7 +35,7 @@ Input::nextFrame() noexcept
 		std::vector<std::byte> frameBuffer(cachedMetadata().sizeBytes());
 		m_client.frame(frameBuffer.data(), frameBuffer.size());
 		m_frame = std::move(frameBuffer);
-		return make_error_code(VideoSourceStatus::success);
+		return make_error_code(VideoSourceStatus::success());
 	}
 	catch (const beast::system_error& se)
 	{
@@ -44,7 +44,7 @@ Input::nextFrame() noexcept
 }
 
 ImageView
-Input::frame(std::byte* data, std::size_t size) noexcept
+Input::frame(std::byte* data, std::size_t size) const noexcept
 {
 	const ImageMetadata& md = cachedMetadata();
 	if (size < md.sizeBytes())

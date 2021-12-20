@@ -30,13 +30,18 @@
 namespace neurala
 {
 /**
- * @brief An enumeration type representing the status of a pipeline job upon
- *        stopping.
+ * @brief A type representing the status of a pipeline job upon stopping.
  */
-enum class EResultsOutputStatus
+struct ResultsOutputStatus final
 {
-	stopped, ///< Indicates that the pipeline job has terminated normally.
-	faulted  ///< Indicates that the pipeline job has terminated abnormally.
+	///< Indicates that the pipeline job has terminated normally.
+	static constexpr ResultsOutputStatus stopped() { return {0}; }
+	///< Indicates that the pipeline job has terminated abnormally.
+	static constexpr ResultsOutputStatus faulted() { return {1}; }
+
+	constexpr operator int() const noexcept { return m_value; }
+
+	int m_value;
 };
 
 /**
@@ -63,7 +68,7 @@ public:
 	 *           used as a discriminator to track which job is stopping.
 	 * @param status The reason for stopping.
 	 */
-	virtual void onStop(std::string_view id, EResultsOutputStatus status) noexcept { }
+	virtual void onStop(std::string_view id, ResultsOutputStatus status) noexcept { }
 };
 
 /**
