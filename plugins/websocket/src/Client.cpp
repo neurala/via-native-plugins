@@ -21,8 +21,6 @@
 #include <cstdlib>
 #include <iostream>
 
-#include <neurala/meta/enum.h>
-
 namespace neurala::plug::ws
 {
 Client::Client(const std::string_view ipAddress, const std::uint16_t port)

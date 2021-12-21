@@ -22,7 +22,6 @@
 #include <system_error>
 
 #include "neurala/exports.h"
-#include "neurala/meta/enum.h"
 
 namespace neurala
 {
