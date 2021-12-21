@@ -25,7 +25,7 @@
 #include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginErrorCallback.h>
 #include <neurala/video/CameraDiscoverer.h>
-#include <neurala/video/CameraInfo.h>
+#include <neurala/video/dto/CameraInfo.h>
 
 namespace neurala::plug::ws
 {
@@ -39,7 +39,7 @@ public:
 	static void destroy(void* p) { delete reinterpret_cast<Discoverer*>(p); }
 
 	/// Return information for the camera emulated by the plugin.
-	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept final
+	[[nodiscard]] std::vector<dto::CameraInfo> operator()() const noexcept final
 	{
 		return {{"0", "Input", "websocket", "127.0.0.1:54321"}};
 	}

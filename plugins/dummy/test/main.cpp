@@ -29,18 +29,18 @@ main()
 
 	// Discover the cameras exposed by this plugin
 	const auto connectedCameras = dummyDiscoverer();
-	CameraInfo dummyCameraInfo = connectedCameras[0];
+	dto::CameraInfo dummyCameraInfo = connectedCameras[0];
 	plug::dummy::Source dummyVideoSource(dummyCameraInfo);
 
 	// Retrieve dummy metadata
-	const ImageMetadata metadata = dummyVideoSource.metadata();
+	const dto::ImageMetadata metadata{dummyVideoSource.metadata()};
 	std::cout << "Source metadata: " << metadata << std::endl;
 
 	// Call dummy nextFrame
 	if (!dummyVideoSource.nextFrame())
 	{
 		// Retrieve and print the image view's metadata
-		const ImageView view = dummyVideoSource.frame();
+		const dto::ImageView view{dummyVideoSource.frame()};
 		std::cout << "Image view metadata: " << view.metadata() << std::endl;
 	}
 }

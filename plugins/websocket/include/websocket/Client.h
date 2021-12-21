@@ -27,7 +27,7 @@
 #include <boost/beast.hpp>
 #include <boost/config.hpp>
 #include <boost/json.hpp>
-#include <neurala/image/ImageMetadata.h>
+#include <neurala/image/dto/ImageMetadata.h>
 #include <neurala/plugin/PluginBindings.h>
 
 namespace neurala::plug::ws
@@ -63,15 +63,15 @@ public:
 	 * enclosed as a JSON object. The width and height attributes must be represented as numbers. The
 	 * latter three are interpreted as the string encoding of an element from the corresponding enum.
 	 */
-	ImageMetadata metadata();
+	dto::ImageMetadata metadata();
 
 	/**
-	 * @brief Retrieve the next frame and copy data to the specified location.
+	 * @brief Retrieve the next frame.
 	 * @param location address to which the frame data must be copied
 	 * @param capacity capacity of the buffer at the given address
-	 * @return true if the capacity was sufficient, false otherwise
+	 * @return the frame buffer
 	 */
-	bool frame(std::byte* const location, const std::size_t capacity);
+	std::vector<std::byte> frame();
 
 	/**
 	 * @brief Send the result of processing a frame back to the server.

@@ -21,7 +21,7 @@
 
 #include <vector>
 
-#include "neurala/video/CameraInfo.h"
+#include "neurala/video/dto/CameraInfo.h"
 
 namespace neurala
 {
@@ -35,7 +35,7 @@ public:
 	virtual ~CameraDiscoverer() = default;
 
 	// Scan for all available cameras
-	[[nodiscard]] virtual std::vector<CameraInfo> operator()() const noexcept = 0;
+	[[nodiscard]] virtual std::vector<dto::CameraInfo> operator()() const noexcept = 0;
 };
 
 } // namespace neurala

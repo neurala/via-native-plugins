@@ -21,6 +21,7 @@
 #include <iostream>
 #include <numeric>
 #include <system_error>
+#include <utility>
 
 #include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginBindings.h"
@@ -28,7 +29,7 @@
 #include "neurala/plugin/PluginManager.h"
 #include "neurala/plugin/PluginStatus.h"
 #include "neurala/utils/Version.h"
-#include "neurala/video/CameraInfo.h"
+#include "neurala/video/dto/CameraInfo.h"
 
 namespace
 {
@@ -64,18 +65,18 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 
 namespace neurala::plug::dummy
 {
-std::vector<CameraInfo>
+std::vector<dto::CameraInfo>
 Discoverer::operator()() const noexcept
 {
 	std::cout << "Discovering available cameras...\n";
-	return {CameraInfo("DummyNativePluginCameraId1",
-	                   kSourceTypeName,
-	                   "External Dummy Camera #1",
-	                   "DummyNativePluginCameraConnection1"),
-	        CameraInfo("DummyNativePluginCameraId1",
-	                   kSourceTypeName,
-	                   "External Dummy Camera #2",
-	                   "DummyNativePluginCameraConnection2")};
+	return {{"DummyNativePluginCameraId1",
+	         kSourceTypeName,
+	         "External Dummy Camera #1",
+	         "DummyNativePluginCameraConnection1"},
+	        {"DummyNativePluginCameraId1",
+	         kSourceTypeName,
+	         "External Dummy Camera #2",
+	         "DummyNativePluginCameraConnection2"}};
 }
 
 void*
@@ -101,22 +102,24 @@ Discoverer::destroy(void* p)
 	delete static_cast<Discoverer*>(p);
 }
 
-Source::Source(const CameraInfo& cameraInfo, const Options& options)
+Source::Source(const dto::CameraInfo& cameraInfo, const Options& options)
 {
 	std::cout << "Initiating VideoSource connection with " << cameraInfo << '\n';
 	std::cout << "With options: " << options << '\n';
 
-	const auto frameBufferSize = metadata().pixelComponentCount();
+	const dto::ImageMetadata md{metadata()};
+	const auto frameBufferSize{md.width() * md.height() * 3};
 	m_frame = std::make_unique<std::uint8_t[]>(frameBufferSize);
 	std::iota(&(m_frame[0]), &(m_frame[frameBufferSize]), 0);
 }
 
-ImageView
+dto::ImageView
 Source::frame(std::byte* data, std::size_t size) const noexcept
 {
 	std::cout << "Copying frame to [" << data << "]\n";
-	std::copy_n(reinterpret_cast<const std::byte*>(frame().data()), frame().sizeBytes(), data);
-	return ImageView{metadata(), data};
+	dto::ImageMetadata md{metadata()};
+	std::copy_n(reinterpret_cast<const std::byte*>(m_frame.get()), md.width() * md.height() * 3, data);
+	return {std::move(metadata()), data};
 }
 
 std::error_code
@@ -133,7 +136,7 @@ Source::create(PluginArguments& arguments, PluginErrorCallback& error)
 
 	try
 	{
-		const auto& cameraInfo = arguments.get<0, const CameraInfo>();
+		const auto& cameraInfo = arguments.get<0, const dto::CameraInfo>();
 		const auto& cameraOptions = arguments.get<1, const Options>();
 
 		p = new Source(cameraInfo, cameraOptions);
