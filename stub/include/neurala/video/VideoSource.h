@@ -76,7 +76,7 @@ public:
 	 * Repetition in metadata requests between the dedicated function and as part of the ImageView's is
 	 * intentional. Provided there are no frame to frame changes, the returned data should be the same.
 	 */
-	[[nodiscard]] virtual dto::ImageView frame() noexcept = 0;
+	[[nodiscard]] virtual dto::ImageView frame() const noexcept = 0;
 
 	/**
 	 * @brief Copy a frame into the buffer provided as argument
@@ -87,7 +87,7 @@ public:
 	 * @param data address of the provided buffer
 	 * @param capacity size limit of the provided buffer, expressed in bytes
 	 */
-	[[nodiscard]] virtual dto::ImageView frame(std::byte* data, std::size_t capacity) noexcept = 0;
+	[[nodiscard]] virtual dto::ImageView frame(std::byte* data, std::size_t capacity) const noexcept = 0;
 
 	// Executes an arbitrary action on the video source
 	[[nodiscard]] virtual std::error_code execute(const std::string& action) noexcept = 0;

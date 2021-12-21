@@ -56,12 +56,15 @@ public:
 
 	[[nodiscard]] std::error_code nextFrame() noexcept override
 	{
-		return make_error_code(VideoSourceStatus::success);
+		return make_error_code(VideoSourceStatus::success());
 	}
 
-	[[nodiscard]] dto::ImageView frame() noexcept override { return {metadata(), m_frame.get()}; }
+	[[nodiscard]] dto::ImageView frame() const noexcept override
+	{
+		return {metadata(), m_frame.get()};
+	}
 
-	[[nodiscard]] dto::ImageView frame(std::byte* data, std::size_t size) noexcept override;
+	[[nodiscard]] dto::ImageView frame(std::byte* data, std::size_t size) const noexcept override;
 
 	std::error_code execute(const std::string& action) noexcept override;
 

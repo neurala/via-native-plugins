@@ -53,13 +53,13 @@ registerClass(const char* name,
 		    }))
 		{
 			// empty name or name with anything except [a-zA-Z0-9\_] is not allowed
-			return make_error_code(PluginStatus::invalidName);
+			return make_error_code(PluginStatus::invalidName());
 		}
 
 		if (m_version.major() != version.major())
 		{
 			// plugin and host versions mismatch
-			return make_error_code(PluginStatus::wrongVersion);
+			return make_error_code(PluginStatus::wrongVersion());
 		}
 
 		std::lock_guard<std::mutex> lock{m_classesMutex};
@@ -68,16 +68,16 @@ registerClass(const char* name,
 		if (!it.second)
 		{
 			// class already registered
-			return make_error_code(PluginStatus::alreadyRegistered);
+			return make_error_code(PluginStatus::alreadyRegistered());
 		}
 	}
 	catch (...)
 	{
 		// unknown error - most likely memory allocation error
-		return make_error_code(PluginStatus::unknown);
+		return make_error_code(PluginStatus::unknown());
 	}
 
-	return make_error_code(PluginStatus::success);
+	return make_error_code(PluginStatus::success());
 }
 
 } // namespace neurala

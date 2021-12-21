@@ -33,7 +33,7 @@ Input::nextFrame() noexcept
 	try
 	{
 		m_frame = m_client.frame();
-		return make_error_code(VideoSourceStatus::success);
+		return make_error_code(VideoSourceStatus::success());
 	}
 	catch (const beast::system_error& se)
 	{
@@ -42,7 +42,7 @@ Input::nextFrame() noexcept
 }
 
 dto::ImageView
-Input::frame(std::byte* data, std::size_t size) noexcept
+Input::frame(std::byte* data, std::size_t size) const noexcept
 {
 	if (size < m_frame.size())
 	{

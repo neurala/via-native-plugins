@@ -81,10 +81,13 @@ public:
 	[[nodiscard]] std::error_code nextFrame() noexcept final;
 
 	// Get a frame from host memory, data needs to be valid until the end of processing​
-	[[nodiscard]] dto::ImageView frame() noexcept final { return {cachedMetadata(), m_frame.data()}; }
+	[[nodiscard]] dto::ImageView frame() const noexcept final
+	{
+		return {cachedMetadata(), m_frame.data()};
+	}
 
 	// Copy a frame into the buffer provided as argument
-	[[nodiscard]] dto::ImageView frame(std::byte* data, std::size_t size) noexcept final;
+	[[nodiscard]] dto::ImageView frame(std::byte* data, std::size_t size) const noexcept final;
 
 	// Executes an arbitrary action on the video source
 	[[nodiscard]] std::error_code execute(const std::string&) noexcept final { return {}; }

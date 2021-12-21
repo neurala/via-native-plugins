@@ -29,13 +29,17 @@ namespace neurala
 /**
  * @brief Plugin status codes.
  */
-enum class PluginStatus
+struct PluginStatus final
 {
-	success,
-	unknown,
-	wrongVersion,
-	invalidName,
-	alreadyRegistered
+	static constexpr PluginStatus success() { return {0}; }
+	static constexpr PluginStatus unknown() { return {1}; }
+	static constexpr PluginStatus wrongVersion() { return {2}; }
+	static constexpr PluginStatus invalidName() { return {3}; }
+	static constexpr PluginStatus alreadyRegistered() { return {4}; }
+
+	constexpr operator int() const noexcept { return m_value; }
+
+	int m_value;
 };
 
 /// @brief Definition of the plugin status error domain
