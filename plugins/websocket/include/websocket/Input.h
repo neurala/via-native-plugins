@@ -63,16 +63,16 @@ public:
 	static void destroy(void* p) { delete reinterpret_cast<Input*>(p); }
 
 	// Image dimension information
-	[[nodiscard]] ImageMetadata metadata() const noexcept final { return m_client.metadata(); }
+	[[nodiscard]] dto::ImageMetadata metadata() const noexcept final { return m_client.metadata(); }
 
 	// Query new frames​
 	[[nodiscard]] std::error_code nextFrame() noexcept final { return m_client.nextFrame(); }
 
 	// Get a frame from host memory, data needs to be valid until the end of processing​
-	[[nodiscard]] ImageView frame() noexcept final { return m_client.frame(); }
+	[[nodiscard]] dto::ImageView frame() const noexcept final { return m_client.frame(); }
 
 	// Copy a frame into the buffer provided as argument
-	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) noexcept final;
+	[[nodiscard]] dto::ImageView frame(std::byte* data, std::size_t size) const noexcept final;
 
 	// Executes an arbitrary action on the video source
 	[[nodiscard]] std::error_code execute(const std::string& action) noexcept final

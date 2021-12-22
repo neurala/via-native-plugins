@@ -19,10 +19,10 @@
 #ifndef NEURALA_VIDEO_VIDEO_SOURCE_H
 #define NEURALA_VIDEO_VIDEO_SOURCE_H
 
-#include "neurala/image/ImageMetadata.h"
-#include "neurala/image/views/ImageView.h"
+#include "neurala/image/dto/ImageMetadata.h"
+#include "neurala/image/views/dto/ImageView.h"
 #include "neurala/utils/Options.h"
-#include "neurala/video/CameraInfo.h"
+#include "neurala/video/dto/CameraInfo.h"
 
 namespace neurala
 {
@@ -45,15 +45,15 @@ public:
 	/**
 	 * For VideoSource implementations, the call to void* create(PluginArguments&,
 	 * PluginErrorCallback&) will provide two plugin arguments:
-	 *  1. CameraInfo (information about the camera and how to connect to it, as provided through the
-	 * implementation of CameraDiscoverer)
+	 *  1. dto::CameraInfo (information about the camera and how to connect to it, as provided through
+	 * the implementation of CameraDiscoverer)
 	 *  2. Options (additional camera settings - not mandatory)
 	 */
 
 	virtual ~VideoSource() = default;
 
 	// Image dimension information
-	[[nodiscard]] virtual ImageMetadata metadata() const noexcept = 0;
+	[[nodiscard]] virtual dto::ImageMetadata metadata() const noexcept = 0;
 
 	/**
 	 * @brief Query availability of new frames​
@@ -76,7 +76,7 @@ public:
 	 * Repetition in metadata requests between the dedicated function and as part of the ImageView's is
 	 * intentional. Provided there are no frame to frame changes, the returned data should be the same.
 	 */
-	[[nodiscard]] virtual ImageView frame() noexcept = 0;
+	[[nodiscard]] virtual dto::ImageView frame() const noexcept = 0;
 
 	/**
 	 * @brief Copy a frame into the buffer provided as argument
@@ -87,7 +87,7 @@ public:
 	 * @param data address of the provided buffer
 	 * @param capacity size limit of the provided buffer, expressed in bytes
 	 */
-	[[nodiscard]] virtual ImageView frame(std::byte* data, std::size_t capacity) noexcept = 0;
+	[[nodiscard]] virtual dto::ImageView frame(std::byte* data, std::size_t capacity) const noexcept = 0;
 
 	// Executes an arbitrary action on the video source
 	[[nodiscard]] virtual std::error_code execute(const std::string& action) noexcept = 0;

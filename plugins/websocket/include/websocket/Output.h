@@ -23,7 +23,7 @@
 #include <utility>
 
 #include <boost/json.hpp>
-#include <neurala/image/views/ImageView.h>
+#include <neurala/image/views/dto/ImageView.h>
 #include <neurala/plugin/PluginArguments.h>
 #include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginErrorCallback.h>
@@ -70,7 +70,7 @@ public:
 	 * @param image A pointer to an image view, which may be null if no frame
 	 *              is available or could be retrieved.
 	 */
-	void operator()(const std::string& metadata, const ImageView*) noexcept final
+	void operator()(const std::string& metadata, const dto::ImageView*) noexcept final
 	{
 		using namespace boost::json;
 		m_client.sendResult(std::move(parse(string_view{metadata.data(), metadata.size()}).as_object()));

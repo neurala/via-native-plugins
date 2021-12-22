@@ -31,11 +31,11 @@ BOOST_AUTO_TEST_CASE(MultipleFrames)
 {
 	plug::ws::Input input;
 	plug::ws::Output output;
-	const ImageMetadata imageMetadata{input.metadata()};
+	const dto::ImageMetadata imageMetadata{input.metadata()};
 	for (std::size_t i{}; i < 10; ++i)
 	{
 		BOOST_TEST(input.nextFrame().value() == 0);
-		const ImageView imageView{input.frame()};
+		const dto::ImageView imageView{input.frame()};
 		output("{ \"status\": \"success\" }", nullptr);
 	}
 }

@@ -24,19 +24,24 @@
 #include <string_view>
 
 #include "neurala/exports.h"
-#include "neurala/image/views/ImageView.h"
+#include "neurala/image/views/dto/ImageView.h"
 #include "neurala/utils/Options.h"
 
 namespace neurala
 {
 /**
- * @brief An enumeration type representing the status of a pipeline job upon
- *        stopping.
+ * @brief A type representing the status of a pipeline job upon stopping.
  */
-enum class EResultsOutputStatus
+struct ResultsOutputStatus final
 {
-	stopped, ///< Indicates that the pipeline job has terminated normally.
-	faulted  ///< Indicates that the pipeline job has terminated abnormally.
+	///< Indicates that the pipeline job has terminated normally.
+	static constexpr ResultsOutputStatus stopped() { return {0}; }
+	///< Indicates that the pipeline job has terminated abnormally.
+	static constexpr ResultsOutputStatus faulted() { return {1}; }
+
+	constexpr operator int() const noexcept { return m_value; }
+
+	int m_value;
 };
 
 /**
@@ -63,7 +68,7 @@ public:
 	 *           used as a discriminator to track which job is stopping.
 	 * @param status The reason for stopping.
 	 */
-	virtual void onStop(std::string_view id, EResultsOutputStatus status) noexcept { }
+	virtual void onStop(std::string_view id, ResultsOutputStatus status) noexcept { }
 };
 
 /**
@@ -83,7 +88,7 @@ public:
 	 * @param image A pointer to an image view, which may be null if no frame
 	 *              is available or could be retrieved.
 	 */
-	virtual void operator()(const std::string& metadata, const ImageView* image) noexcept = 0;
+	virtual void operator()(const std::string& metadata, const dto::ImageView* image) noexcept = 0;
 };
 
 } // namespace neurala

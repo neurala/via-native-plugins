@@ -22,36 +22,22 @@
 #include <system_error>
 
 #include "neurala/exports.h"
-#include "neurala/meta/enum.h"
 
 namespace neurala
 {
-enum class B4BError : int
+struct B4BError final
 {
-	ok = 0,
-	unknown = 1,
-	notImplemented,
-	genericError,
-	invalidParameter,
-	unsupportedAction
-};
+	static constexpr B4BError ok() { return {0}; }
+	static constexpr B4BError unknown() { return {1}; }
+	static constexpr B4BError notImplemented() { return {2}; }
+	static constexpr B4BError genericError() { return {3}; }
+	static constexpr B4BError invalidParameter() { return {4}; }
+	static constexpr B4BError unsupportedAction() { return {5}; }
 
-// NOTE:20210927:jgerity:SWIG does not support `auto` without a trailing return type declaration (http://www.swig.org/Doc4.0/SWIGDocumentation.html#CPlusPlus11_alternate_function_syntax)
-#ifndef SWIG
-template<>
-class MetaEnum<B4BError> : public MetaEnumRegister<B4BError>
-{
-public:
-	static constexpr const auto values = enumRegisterValues(
-	 NEURALA_META_ENUM_ENTRY(B4BError, ok),
-	 NEURALA_META_ENUM_ENTRY(B4BError, unknown),
-	 NEURALA_META_ENUM_ENTRY(B4BError, notImplemented),
-	 NEURALA_META_ENUM_ENTRY(B4BError, genericError),
-	 NEURALA_META_ENUM_ENTRY(B4BError, invalidParameter),
-	 NEURALA_META_ENUM_ENTRY(B4BError, unsupportedAction));
-	static constexpr const auto fallbackValue = values[1];
+	constexpr operator int() const noexcept { return m_value; }
+
+	int m_value;
 };
-#endif // SWIG
 
 NEURALA_PUBLIC const std::error_category& b4bCategory() noexcept;
 

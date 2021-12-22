@@ -36,19 +36,19 @@ BOOST_FIXTURE_TEST_SUITE(Client, ClientFixture)
 
 BOOST_AUTO_TEST_CASE(Metadata)
 {
-	const ImageMetadata metadata{client.metadata()};
+	const dto::ImageMetadata metadata{client.metadata()};
 	BOOST_TEST(metadata.width() == 800);
 	BOOST_TEST(metadata.height() == 600);
-	BOOST_TEST(metadata.colorSpace() == EColorSpace::RGB);
-	BOOST_TEST(metadata.layout() == EImageDataLayout::planar);
-	BOOST_TEST(metadata.datatype() == EDatatype::uint8);
+	BOOST_TEST(metadata.colorSpace() == "RGB");
+	BOOST_TEST(metadata.layout() == "planar");
+	BOOST_TEST(metadata.datatype() == "uint8");
 }
 
 BOOST_AUTO_TEST_CASE(Frame)
 {
 	BOOST_TEST(client.nextFrame().value() == 0);
-	const ImageView frame{client.frame()};
-	BOOST_TEST(frame.colorSpace() == EColorSpace::RGB);
+	const dto::ImageView frame{client.frame()};
+	BOOST_TEST(frame.colorSpace() == "RGB");
 	BOOST_CHECK_EQUAL(client.frameSize(), frame.width() * frame.height() * 3);
 }
 

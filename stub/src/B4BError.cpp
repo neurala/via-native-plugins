@@ -28,8 +28,22 @@ public:
 	virtual const char* name() const noexcept { return "b4b_error"; }
 	virtual std::string message(int ev) const noexcept
 	{
-		const auto code = static_cast<B4BError>(ev);
-		return enumToString(code);
+		switch (ev)
+		{
+			case B4BError::ok():
+				return "ok";
+			case B4BError::notImplemented():
+				return "notImplemented";
+			case B4BError::genericError():
+				return "genericError";
+			case B4BError::invalidParameter():
+				return "invalidParameter";
+			case B4BError::unsupportedAction():
+				return "unsupportedAction";
+			case B4BError::unknown():
+			default:
+				return "unknown";
+		}
 	}
 };
 } // namespace

@@ -24,10 +24,10 @@
 
 namespace neurala::plug::ws
 {
-ImageView
-Input::frame(std::byte* data, std::size_t size) noexcept
+dto::ImageView
+Input::frame(std::byte* data, std::size_t size) const noexcept
 {
-	const ImageView iv{frame()};
+	const dto::ImageView iv{frame()};
 	const std::size_t frameSize{m_client.frameSize()};
 	if (size < frameSize)
 	{

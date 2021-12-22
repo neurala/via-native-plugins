@@ -16,6 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
@@ -102,7 +103,7 @@ public:
 };
 } // namespace
 
-std::pair<neurala::ImageMetadata, std::error_code>
+std::pair<dto::ImageMetadata, std::error_code>
 read(const void* const data, const std::size_t size, std::vector<std::byte>& output) noexcept
 {
 	try
@@ -118,7 +119,7 @@ read(const void* const data, const std::size_t size, std::vector<std::byte>& out
 		{
 			std::cerr << "Failed to read JPG header.\n";
 			jpeg_destroy_decompress(&decompress);
-			return {{}, make_error_code(VideoSourceStatus::error)};
+			return {{}, make_error_code(VideoSourceStatus::error())};
 		}
 
 		decompress.out_color_space = JCS_RGB;
@@ -126,7 +127,7 @@ read(const void* const data, const std::size_t size, std::vector<std::byte>& out
 		{
 			std::cerr << "Failed to decompress JPG.\n";
 			jpeg_destroy_decompress(&decompress);
-			return {{}, make_error_code(VideoSourceStatus::error)};
+			return {{}, make_error_code(VideoSourceStatus::error())};
 		}
 
 		const auto stride{decompress.out_color_components * decompress.output_width};
@@ -140,18 +141,18 @@ read(const void* const data, const std::size_t size, std::vector<std::byte>& out
 		jpeg_finish_decompress(&decompress);
 
 		jpeg_destroy_decompress(&decompress);
-		return {neurala::ImageMetadata{decompress.output_width,
-		                               decompress.output_height,
-		                               EColorSpace::RGB,
-		                               EImageDataLayout::interleaved,
-		                               EDatatype::uint8},
-		        make_error_code(VideoSourceStatus::success)};
+		return {dto::ImageMetadata{decompress.output_width,
+		                           decompress.output_height,
+		                           "RGB",
+		                           "interleaved",
+		                           "uint8"},
+		        make_error_code(VideoSourceStatus::success())};
 	}
 	catch (...)
 	{
 		std::cerr << "Error while parsing JPG\n";
 	}
-	return {{}, make_error_code(VideoSourceStatus::error)};
+	return {{}, make_error_code(VideoSourceStatus::error())};
 }
 
 } // namespace neurala::plug::ws::jpg

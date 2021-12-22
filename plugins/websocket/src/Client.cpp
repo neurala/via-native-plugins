@@ -16,18 +16,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "websocket/Client.h"
-#include "websocket/Environment.h"
-#include "websocket/JPG.h"
-
 #include <cstdlib>
 #include <iostream>
 #include <iterator>
 #include <tuple>
 #include <utility>
 
-#include <neurala/meta/enum.h>
 #include <neurala/video/VideoSourceStatus.h>
+
+#include "websocket/Client.h"
+#include "websocket/Environment.h"
+#include "websocket/JPG.h"
 
 namespace neurala::plug::ws
 {
@@ -66,7 +65,7 @@ Client::~Client()
 	}
 }
 
-ImageMetadata
+dto::ImageMetadata
 Client::metadata() noexcept
 {
 	std::error_code ec;
@@ -92,21 +91,19 @@ Client::metadata() noexcept
 			}
 			const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
 			const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
-			return {width, height, EColorSpace::RGB, EImageDataLayout::interleaved, EDatatype::uint8};
+			return {width, height, "RGB", "interleaved", "uint8"};
 		}
 
 		const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
 		const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
 		const string& colorSpaceStr{jsonObject.at("colorSpace").as_string()};
-		const EColorSpace colorSpace{
-		 stringToEnum<EColorSpace>(std::string_view{colorSpaceStr.data(), colorSpaceStr.size()})};
 		const string& layoutStr{jsonObject.at("layout").as_string()};
-		const EImageDataLayout layout{
-		 stringToEnum<EImageDataLayout>(std::string_view{layoutStr.data(), layoutStr.size()})};
 		const string& dataTypeStr{jsonObject.at("dataType").as_string()};
-		const EDatatype dataType{
-		 stringToEnum<EDatatype>(std::string_view{dataTypeStr.data(), dataTypeStr.size()})};
-		return {width, height, colorSpace, layout, dataType};
+		return {width,
+		        height,
+		        std::string{colorSpaceStr.data(), colorSpaceStr.size()},
+		        std::string{layoutStr.data(), layoutStr.size()},
+		        std::string{dataTypeStr.data(), dataTypeStr.size()}};
 	}
 	catch (...)
 	{
@@ -130,14 +127,14 @@ Client::nextFrame() noexcept
 		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()),
 		            buffer.size(),
 		            begin(m_frameCache.data));
-		return make_error_code(VideoSourceStatus::success);
+		return make_error_code(VideoSourceStatus::success());
 	}
 	if (m_frameCache.format == "jpg")
 	{
 		std::tie(m_frameCache.metadata, ec) = jpg::read(buffer.data(), buffer.size(), m_frameCache.data);
 		return ec;
 	}
-	return make_error_code(VideoSourceStatus::pixelFormatNotSupported);
+	return make_error_code(VideoSourceStatus::pixelFormatNotSupported());
 }
 
 std::error_code
@@ -187,7 +184,7 @@ Client::response(const std::string_view requestType,
 	return m_buffer.cdata();
 }
 
-ImageMetadata
+dto::ImageMetadata
 Client::metadataFromFrame() noexcept
 {
 	std::error_code ec;

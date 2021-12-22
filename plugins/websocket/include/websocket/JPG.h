@@ -24,7 +24,7 @@
 #include <utility>
 #include <vector>
 
-#include <neurala/image/ImageMetadata.h>
+#include <neurala/image/dto/ImageMetadata.h>
 
 namespace neurala::plug::ws::jpg
 {
@@ -34,7 +34,7 @@ namespace neurala::plug::ws::jpg
  * @param size The amount of data in the buffer
  * @param output The buffer to fill
  */
-std::pair<neurala::ImageMetadata, std::error_code>
+std::pair<dto::ImageMetadata, std::error_code>
 read(const void* const data, const std::size_t size, std::vector<std::byte>& output) noexcept;
 } // namespace neurala::plug::ws::jpg
 

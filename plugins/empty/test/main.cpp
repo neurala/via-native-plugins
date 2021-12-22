@@ -29,14 +29,14 @@ main()
 	plug::empty::ResultsOutput emptyResultsOutput;
 
 	// Retrieve empty metadata
-	const ImageMetadata metadata = emptyVideoSource.metadata();
+	const dto::ImageMetadata metadata{emptyVideoSource.metadata()};
 	std::cout << "Metadata: " << metadata << std::endl;
 
 	// Call empty nextFrame
 	if (!emptyVideoSource.nextFrame())
 	{
 		// Retrieve and print the image view's metadata
-		const ImageView view = emptyVideoSource.frame();
+		const dto::ImageView view{emptyVideoSource.frame()};
 		std::cout << "Image view metadata: " << view.metadata() << std::endl;
 	}
 

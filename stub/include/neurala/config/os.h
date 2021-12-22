@@ -27,9 +27,18 @@
 #define NEURALA_OS_WINDOWS
 #endif
 
+#if !defined(NEURALA_OS_LINUX) \
+ && (defined(linux) || defined(__linux) || defined(__linux__) || defined(__gnu_linux))
+#define NEURALA_OS_LINUX
+#endif
+
 #if !defined(NEURALA_OS_APPLE) && defined(__APPLE__) /* Defined by Apple Clang for iOS and macOS \
                                                         both */
 #define NEURALA_OS_APPLE
+#endif
+
+#if !defined(NEURALA_OS_ANDROID) && defined(__ANDROID__)
+#define NEURALA_OS_ANDROID
 #endif
 
 #endif // NEURALA_CONFIG_OS_H

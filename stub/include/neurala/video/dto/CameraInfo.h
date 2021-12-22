@@ -16,14 +16,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NEURALA_VIDEO_CAMERA_INFO_H
-#define NEURALA_VIDEO_CAMERA_INFO_H
+#ifndef NEURALA_VIDEO_DTO_CAMERA_INFO_H
+#define NEURALA_VIDEO_DTO_CAMERA_INFO_H
 
 #include <iomanip>
 #include <ostream>
 #include <string>
 
 namespace neurala
+{
+namespace dto
 {
 /**
  * @brief Camera information.
@@ -108,6 +110,7 @@ public:
 	}
 };
 
+} // namespace dto
 } // namespace neurala
 
 #endif // NEURALA_VIDEO_CAMERA_INFO_H

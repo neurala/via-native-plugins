@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_SUITE(Discoverer)
 
 BOOST_AUTO_TEST_CASE(GetCameraInfo)
 {
-	const std::vector<CameraInfo> cameraInfo{plug::ws::Discoverer{}()};
+	const std::vector<dto::CameraInfo> cameraInfo{plug::ws::Discoverer{}()};
 	BOOST_TEST(cameraInfo.size() == 1);
 	BOOST_TEST(cameraInfo.front().valid());
 	BOOST_TEST(cameraInfo.front().id() == "websocket_plugin");

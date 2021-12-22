@@ -35,7 +35,7 @@ namespace plug::dummy
 class PLUGIN_API Discoverer : public CameraDiscoverer
 {
 public:
-	[[nodiscard]] std::vector<CameraInfo> operator()() const noexcept override;
+	[[nodiscard]] std::vector<dto::CameraInfo> operator()() const noexcept override;
 
 	static void* create(PluginArguments&, PluginErrorCallback&);
 	static void destroy(void* p);
@@ -47,21 +47,24 @@ public:
 class PLUGIN_API Source : public VideoSource
 {
 public:
-	explicit Source(const CameraInfo& cameraInfo, const Options& cameraOptions = {});
+	explicit Source(const dto::CameraInfo& cameraInfo, const Options& cameraOptions = {});
 
-	[[nodiscard]] ImageMetadata metadata() const noexcept override
+	[[nodiscard]] dto::ImageMetadata metadata() const noexcept override
 	{
-		return ImageMetadata(200, 200, EColorSpace::RGB, EImageDataLayout::planar, EDatatype::uint8);
+		return {200, 200, "RGB", "planar", "uint8"};
 	}
 
 	[[nodiscard]] std::error_code nextFrame() noexcept override
 	{
-		return make_error_code(VideoSourceStatus::success);
+		return make_error_code(VideoSourceStatus::success());
 	}
 
-	[[nodiscard]] ImageView frame() noexcept override { return ImageView(metadata(), m_frame.get()); }
+	[[nodiscard]] dto::ImageView frame() const noexcept override
+	{
+		return {metadata(), m_frame.get()};
+	}
 
-	[[nodiscard]] ImageView frame(std::byte* data, std::size_t size) noexcept override;
+	[[nodiscard]] dto::ImageView frame(std::byte* data, std::size_t size) const noexcept override;
 
 	std::error_code execute(const std::string& action) noexcept override;
 

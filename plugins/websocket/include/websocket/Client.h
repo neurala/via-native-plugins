@@ -30,8 +30,8 @@
 #include <boost/beast.hpp>
 #include <boost/config.hpp>
 #include <boost/json.hpp>
-#include <neurala/image/ImageMetadata.h>
-#include <neurala/image/views/ImageView.h>
+#include <neurala/image/dto/ImageMetadata.h>
+#include <neurala/image/views/dto/ImageView.h>
 #include <neurala/plugin/PluginBindings.h>
 
 namespace neurala::plug::ws
@@ -59,7 +59,7 @@ public:
 	 * enclosed as a JSON object. The width and height attributes must be represented as numbers. The
 	 * latter three are interpreted as the string encoding of an element from the corresponding enum.
 	 */
-	ImageMetadata metadata() noexcept;
+	dto::ImageMetadata metadata() noexcept;
 
 	/**
 	 * @brief Retrieve the next frame.
@@ -69,7 +69,7 @@ public:
 	/**
 	 * @brief Returns the a view of the last retrieved frame.
 	 */
-	const ImageView frame() const noexcept
+	const dto::ImageView frame() const noexcept
 	{
 		return {m_frameCache.metadata, m_frameCache.data.data()};
 	}
@@ -104,7 +104,7 @@ private:
 	                     boost::json::object&& body,
 	                     std::error_code& ec) noexcept;
 
-	ImageMetadata metadataFromFrame() noexcept;
+	dto::ImageMetadata metadataFromFrame() noexcept;
 
 	boost::asio::io_context m_ioContext;
 	boost::asio::ip::tcp::socket m_socket;
@@ -114,7 +114,7 @@ private:
 	struct FrameCache final
 	{
 		std::string format;
-		neurala::ImageMetadata metadata;
+		dto::ImageMetadata metadata;
 		std::vector<std::byte> data;
 	} m_frameCache;
 };

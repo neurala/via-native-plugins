@@ -38,7 +38,7 @@ public:
 	 * @param image A pointer to an image view, which may be null if no frame
 	 *              is available or could be retrieved.
 	 */
-	void operator()(const std::string&, const ImageView*) noexcept final { }
+	void operator()(const std::string&, const dto::ImageView*) noexcept final { }
 };
 
 } // namespace neurala::plug::empty
