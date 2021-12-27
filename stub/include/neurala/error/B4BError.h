@@ -25,7 +25,11 @@
 
 namespace neurala
 {
-struct B4BError final
+struct B4BError
+// NOTE:20211227:jgerity:SWIG does not support the final keyword in class declarations, see SDK-6067
+#ifndef SWIG
+final
+#endif // SWIG
 {
 	static constexpr B4BError ok() { return {0}; }
 	static constexpr B4BError unknown() { return {1}; }
