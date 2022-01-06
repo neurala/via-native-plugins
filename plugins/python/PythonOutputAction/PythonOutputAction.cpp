@@ -1,0 +1,160 @@
+/*
+ * This file is part of Neurala SDK.
+ * Copyright Neurala Inc. 2013-2021. All rights reserved.
+ *
+ * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
+ * not license, sell, rent, lease, transfer, assign, distribute, display, host, outsource, disclose
+ * or otherwise commercially exploit or make this source code available to any third party; (b) you
+ * shall not modify, make derivative works of, disassemble, reverse compile or reverse engineer any
+ * part of the SDK; (c) You shall not access the SDK in order to build a similar or competitive
+ * product or service; (d) no part of the this source may be copied, reproduced, distributed,
+ * republished, downloaded, displayed, posted or transmitted in any form or by any means, including
+ * but not limited to electronic, mechanical, photocopying, recording or other means; and (e) any
+ * future release, update, or other addition to functionality of the SDK shall be subject to the
+ * terms of the accompanying License Agreement. You must reproduce, on all copies made by you or
+ * for you, and must not remove, alter, or obscure in any way all proprietary rights notices
+ * (including copyright notices) of Neurala Inc or its suppliers on or within the copies of the
+ * SDK. Any sample code provided with the SDK and designated as such are for illustrative purposes
+ * only and are not to be included in your applications.
+ *
+ * In cases when the accompanying License Agreement permits redistribution of this file, the above
+ * notice shall be reproduced its entirety in every copy of a distributed version of this file.
+ */
+
+#include <algorithm>
+#include <iostream>
+#include <thread>
+
+#include "neurala/plugin/PluginStatus.h"
+
+#include "PythonOutputAction.h"
+
+#define REGISTER_CLASS(cls, name, version) \
+	*status = pm.registerPlugin<cls>(name, version); \
+	if (*status != neurala::PluginStatus::success() && \
+	    *status != neurala::PluginStatus::alreadyRegistered() ) \
+		{ return nullptr; }
+
+#ifndef NDEBUG
+#define D(x) std::cout << "[thread 0x" << std::hex << std::this_thread::get_id() << std::dec << "] PythonOutputAction: " << x
+#else
+#define D(x) do {} while (0);
+#endif
+
+namespace
+{
+int
+exitHere()
+{
+	return 0;
+}
+
+} // namespace
+
+extern "C" NeuralaPluginExitFunction
+initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
+{
+	auto kPluginVersion = neurala::Version(1, 0);
+	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
+
+	wchar_t* kProgramName = L"PythonOutputAction";
+	Py_SetProgramName(kProgramName);
+	if (!Py_IsInitialized())
+	{
+		D("Initializing Python\n");
+		Py_InitializeEx(0);  // does not register signal handlers
+	} else {
+		D("see an initialized Python\n");
+	}
+
+	// necessary in 3.6, but not later versions
+	if (!PyEval_ThreadsInitialized())
+	{
+		PyEval_InitThreads();
+	}
+
+	if (PyGILState_Check())
+	{
+		// NOTE:20220105:jgerity:If we hold the GIL after calling Py_Initialize() (i.e. we called it first), we need to
+		// release it so that other threads can acquire it.
+		PyEval_SaveThread();
+	}
+
+	REGISTER_CLASS(neurala::PythonPlugin::PythonOutputAction, "PythonOutputAction", kPluginVersion);
+
+	return exitHere;
+
+}
+
+namespace neurala {
+	namespace PythonPlugin {
+
+		/*
+		Obtain a buffer from a Python object
+
+		Returns 0 on success, -1 on failure
+
+		NOTE: caller is responsible for calling PyBuffer_Release(buf) when the buffer is no longer being used, so that obj can be garbage collected
+		*/
+		int
+		bufferFromPyObject(PyObject* obj, Py_buffer* buf, int flags = 0)
+		{
+			ACQUIRE_GIL;
+
+			/* If the object (e.g. io.BytesIO) defines getbuffer(), we should call it first to get the right object to pass to PyObject_GetBuffer() */
+			if (PyObject_HasAttrString(obj, "getbuffer") == 1)
+			{
+				obj = PyObject_CallMethod(obj, "getbuffer", NULL);
+				if (obj == NULL) {
+					D("Error occurred when calling getbuffer() on Python object");
+					return -1;
+				}
+			}
+
+			if (!PyObject_CheckBuffer(obj))
+			{
+				D("Python object does not support the buffer protocol");
+				return -1;
+			}
+
+			if (PyObject_GetBuffer(obj, buf, flags) != 0)
+			{
+				D("Error occurred when calling PyObject_GetBuffer()");
+				return -1;
+			}
+
+			RELEASE_GIL;
+
+			return 0;
+		}
+
+		void PythonOutputAction::operator()(const std::string& metadata, const dto::ImageView* view) noexcept
+		{
+			PyObject *args, *result;
+
+			ACQUIRE_GIL;
+
+			if (m_outputcallable == nullptr)
+			{
+				D("no output callable\n");
+				goto cleanup;
+			}
+
+			args = PyTuple_Pack(1, PyUnicode_FromString(metadata.c_str()));
+
+			// a more sophisticated plugin could make use of the SWIG layer here to also pass the ImageView
+			result = PyObject_Call(m_outputcallable, args, NULL);
+			if (result == NULL) {
+				D("error occurred in call\n");
+				// Python exception information is available here using e.g. PyErr_Print() if desired
+				goto cleanup;
+			}
+			cleanup:
+				Py_XDECREF(args);
+				Py_XDECREF(result);
+				RELEASE_GIL;
+		}
+
+	} // namespace PythonPlugin
+} // namespace neurala
+

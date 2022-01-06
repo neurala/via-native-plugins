@@ -27,3 +27,4 @@ execute_process(COMMAND
 )
 
 add_subdirectory(PythonCamera)
+add_subdirectory(PythonOutputAction)
