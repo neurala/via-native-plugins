@@ -1,6 +1,6 @@
 /*
  * This file is part of Neurala SDK.
- * Copyright Neurala Inc. 2013-2021. All rights reserved.
+ * Copyright Neurala Inc. 2013-2022. All rights reserved.
  *
  * Except as expressly permitted in the accompanying License Agreement, if at all, (a) you shall
  * not license, sell, rent, lease, transfer, assign, distribute, display, host, outsource, disclose
