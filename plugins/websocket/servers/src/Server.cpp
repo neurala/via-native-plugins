@@ -16,7 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "Server.h"
+#include "websocket/Server.h"
 
 #include <algorithm>
 #include <iostream>
@@ -59,20 +59,21 @@ Server::~Server()
 void
 Server::run()
 {
-	std::unique_ptr<volatile tcp::socket> socket;
-	volatile bool detachingThread{};
+	std::unique_ptr<tcp::socket> socket;
+	bool detachingThread{};
 	while (m_running)
 	{
 		while (detachingThread)
 		{
 			boost::this_thread::sleep(boost::posix_time::seconds(1));
 		}
-		socket = std::make_unique<volatile tcp::socket>(m_ioContext);
-		m_acceptor.accept(const_cast<tcp::socket&>(*socket));
+		socket = std::make_unique<tcp::socket>(m_ioContext);
+		m_acceptor.accept(*socket);
 		detachingThread = true;
 		boost::thread([&]() {
-			session(std::move(const_cast<tcp::socket&>(*socket)));
+			tcp::socket assignedSocket{std::move(*socket)};
 			detachingThread = false;
+			session(std::move(assignedSocket));
 		})
 		 .detach();
 	}

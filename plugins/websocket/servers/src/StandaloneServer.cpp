@@ -19,12 +19,12 @@
 #include <chrono>
 #include <thread>
 
-#include "websocket/InputServer.h"
+#include "websocket/IOServer.h"
 
 int
 main()
 {
-	neurala::plug::ws::InputServer inputServer{"127.0.0.1", 54321};
+	neurala::plug::ws::IOServer ioServer{"127.0.0.1", 54321};
 
 	for (;;)
 	{

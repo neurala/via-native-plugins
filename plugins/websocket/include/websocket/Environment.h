@@ -16,27 +16,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <iostream>
+#ifndef NEURALA_PLUG_WS_ENVIRONMENT_H
+#define NEURALA_PLUG_WS_ENVIRONMENT_H
 
-#include <boost/beast.hpp>
-
-#include "OutputServer.h"
+#include <cstdlib>
 
 namespace neurala::plug::ws
 {
-OutputServer::OutputServer(const std::string_view ipAddress, const std::uint16_t port)
- : Server{ipAddress,
-          port,
-          {{"result", [&](WebSocketStream& stream, const boost::json::object& request) {
-	            handleResult(stream, request);
-            }}}}
-{ }
+inline const char* const envIpAddress{std::getenv("NEURALA_SERVER_IP_ADDRESS")};
+inline const std::string_view ipAddress{envIpAddress == nullptr ? "127.0.0.1" : envIpAddress};
 
-void
-OutputServer::handleResult(WebSocketStream& stream, const boost::json::object& request)
-{
-	std::cout << "Received result:\n" << boost::json::serialize(request) << '\n';
-	stream.write(net::buffer("result JSON received"));
-}
+inline const char* const envPort{std::getenv("NEURALA_SERVER_PORT")};
+inline const std::uint16_t port{
+ static_cast<std::uint16_t>(envPort == nullptr ? 54321 : std::atoi(envPort))};
 
 } // namespace neurala::plug::ws
+
+#endif // NEURALA_PLUG_WS_ENVIRONMENT_H

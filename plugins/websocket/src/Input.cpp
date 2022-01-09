@@ -16,53 +16,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "Input.h"
+#include "websocket/Input.h"
 #include "neurala/video/VideoSourceStatus.h"
 
+#include <algorithm>
 #include <iostream>
 
 namespace neurala::plug::ws
 {
-Input::Input(const std::string_view ipAddress, const std::uint16_t port)
- : VideoSource{}, m_client{ipAddress, port}, m_metadata{}, m_frame{}
-{ }
-
-std::error_code
-Input::nextFrame() noexcept
-{
-	try
-	{
-		m_frame = m_client.frame();
-		return make_error_code(VideoSourceStatus::success());
-	}
-	catch (const beast::system_error& se)
-	{
-		return std::make_error_code(static_cast<std::errc>(se.code().value()));
-	}
-}
-
 dto::ImageView
 Input::frame(std::byte* data, std::size_t size) const noexcept
 {
-	if (size < m_frame.size())
+	const dto::ImageView iv{frame()};
+	const std::size_t frameSize{m_client.frameSize()};
+	if (size < frameSize)
 	{
 		std::cerr << "Insufficient capacity in B4B buffer.\n";
 	}
 	else
 	{
-		std::copy(cbegin(m_frame), cend(m_frame), data);
+		std::copy_n(static_cast<const std::byte*>(iv.data()), frameSize, data);
 	}
-	return {cachedMetadata(), data};
-}
-
-const dto::ImageMetadata&
-Input::cachedMetadata() const
-{
-	if (!m_metadata)
-	{
-		m_metadata = m_client.metadata();
-	}
-	return *m_metadata;
+	return {iv.metadata(), data};
 }
 
 } // namespace neurala::plug::ws

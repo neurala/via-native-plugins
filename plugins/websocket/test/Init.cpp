@@ -21,13 +21,12 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/thread.hpp>
 
-#include "websocket/InputServer.h"
-#include "websocket/OutputServer.h"
+#include "websocket/Environment.h"
+#include "websocket/IOServer.h"
 
 struct ServerFixture
 {
-	neurala::plug::ws::InputServer inputServer{"127.0.0.1", 54321};
-	neurala::plug::ws::OutputServer outputServer{"127.0.0.1", 43210};
+	neurala::plug::ws::IOServer ioServer{neurala::plug::ws::ipAddress, neurala::plug::ws::port};
 };
 
 BOOST_TEST_GLOBAL_FIXTURE(ServerFixture);

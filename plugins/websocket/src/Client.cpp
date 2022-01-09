@@ -16,73 +16,162 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "Client.h"
-
 #include <cstdlib>
 #include <iostream>
+#include <iterator>
+#include <tuple>
+#include <utility>
+
+#include <neurala/video/VideoSourceStatus.h>
+
+#include "websocket/Client.h"
+#include "websocket/Environment.h"
 
 namespace neurala::plug::ws
 {
-Client::Client(const std::string_view ipAddress, const std::uint16_t port)
- : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}
+Client::Client() : m_ioContext{}, m_socket{m_ioContext}, m_stream{m_socket}, m_frameCache{}
+{
+	try
+	{
+		boost::asio::ip::tcp::endpoint endpoint{boost::asio::ip::make_address(ipAddress), port};
+		m_socket.connect(endpoint);
+		// Set buffer limit to just above 4k images
+		const auto previousMax = m_stream.read_message_max();
+		m_stream.read_message_max(280000000);
+		std::clog << "Changed max message: " << previousMax << " -> " << m_stream.read_message_max()
+		          << '\n';
+		m_stream.handshake(ipAddress.data(), "/");
+		std::clog << "WebSocket client connected.\n";
+		m_frameCache.metadata = metadata(); // ensure the cache is initialized
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Error while initializing WebSocket connection: " << e.what() << '\n';
+	}
+	catch (...)
+	{
+		std::cerr << "Unknown error while initializing WebSocket connection.\n";
+	}
+}
+
+Client::~Client()
 {
 	boost::system::error_code ec;
-	tcp::endpoint endpoint{net::ip::make_address(ipAddress, ec), port};
-	m_socket.connect(endpoint, ec);
-	if (ec.failed())
+	m_stream.close(boost::beast::websocket::close_code::normal, ec);
+	if (ec)
 	{
-		std::cerr << "Failed to connect: " << ec.message() << ".\n";
-		throw std::system_error(ec);
+		std::cerr << "Error while disconnecting from the server: " << ec.message() << '\n';
 	}
-	std::cout << "Client connected.\n";
-	m_stream.handshake(ipAddress.data(), "/");
 }
 
 dto::ImageMetadata
-Client::metadata()
+Client::metadata() noexcept
 {
-	const net::const_buffer buffer{response("metadata")};
-	using namespace boost::json;
-	const value jsonValue{
-	 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
-	const object& jsonObject{jsonValue.as_object()};
-	const string& colorSpace{jsonObject.at("colorSpace").as_string()};
-	const string& layout{jsonObject.at("layout").as_string()};
-	const string& dataType{jsonObject.at("dataType").as_string()};
-	return {static_cast<std::size_t>(jsonObject.at("width").as_int64()),
-	        static_cast<std::size_t>(jsonObject.at("height").as_int64()),
-	        std::string{colorSpace.data(), colorSpace.size()},
-	        std::string{layout.data(), layout.size()},
-	        std::string{dataType.data(), dataType.size()}};
+	std::error_code ec;
+	const ConstBuffer buffer{response("metadata", {}, ec)};
+	if (ec)
+	{
+		return {};
+	}
+	try
+	{
+		using namespace boost::json;
+		const value jsonValue{
+		 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
+		const object& jsonObject{jsonValue.as_object()};
+
+		if (jsonObject.contains("format"))
+		{
+			const auto& s{jsonObject.at("format").as_string()};
+			m_frameCache.format = std::string{s.data(), s.size()};
+			const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
+			const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
+			return {width, height, "RGB", "interleaved", "uint8"};
+		}
+
+		const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
+		const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
+		const string& colorSpaceStr{jsonObject.at("colorSpace").as_string()};
+		const string& layoutStr{jsonObject.at("layout").as_string()};
+		const string& dataTypeStr{jsonObject.at("dataType").as_string()};
+		return {width,
+		        height,
+		        std::string{colorSpaceStr.data(), colorSpaceStr.size()},
+		        std::string{layoutStr.data(), layoutStr.size()},
+		        std::string{dataTypeStr.data(), dataTypeStr.size()}};
+	}
+	catch (...)
+	{
+		std::cerr << "Error while parsing 'metadata' response\n";
+	}
+	return {};
 }
 
-std::vector<std::byte>
-Client::frame()
+std::error_code
+Client::nextFrame() noexcept
 {
-	net::const_buffer buffer = response("frame");
-	std::vector<std::byte> ret(buffer.size());
-	std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size(), begin(ret));
-	return ret;
+	std::error_code ec;
+	const ConstBuffer buffer{response("frame", {}, ec)};
+	if (ec)
+	{
+		return ec;
+	}
+	if (m_frameCache.format.empty())
+	{
+		m_frameCache.data.resize(buffer.size());
+		std::copy_n(reinterpret_cast<const std::byte*>(buffer.data()),
+		            buffer.size(),
+		            begin(m_frameCache.data));
+		return make_error_code(VideoSourceStatus::success());
+	}
+	return make_error_code(VideoSourceStatus::pixelFormatNotSupported());
 }
 
-net::const_buffer
-Client::response(const std::string_view requestType, const boost::json::object& body /*= {}*/)
+std::error_code
+Client::execute(const std::string_view action) noexcept
+{
+	std::error_code ec;
+	response("execute", {{"action", action.data()}}, ec);
+	return ec;
+}
+
+void
+Client::sendResult(boost::json::object&& result) noexcept
+{
+	std::error_code ec;
+	response("result", std::move(result), ec);
+}
+
+Client::ConstBuffer
+Client::response(const std::string_view requestType,
+                 boost::json::object&& body,
+                 std::error_code& ec) noexcept
 {
 	m_buffer.clear();
-	boost::json::object request;
-	request["request"] = requestType.data();
-	if (!body.empty())
+	try
 	{
-		request["body"] = body;
+		boost::json::object request{{"request", requestType.data()}};
+		if (!body.empty())
+		{
+			request.emplace("body", std::move(body));
+		}
+		m_stream.write(boost::asio::buffer(serialize(request)));
+		m_stream.read(m_buffer);
 	}
-	m_stream.write(net::buffer(serialize(request)));
-	m_stream.read(m_buffer);
-	const net::const_buffer data = m_buffer.cdata();
-	if (data.size() < 1024)
+	catch (const boost::beast::system_error& se)
 	{
-		std::cout << beast::make_printable(data) << '\n';
+		ec = std::make_error_code(static_cast<std::errc>(se.code().value()));
+		std::cerr << "Error while processing request: " << se.what() << '\n';
 	}
-	return data;
+	catch (const std::exception& e)
+	{
+		std::cerr << "Error while processing request: " << e.what() << '\n';
+	}
+	catch (...)
+	{
+		std::cerr << "Unknown error while processing request.\n";
+	}
+	return m_buffer.cdata();
 }
 
 } // namespace neurala::plug::ws

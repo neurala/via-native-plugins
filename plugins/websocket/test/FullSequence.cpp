@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_SUITE(FullSequence)
 
 BOOST_AUTO_TEST_CASE(MultipleFrames)
 {
-	plug::ws::Input input{"127.0.0.1", 54321};
+	plug::ws::Input input;
 	plug::ws::Output output;
 	const dto::ImageMetadata imageMetadata{input.metadata()};
 	for (std::size_t i{}; i < 10; ++i)

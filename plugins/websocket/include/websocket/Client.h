@@ -21,32 +21,28 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 #include <string_view>
+#include <system_error>
+#include <vector>
 
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <boost/config.hpp>
 #include <boost/json.hpp>
 #include <neurala/image/dto/ImageMetadata.h>
+#include <neurala/image/views/dto/ImageView.h>
 #include <neurala/plugin/PluginBindings.h>
 
 namespace neurala::plug::ws
 {
-namespace beast = boost::beast;
-namespace net = boost::asio;
-using tcp = net::ip::tcp;
-
 /**
- * @brief Websocket client that receives input frames from a specified server.
+ * @brief WebSocket client that receives input frames from a specified server.
  */
 class PLUGIN_API Client final
 {
 public:
-	/**
-	 * @param ipAddress the server's IP address
-	 * @param port the port on which the server is receiving connection
-	 */
-	Client(const std::string_view ipAddress, const std::uint16_t port);
+	Client();
 
 	Client(const Client&) = delete;
 	Client(Client&&) = default;
@@ -54,7 +50,7 @@ public:
 	Client& operator=(Client&&) = delete; // the stream is not move-assignable
 
 	/// Closes the WebSocket stream used to communicate with the server.
-	~Client() { m_stream.close(beast::websocket::close_code::normal); }
+	~Client();
 
 	/**
 	 * @brief Retrieve metadata regarding frames fed by the server.
@@ -63,35 +59,62 @@ public:
 	 * enclosed as a JSON object. The width and height attributes must be represented as numbers. The
 	 * latter three are interpreted as the string encoding of an element from the corresponding enum.
 	 */
-	dto::ImageMetadata metadata();
+	dto::ImageMetadata metadata() noexcept;
 
 	/**
 	 * @brief Retrieve the next frame.
-	 * @param location address to which the frame data must be copied
-	 * @param capacity capacity of the buffer at the given address
-	 * @return the frame buffer
 	 */
-	std::vector<std::byte> frame();
+	std::error_code nextFrame() noexcept;
+
+	/**
+	 * @brief Returns the a view of the last retrieved frame.
+	 */
+	const dto::ImageView frame() const noexcept
+	{
+		return {m_frameCache.metadata, m_frameCache.data.data()};
+	}
+
+	/**
+	 * @brief Returns the size of the last retrieved frame.
+	 */
+	const std::size_t frameSize() const noexcept { return m_frameCache.data.size(); }
+
+	/**
+	 * @brief Executes an arbitrary action on the video source.
+	 * @param action label assigned to the commanded action
+	 */
+	std::error_code execute(const std::string_view action) noexcept;
 
 	/**
 	 * @brief Send the result of processing a frame back to the server.
 	 * @param result body of the result sending request
 	 */
-	void sendResult(const boost::json::object& result) { response("result", result); }
+	void sendResult(boost::json::object&& result) noexcept;
 
 private:
+	using ConstBuffer = boost::asio::const_buffer;
+
 	/**
 	 * @brief Retrieve the response for a given request.
 	 *
 	 * Requests used the JSON format. The request type is set as the "request" element. If a body
 	 * object is specified, a "body" element is also included in the message.
 	 */
-	net::const_buffer response(const std::string_view requestType, const boost::json::object& body = {});
+	ConstBuffer response(const std::string_view requestType,
+	                     boost::json::object&& body,
+	                     std::error_code& ec) noexcept;
 
-	net::io_context m_ioContext;
-	tcp::socket m_socket;
-	beast::websocket::stream<tcp::socket&> m_stream;
-	beast::flat_buffer m_buffer;
+	boost::asio::io_context m_ioContext;
+	boost::asio::ip::tcp::socket m_socket;
+	boost::beast::websocket::stream<boost::asio::ip::tcp::socket&> m_stream;
+	boost::beast::flat_buffer m_buffer;
+
+	struct FrameCache final
+	{
+		std::string format;
+		dto::ImageMetadata metadata;
+		std::vector<std::byte> data;
+	} m_frameCache;
 };
 
 } // namespace neurala::plug::ws

@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_SUITE(Input)
 
 BOOST_AUTO_TEST_CASE(Metadata)
 {
-	const dto::ImageMetadata metadata{plug::ws::Input{"127.0.0.1", 54321}.metadata()};
+	const dto::ImageMetadata metadata{plug::ws::Input{}.metadata()};
 	BOOST_TEST(metadata.width() == 800);
 	BOOST_TEST(metadata.height() == 600);
 	BOOST_TEST(metadata.colorSpace() == "RGB");
@@ -39,12 +39,12 @@ BOOST_AUTO_TEST_CASE(Metadata)
 
 BOOST_AUTO_TEST_CASE(NextFrame)
 {
-	BOOST_TEST(plug::ws::Input("127.0.0.1", 54321).nextFrame().value() == 0);
+	BOOST_TEST(plug::ws::Input{}.nextFrame().value() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(ManagedFrame)
 {
-	plug::ws::Input input{"127.0.0.1", 54321};
+	plug::ws::Input input{};
 	BOOST_TEST(input.nextFrame().value() == 0);
 	const dto::ImageView view{input.frame()};
 	BOOST_TEST(view.data() != nullptr);
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(ManagedFrame)
 
 BOOST_AUTO_TEST_CASE(UnmanagedFrame)
 {
-	plug::ws::Input input{"127.0.0.1", 54321};
+	plug::ws::Input input{};
 	BOOST_TEST(input.nextFrame().value() == 0);
 	std::vector<std::byte> frameBuffer(800 * 600 * 3);
 	const dto::ImageView view{input.frame(frameBuffer.data(), frameBuffer.size())};

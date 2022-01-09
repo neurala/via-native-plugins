@@ -43,7 +43,7 @@ using tcp = net::ip::tcp;
  *
  * Specific behavior depending on client requests must be added for an instance to be useful.
  */
-class PLUGIN_API Server
+class Server
 {
 public:
 	using WebSocketStream = beast::websocket::stream<tcp::socket>;
@@ -86,7 +86,7 @@ private:
 	net::io_context m_ioContext;
 	tcp::acceptor m_acceptor;
 	std::vector<boost::thread> m_sessions;
-	volatile bool m_running;
+	bool m_running;
 	boost::thread m_thread;
 };
 
