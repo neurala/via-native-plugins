@@ -38,15 +38,12 @@
 #include <neurala/plugin/PluginManager.h>
 #include <neurala/plugin/PluginStatus.h>
 
-
-
 #include <neurala/video/CameraDiscoverer.h>
 #include <neurala/video/VideoSource.h>
 #include <neurala/video/VideoSourceStatus.h>
 #include <neurala/video/dto/CameraInfo.h>
 
-#include "Python.h"
-
+#include "PythonPlugin.h"
 
 namespace neurala {
 	namespace PythonCamera {
@@ -93,4 +90,4 @@ namespace neurala {
 	} // namespace PythonCamera
 } // namespace neurala
 
-#endif // NEURALA_PYTHON_PLUGIN_H
+#endif // NEURALA_PYTHON_CAMERA_H

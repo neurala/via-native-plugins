@@ -35,11 +35,6 @@
 	    *status != neurala::PluginStatus::alreadyRegistered() ) \
 		{ return nullptr; }
 
-#ifndef NDEBUG
-#define D(x) std::cout << "[thread 0x" << std::hex << std::this_thread::get_id() << std::dec << "] PythonCamera: " << x
-#else
-#define D(x) do {} while (0);
-#endif
 
 namespace
 {
@@ -54,25 +49,10 @@ exitHere()
 extern "C" NeuralaPluginExitFunction
 initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
-	wchar_t* kProgramName = L"PythonCamera";
-	Py_SetProgramName(kProgramName);
-	D("Initializing Python\n");
-	Py_InitializeEx(0);  // NOTE:20220105:jgerity:does not register signal handlers
-
-	// necessary in 3.6, but not later versions
-	if (!PyEval_ThreadsInitialized())
-	{
-		PyEval_InitThreads();
-	}
-
-	if (PyGILState_Check())
-	{
-		PyEval_SaveThread();
-	}
-
+	auto kPluginVersion = neurala::Version(1, 0);
 	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
 
-	auto kPluginVersion = neurala::Version(1, 0);
+	neurala::initializePython(L"PythonCamera");
 
 	REGISTER_CLASS(neurala::PythonCamera::Discoverer, "libPythonCameraDiscoverer", kPluginVersion);
 	REGISTER_CLASS(neurala::PythonCamera::Source, "PythonCamera", kPluginVersion);
@@ -115,41 +95,6 @@ namespace neurala {
 			delete static_cast<Discoverer*>(p);
 		}
 
-		/*
-		Returns 0 on success, -1 on failure
-
-		NOTE: caller is responsible for acquiring the GIL before calling this function
-		NOTE: caller is responsible for calling PyBuffer_Release(buf) when the buffer is no longer being used, so that obj can be garbage collected
-		*/
-		int
-		bufferFromPyObject(PyObject* obj, Py_buffer* buf, int flags = 0)
-		{
-			int err = 0;
-
-			/* If the object (e.g. io.BytesIO) defines getbuffer(), we should call it first to get the right object to pass to PyObject_GetBuffer() */
-			if (PyObject_HasAttrString(obj, "getbuffer") == 1)
-			{
-				obj = PyObject_CallMethod(obj, "getbuffer", NULL);
-				if (obj == NULL) {
- 					D("Error occurred when calling getbuffer() on Python object\n");
-					err = -1;
-				}
-			}
-
-			if (!PyObject_CheckBuffer(obj))
-			{
- 				D("Python object does not support the buffer protocol\n");
-				err = -1;
-			}
-
-			if (PyObject_GetBuffer(obj, buf, flags) != 0)
-			{
- 				D("Error occurred when calling PyObject_GetBuffer()\n");
-				err = -1;
-			}
-
-			return err;
-		}
 
 		/*
 		0 on success
@@ -158,7 +103,7 @@ namespace neurala {
 		int
 		pyImg(Py_buffer* buf)
 		{
-			D("acquiring the GIL\n");
+			DEBUG("acquiring the GIL\n");
 			PyGILState_STATE gil = PyGILState_Ensure();
 
 			// get module dict for globals/locals
@@ -170,8 +115,8 @@ namespace neurala {
 			}
 			d = PyModule_GetDict(m);
 
-			// TODO: this should load a callable from a source file
-			// hard-coded 300x300 image with 100px-high bands of red, green, blue
+			// NOTE:20220110:jgerity:here we evaluate a fixed program to create a 300x300 image
+			// See PythonOutputAction for an example of executing Python source from a file
 			const char* prog = "b'\\xFF\\x00\\x00'*300*100 + b'\\x00\\xFF\\x00'*300*100 + b'\\x00\\x00\\xFF'*300*100";
 			v = PyRun_String(prog, Py_eval_input, d, d);
 			if (v == NULL)
@@ -182,13 +127,13 @@ namespace neurala {
 			int err = bufferFromPyObject(v, buf);
 			if (err != 0)
 			{
- 				D("Failed to get buffer from python object\n");
+ 				DEBUG("Failed to get buffer from python object\n");
 				return -1;
 			}
 
 			Py_XDECREF(v);
 
-			D("releasing the GIL\n");
+			DEBUG("releasing the GIL\n");
 			PyGILState_Release(gil);
 			return 0;
 		}

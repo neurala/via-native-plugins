@@ -6,12 +6,13 @@ target_include_directories(PythonCamera
 	PRIVATE
 		${Python3_INCLUDE_DIRS}
 		${B4B_INCLUDE_DIRS}
+		${CMAKE_CURRENT_SOURCE_DIR}/../include/  # PythonPlugin.h
 )
 
-#target_compile_definitions(PythonCamera
-#	PRIVATE
-#		NEURALA_EXPORT_PLUGIN
-#)
+target_compile_definitions(PythonCamera
+	PRIVATE
+		NEURALA_EXPORT_PLUGIN
+)
 
 target_link_libraries(PythonCamera
 	PRIVATE

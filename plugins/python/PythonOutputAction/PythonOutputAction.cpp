@@ -22,8 +22,6 @@
  */
 
 #include <algorithm>
-#include <iostream>
-#include <thread>
 
 #include "neurala/plugin/PluginStatus.h"
 
@@ -34,12 +32,6 @@
 	if (*status != neurala::PluginStatus::success() && \
 	    *status != neurala::PluginStatus::alreadyRegistered() ) \
 		{ return nullptr; }
-
-#ifndef NDEBUG
-#define D(x) std::cout << "[thread 0x" << std::hex << std::this_thread::get_id() << std::dec << "] PythonOutputAction: " << x
-#else
-#define D(x) do {} while (0);
-#endif
 
 namespace
 {
@@ -57,28 +49,7 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 	auto kPluginVersion = neurala::Version(1, 0);
 	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
 
-	wchar_t* kProgramName = L"PythonOutputAction";
-	Py_SetProgramName(kProgramName);
-	if (!Py_IsInitialized())
-	{
-		D("Initializing Python\n");
-		Py_InitializeEx(0);  // does not register signal handlers
-	} else {
-		D("see an initialized Python\n");
-	}
-
-	// necessary in 3.6, but not later versions
-	if (!PyEval_ThreadsInitialized())
-	{
-		PyEval_InitThreads();
-	}
-
-	if (PyGILState_Check())
-	{
-		// NOTE:20220105:jgerity:If we hold the GIL after calling Py_Initialize() (i.e. we called it first), we need to
-		// release it so that other threads can acquire it.
-		PyEval_SaveThread();
-	}
+	neurala::initializePython(L"PythonOutputAction");
 
 	REGISTER_CLASS(neurala::PythonPlugin::PythonOutputAction, "PythonOutputAction", kPluginVersion);
 
@@ -89,45 +60,6 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 namespace neurala {
 	namespace PythonPlugin {
 
-		/*
-		Obtain a buffer from a Python object
-
-		Returns 0 on success, -1 on failure
-
-		NOTE: caller is responsible for calling PyBuffer_Release(buf) when the buffer is no longer being used, so that obj can be garbage collected
-		*/
-		int
-		bufferFromPyObject(PyObject* obj, Py_buffer* buf, int flags = 0)
-		{
-			ACQUIRE_GIL;
-
-			/* If the object (e.g. io.BytesIO) defines getbuffer(), we should call it first to get the right object to pass to PyObject_GetBuffer() */
-			if (PyObject_HasAttrString(obj, "getbuffer") == 1)
-			{
-				obj = PyObject_CallMethod(obj, "getbuffer", NULL);
-				if (obj == NULL) {
-					D("Error occurred when calling getbuffer() on Python object");
-					return -1;
-				}
-			}
-
-			if (!PyObject_CheckBuffer(obj))
-			{
-				D("Python object does not support the buffer protocol");
-				return -1;
-			}
-
-			if (PyObject_GetBuffer(obj, buf, flags) != 0)
-			{
-				D("Error occurred when calling PyObject_GetBuffer()");
-				return -1;
-			}
-
-			RELEASE_GIL;
-
-			return 0;
-		}
-
 		void PythonOutputAction::operator()(const std::string& metadata, const dto::ImageView* view) noexcept
 		{
 			PyObject *args, *result;
@@ -136,7 +68,7 @@ namespace neurala {
 
 			if (m_outputcallable == nullptr)
 			{
-				D("no output callable\n");
+				DEBUG("no output callable\n");
 				goto cleanup;
 			}
 
@@ -145,7 +77,7 @@ namespace neurala {
 			// a more sophisticated plugin could make use of the SWIG layer here to also pass the ImageView
 			result = PyObject_Call(m_outputcallable, args, NULL);
 			if (result == NULL) {
-				D("error occurred in call\n");
+				DEBUG("error occurred in call\n");
 				// Python exception information is available here using e.g. PyErr_Print() if desired
 				goto cleanup;
 			}
