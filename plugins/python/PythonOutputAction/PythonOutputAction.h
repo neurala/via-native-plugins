@@ -56,7 +56,6 @@ namespace neurala {
 			}
 
 			static void destroy(void* p) {
-				Py_Finalize();
 				auto *pobj = reinterpret_cast<PythonOutputAction*>(p);
 				Py_XDECREF(pobj->m_outputcallable);
 				delete pobj;

@@ -41,6 +41,7 @@ namespace
 int
 exitHere()
 {
+	Py_Finalize();
 	return 0;
 }
 
