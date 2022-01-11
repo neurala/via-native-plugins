@@ -104,8 +104,7 @@ namespace neurala {
 		int
 		pyImg(Py_buffer* buf)
 		{
-			DEBUG("acquiring the GIL\n");
-			PyGILState_STATE gil = PyGILState_Ensure();
+			ACQUIRE_GIL;
 
 			// get module dict for globals/locals
 			PyObject *m, *d, *v;
@@ -134,8 +133,8 @@ namespace neurala {
 
 			Py_XDECREF(v);
 
-			DEBUG("releasing the GIL\n");
-			PyGILState_Release(gil);
+		cleanup:
+			RELEASE_GIL;
 			return 0;
 		}
 
