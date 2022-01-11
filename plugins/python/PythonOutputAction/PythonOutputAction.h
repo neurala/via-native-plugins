@@ -45,10 +45,12 @@ namespace neurala {
 			PythonOutputAction(PyObject* callable) : m_outputcallable{callable} {};
 
 			static void* create(neurala::PluginArguments& args, neurala::PluginErrorCallback& error) {
+				constexpr char* kDefaultCallableName = "outputFrame";
+
 				ACQUIRE_GIL;
 
 				const auto& spec = args.get<0, const std::string>();
-				PyObject* obj = objFromSpec(spec);
+				PyObject* obj = objFromSpec(spec, kDefaultCallableName);
 
 				RELEASE_GIL;
 				// PythonOutputAction steals a reference to the callable object, it will be dropped when destroy() is called

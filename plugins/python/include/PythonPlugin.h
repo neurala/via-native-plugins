@@ -67,7 +67,7 @@ parseCallableSpec(std::string callableSpec)
 // given a specification like mod.pkg:obj, import mod.pkg and return obj, or NULL if an error occurs
 // caller owns a reference to the returned callable object
 PyObject*
-objFromSpec(std::string specstr)
+objFromSpec(std::string specstr, const char* defaultName = nullptr)
 {
     PyObject *spec, *mod, *moduleName, *objName, *result = NULL;
     ACQUIRE_GIL;
@@ -79,11 +79,17 @@ objFromSpec(std::string specstr)
     DEBUG("moduleName=" << PyUnicode_AS_DATA(moduleName) << ", " <<
           "objName=" << PyUnicode_AS_DATA(objName) << "\n");
 
-    // NOCOMMIT
-    // if (objName == "")
-    // {
-    //     objName = "some_sane_default";
-    // }
+    if (PyUnicode_CompareWithASCIIString(objName, "") == 0)
+    {
+        if (defaultName != nullptr)
+        {
+            DEBUG("Using default callable name: defaultName=" << defaultName);
+            objName = PyUnicode_FromString(defaultName);
+        } else {
+            DEBUG("Callable name is empty in spec and there is no default");
+            goto cleanup;
+        }
+    }
 
     mod = PyImport_Import(moduleName);
     if (mod == NULL) {
@@ -92,12 +98,17 @@ objFromSpec(std::string specstr)
     }
     result = PyObject_GetAttr(mod, objName);
     if (result == NULL) {
-        DEBUG("can't retrieve object");
-        Py_XDECREF(mod);
+        DEBUG("can't retrieve Python object");
         goto cleanup;
     }
 
-    // check if it's callable?
+    if (!PyCallable_Check(result))
+    {
+        DEBUG("Python object is not callable");
+        Py_XDECREF(result);
+        result = NULL;
+        goto cleanup;
+    }
 
 cleanup:
     Py_XDECREF(mod);
