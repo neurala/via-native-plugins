@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(GetCameraInfo)
 	BOOST_TEST(cameraInfo.front().id() == "websocket_plugin");
 	BOOST_TEST(cameraInfo.front().name() == "WebSocket Plugin");
 	BOOST_TEST(cameraInfo.front().type() == "websocketInput");
-	BOOST_TEST(cameraInfo.front().connection() == "127.0.0.1:54321");
+	BOOST_TEST(cameraInfo.front().connection() == "127.0.0.1:51234");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

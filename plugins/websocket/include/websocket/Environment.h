@@ -28,7 +28,7 @@ inline const std::string_view ipAddress{envIpAddress == nullptr ? "127.0.0.1" : 
 
 inline const char* const envPort{std::getenv("NEURALA_SERVER_PORT")};
 inline const std::uint16_t port{
- static_cast<std::uint16_t>(envPort == nullptr ? 54321 : std::atoi(envPort))};
+ static_cast<std::uint16_t>(envPort == nullptr ? 51234 : std::atoi(envPort))};
 
 } // namespace neurala::plug::ws
 

@@ -24,7 +24,7 @@
 int
 main()
 {
-	neurala::plug::ws::IOServer ioServer{"127.0.0.1", 54321};
+	neurala::plug::ws::IOServer ioServer{"127.0.0.1", 51234};
 
 	for (;;)
 	{
