@@ -118,6 +118,7 @@ cleanup:
 
 
 /*
+Obtain the buffer underlying the given Python object
 Returns 0 on success, -1 on failure
 
 NOTE: caller is responsible for acquiring the GIL before calling this function
