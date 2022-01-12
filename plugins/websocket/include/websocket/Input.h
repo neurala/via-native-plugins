@@ -20,17 +20,15 @@
 #define NEURALA_PLUG_WS_INPUT_H
 
 #include <cstddef>
-#include <optional>
 #include <string>
 #include <system_error>
-#include <vector>
 
 #include <neurala/plugin/PluginArguments.h>
 #include <neurala/plugin/PluginBindings.h>
 #include <neurala/plugin/PluginErrorCallback.h>
 #include <neurala/video/VideoSource.h>
 
-#include "Client.h"
+#include "websocket/Client.h"
 
 namespace neurala::plug::ws
 {
@@ -42,13 +40,9 @@ class PLUGIN_API Input final : public VideoSource
 public:
 	static void* create(PluginArguments& args, PluginErrorCallback& ec)
 	{
-		const std::string& connection{args.get<0, const dto::CameraInfo>().connection()};
-		const std::size_t delimiterIndex = connection.find(':');
-
 		try
 		{
-			return new Input{std::string_view{connection.data(), delimiterIndex},
-			                 static_cast<std::uint16_t>(std::atoi(connection.data() + delimiterIndex + 1))};
+			return new Input;
 		}
 		catch (const std::system_error& se)
 		{
@@ -68,37 +62,26 @@ public:
 
 	static void destroy(void* p) { delete reinterpret_cast<Input*>(p); }
 
-	/**
-	 * @param ipAddress server's IP address
-	 * @param port server's listening port
-	 */
-	Input(const std::string_view ipAddress, const std::uint16_t port);
-
 	// Image dimension information
-	[[nodiscard]] dto::ImageMetadata metadata() const noexcept final { return cachedMetadata(); }
+	[[nodiscard]] dto::ImageMetadata metadata() const noexcept final { return m_client.metadata(); }
 
 	// Query new frames​
-	[[nodiscard]] std::error_code nextFrame() noexcept final;
+	[[nodiscard]] std::error_code nextFrame() noexcept final { return m_client.nextFrame(); }
 
 	// Get a frame from host memory, data needs to be valid until the end of processing​
-	[[nodiscard]] dto::ImageView frame() const noexcept final
-	{
-		return {cachedMetadata(), m_frame.data()};
-	}
+	[[nodiscard]] dto::ImageView frame() const noexcept final { return m_client.frame(); }
 
 	// Copy a frame into the buffer provided as argument
 	[[nodiscard]] dto::ImageView frame(std::byte* data, std::size_t size) const noexcept final;
 
 	// Executes an arbitrary action on the video source
-	[[nodiscard]] std::error_code execute(const std::string&) noexcept final { return {}; }
+	[[nodiscard]] std::error_code execute(const std::string& action) noexcept final
+	{
+		return m_client.execute(action);
+	}
 
 private:
-	// Access the image metadata. Only retrieve over the network if necessary.
-	const dto::ImageMetadata& cachedMetadata() const;
-
 	mutable Client m_client;
-	mutable std::optional<dto::ImageMetadata> m_metadata;
-	std::vector<std::byte> m_frame;
 };
 
 } // namespace neurala::plug::ws

@@ -29,7 +29,7 @@ using namespace neurala;
 
 struct ClientFixture
 {
-	plug::ws::Client client{"127.0.0.1", 54321};
+	plug::ws::Client client;
 };
 
 BOOST_FIXTURE_TEST_SUITE(Client, ClientFixture)
@@ -44,12 +44,19 @@ BOOST_AUTO_TEST_CASE(Metadata)
 	BOOST_TEST(metadata.datatype() == "uint8");
 }
 
+BOOST_AUTO_TEST_CASE(Frame)
+{
+	BOOST_TEST(client.nextFrame().value() == 0);
+	const dto::ImageView frame{client.frame()};
+	BOOST_TEST(frame.colorSpace() == "RGB");
+	BOOST_CHECK_EQUAL(client.frameSize(), frame.width() * frame.height() * 3);
+}
+
 BOOST_AUTO_TEST_CASE(Response)
 {
 	try
 	{
-		plug::ws::Client outputClient{"127.0.0.1", 43210};
-		outputClient.sendResult(boost::json::object{{"status", "success"}});
+		client.sendResult(boost::json::object{{"status", "success"}});
 	}
 	catch (...)
 	{

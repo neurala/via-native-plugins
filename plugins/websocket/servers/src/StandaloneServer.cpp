@@ -16,27 +16,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <iostream>
+#include <chrono>
+#include <thread>
 
-#include <boost/beast.hpp>
+#include "websocket/IOServer.h"
 
-#include "OutputServer.h"
-
-namespace neurala::plug::ws
+int
+main()
 {
-OutputServer::OutputServer(const std::string_view ipAddress, const std::uint16_t port)
- : Server{ipAddress,
-          port,
-          {{"result", [&](WebSocketStream& stream, const boost::json::object& request) {
-	            handleResult(stream, request);
-            }}}}
-{ }
+	neurala::plug::ws::IOServer ioServer{"127.0.0.1", 51234};
 
-void
-OutputServer::handleResult(WebSocketStream& stream, const boost::json::object& request)
-{
-	std::cout << "Received result:\n" << boost::json::serialize(request) << '\n';
-	stream.write(net::buffer("result JSON received"));
+	for (;;)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
 }
-
-} // namespace neurala::plug::ws

@@ -23,9 +23,9 @@
 #include <neurala/plugin/PluginStatus.h>
 #include <neurala/utils/Version.h>
 
-#include "Discoverer.h"
-#include "Input.h"
-#include "Output.h"
+#include "websocket/Discoverer.h"
+#include "websocket/Input.h"
+#include "websocket/Output.h"
 
 extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
@@ -37,12 +37,12 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 	{
 		return nullptr;
 	}
-	*status = pm.registerPlugin<plug::ws::Input>("Input", Version(1, 0));
+	*status = pm.registerPlugin<plug::ws::Input>("websocketInput", Version(1, 0));
 	if (*status != PluginStatus::success())
 	{
 		return nullptr;
 	}
-	*status = pm.registerPlugin<plug::ws::Output>("Output", Version(1, 0));
+	*status = pm.registerPlugin<plug::ws::Output>("websocketOutput", Version(1, 0));
 	if (*status != PluginStatus::success())
 	{
 		return nullptr;

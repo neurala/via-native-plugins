@@ -29,10 +29,10 @@ BOOST_AUTO_TEST_CASE(GetCameraInfo)
 	const std::vector<dto::CameraInfo> cameraInfo{plug::ws::Discoverer{}()};
 	BOOST_TEST(cameraInfo.size() == 1);
 	BOOST_TEST(cameraInfo.front().valid());
-	BOOST_TEST(cameraInfo.front().id() == "0");
-	BOOST_TEST(cameraInfo.front().name() == "websocket");
-	BOOST_TEST(cameraInfo.front().type() == "Input");
-	BOOST_TEST(cameraInfo.front().connection() == "127.0.0.1:54321");
+	BOOST_TEST(cameraInfo.front().id() == "websocket_plugin");
+	BOOST_TEST(cameraInfo.front().name() == "WebSocket Plugin");
+	BOOST_TEST(cameraInfo.front().type() == "websocketInput");
+	BOOST_TEST(cameraInfo.front().connection() == "127.0.0.1:51234");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

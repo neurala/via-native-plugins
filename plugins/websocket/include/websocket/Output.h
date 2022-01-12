@@ -20,6 +20,7 @@
 #define NEURALA_PLUG_WS_OUTPUT_H
 
 #include <string>
+#include <utility>
 
 #include <boost/json.hpp>
 #include <neurala/image/views/dto/ImageView.h>
@@ -28,7 +29,7 @@
 #include <neurala/plugin/PluginErrorCallback.h>
 #include <neurala/utils/ResultsOutput.h>
 
-#include "Client.h"
+#include "websocket/Client.h"
 
 namespace neurala::plug::ws
 {
@@ -62,8 +63,6 @@ public:
 
 	static void destroy(void* p) { delete reinterpret_cast<Output*>(p); }
 
-	Output() : ResultsOutput{}, m_client{"127.0.0.1", 43210} { }
-
 	/**
 	 * @brief Send a result JSON to the output server.
 	 *
@@ -74,7 +73,7 @@ public:
 	void operator()(const std::string& metadata, const dto::ImageView*) noexcept final
 	{
 		using namespace boost::json;
-		m_client.sendResult(parse(string_view{metadata.data(), metadata.size()}).as_object());
+		m_client.sendResult(std::move(parse(string_view{metadata.data(), metadata.size()}).as_object()));
 	}
 
 private:

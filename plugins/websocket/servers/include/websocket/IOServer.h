@@ -16,18 +16,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <chrono>
-#include <thread>
+#ifndef NEURALA_PLUG_WS_IO_SERVER_H
+#define NEURALA_PLUG_WS_IO_SERVER_H
 
-#include "websocket/InputServer.h"
+#include <cstddef>
+#include <cstdint>
+#include <string_view>
 
-int
-main()
+#include <boost/json.hpp>
+#include <neurala/plugin/PluginBindings.h>
+
+#include "websocket/Server.h"
+
+namespace neurala::plug::ws
 {
-	neurala::plug::ws::InputServer inputServer{"127.0.0.1", 54321};
+/**
+ * @brief Implementation of the server base that handles metadata and frame requests.
+ */
+class IOServer final : public Server
+{
+public:
+	IOServer(const std::string_view ipAddress, const std::uint16_t port);
 
-	for (;;)
+private:
+	/// Handle an image metadata request.
+	void handleMetadata(WebSocketStream& stream);
+	/// Handle a frame request.
+	void handleFrame(WebSocketStream& stream);
+	/// Send a result JSON to the output server.
+	void handleResult(WebSocketStream& stream, const boost::json::object& request);
+
+	struct Metadata final
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	}
-}
+		std::size_t width;
+		std::size_t height;
+		std::string_view colorSpace;
+		std::string_view layout;
+		std::string_view dataType;
+	} m_metadata;
+};
+
+} // namespace neurala::plug::ws
+
+#endif // NEURALA_PLUG_WS_IO_SERVER_H

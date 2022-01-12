@@ -16,43 +16,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NEURALA_PLUG_WS_INPUT_SERVER_H
-#define NEURALA_PLUG_WS_INPUT_SERVER_H
+#ifndef NEURALA_PLUG_WS_ENVIRONMENT_H
+#define NEURALA_PLUG_WS_ENVIRONMENT_H
 
-#include <cstddef>
-#include <cstdint>
-#include <string_view>
-
-#include <neurala/plugin/PluginBindings.h>
-
-#include "Server.h"
+#include <cstdlib>
 
 namespace neurala::plug::ws
 {
-/**
- * @brief Implementation of the server base that handles metadata and frame requests.
- */
-class PLUGIN_API InputServer final : public Server
-{
-public:
-	InputServer(const std::string_view ipAddress, const std::uint16_t port);
+inline const char* const envIpAddress{std::getenv("NEURALA_SERVER_IP_ADDRESS")};
+inline const std::string_view ipAddress{envIpAddress == nullptr ? "127.0.0.1" : envIpAddress};
 
-private:
-	/// Handle an image metadata request.
-	void handleMetadata(WebSocketStream& stream);
-	/// Handle a frame request.
-	void handleFrame(WebSocketStream& stream);
-
-	struct Metadata final
-	{
-		std::size_t width;
-		std::size_t height;
-		std::string_view colorSpace;
-		std::string_view layout;
-		std::string_view dataType;
-	} m_metadata;
-};
+inline const char* const envPort{std::getenv("NEURALA_SERVER_PORT")};
+inline const std::uint16_t port{
+ static_cast<std::uint16_t>(envPort == nullptr ? 51234 : std::atoi(envPort))};
 
 } // namespace neurala::plug::ws
 
-#endif // NEURALA_PLUG_WS_INPUT_SERVER_H
+#endif // NEURALA_PLUG_WS_ENVIRONMENT_H

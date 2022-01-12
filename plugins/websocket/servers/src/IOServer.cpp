@@ -16,29 +16,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "InputServer.h"
+#include "websocket/IOServer.h"
 
 #include <cstdint>
+#include <iostream>
 #include <numeric>
 #include <string_view>
 #include <vector>
 
+#include <boost/beast.hpp>
 #include <boost/json.hpp>
 
 namespace neurala::plug::ws
 {
-InputServer::InputServer(const std::string_view ipAddress, const std::uint16_t port)
+IOServer::IOServer(const std::string_view ipAddress, const std::uint16_t port)
  : Server{ipAddress,
           port,
           {{"metadata",
             [&](WebSocketStream& stream, const boost::json::object&) { handleMetadata(stream); }},
            {"frame",
-            [&](WebSocketStream& stream, const boost::json::object&) { handleFrame(stream); }}}},
+            [&](WebSocketStream& stream, const boost::json::object&) { handleFrame(stream); }},
+           {"result",
+            [&](WebSocketStream& stream, const boost::json::object& request) {
+	            handleResult(stream, request);
+            }}}},
    m_metadata{800, 600, "RGB", "planar", "uint8"}
 { }
 
 void
-InputServer::handleMetadata(WebSocketStream& stream)
+IOServer::handleMetadata(WebSocketStream& stream)
 {
 	boost::json::object md;
 	md["width"] = m_metadata.width;
@@ -50,13 +56,20 @@ InputServer::handleMetadata(WebSocketStream& stream)
 }
 
 void
-InputServer::handleFrame(WebSocketStream& stream)
+IOServer::handleFrame(WebSocketStream& stream)
 {
 	std::vector<std::uint8_t> frameData(m_metadata.width * m_metadata.height
 	                                    * m_metadata.colorSpace.size());
 	static std::uint8_t init{}; // make every frame slightly different
 	std::iota(begin(frameData), end(frameData), ++init);
 	stream.write(net::buffer(frameData));
+}
+
+void
+IOServer::handleResult(WebSocketStream& stream, const boost::json::object& request)
+{
+	std::cout << "Received result:\n" << boost::json::serialize(request) << '\n';
+	stream.write(net::buffer("result JSON received"));
 }
 
 } // namespace neurala::plug::ws
