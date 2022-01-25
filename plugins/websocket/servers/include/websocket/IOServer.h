@@ -53,6 +53,7 @@ private:
 		std::string_view colorSpace;
 		std::string_view layout;
 		std::string_view dataType;
+		std::string_view orientation;
 	} m_metadata;
 };
 

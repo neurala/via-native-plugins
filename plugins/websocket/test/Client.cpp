@@ -42,6 +42,7 @@ BOOST_AUTO_TEST_CASE(Metadata)
 	BOOST_TEST(metadata.colorSpace() == "RGB");
 	BOOST_TEST(metadata.layout() == "planar");
 	BOOST_TEST(metadata.datatype() == "uint8");
+	BOOST_TEST(metadata.orientation() == "topLeft");
 }
 
 BOOST_AUTO_TEST_CASE(Frame)

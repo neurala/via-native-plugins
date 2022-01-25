@@ -78,6 +78,9 @@ public:
 	/// @copydoc ImageMetadata::datatype() const
 	const std::string& datatype() const noexcept { return m_metadata.datatype(); }
 
+	/// @copydoc ImageMetadata::orientation() const
+	const std::string& orientation() const noexcept { return m_metadata.orientation(); }
+
 	/**
 	 * @brief Returns the metadata associated with this view.
 	 */

@@ -91,14 +91,16 @@ Client::metadata() noexcept
 
 		const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
 		const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
-		const string& colorSpaceStr{jsonObject.at("colorSpace").as_string()};
-		const string& layoutStr{jsonObject.at("layout").as_string()};
-		const string& dataTypeStr{jsonObject.at("dataType").as_string()};
+		const string& colorSpace{jsonObject.at("colorSpace").as_string()};
+		const string& layout{jsonObject.at("layout").as_string()};
+		const string& dataType{jsonObject.at("dataType").as_string()};
+		const string& orientation{jsonObject.at("orientation").as_string()};
 		return {width,
 		        height,
-		        std::string{colorSpaceStr.data(), colorSpaceStr.size()},
-		        std::string{layoutStr.data(), layoutStr.size()},
-		        std::string{dataTypeStr.data(), dataTypeStr.size()}};
+		        std::string{colorSpaceStr.data(), colorSpace.size()},
+		        std::string{layout.data(), layout.size()},
+		        std::string{dataType.data(), dataType.size()},
+		        std::string{orientation.data(), orientation.size()}};
 	}
 	catch (...)
 	{

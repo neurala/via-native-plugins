@@ -33,7 +33,8 @@ This plugin will be built with the rest in this repository. See the root-level `
   "height": "(image height in pixels)",
   "layout": "planar|interleaved|semiplanar", // Usually "interleaved"
   "dataType": "boolean|uint8|uint16|binary16|binary32|binary64", // Usually "uint8"
-  "colorSpace": "grayscale|RGB|RGBA|BGR|BGRA|RGB565|HSV|bayerRG|bayerGR|bayerBG|bayerGB|YUV420|NV12|NV21|YUV422"
+  "colorSpace": "grayscale|RGB|RGBA|BGR|BGRA|RGB565|HSV|bayerRG|bayerGR|bayerBG|bayerGB|YUV420|NV12|NV21|YUV422",
+  "orientation": "topLeft|topRight|bottomRight|bottomLeft|leftTop|rightTop|rightBottom|leftBottom" // Usually "topLeft"
 }
 ```
 

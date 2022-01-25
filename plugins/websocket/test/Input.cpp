@@ -35,6 +35,7 @@ BOOST_AUTO_TEST_CASE(Metadata)
 	BOOST_TEST(metadata.colorSpace() == "RGB");
 	BOOST_TEST(metadata.layout() == "planar");
 	BOOST_TEST(metadata.datatype() == "uint8");
+	BOOST_TEST(metadata.orientatiton() == "topLeft");
 }
 
 BOOST_AUTO_TEST_CASE(NextFrame)
@@ -53,6 +54,7 @@ BOOST_AUTO_TEST_CASE(ManagedFrame)
 	BOOST_TEST(view.colorSpace() == "RGB");
 	BOOST_TEST(view.layout() == "planar");
 	BOOST_TEST(view.datatype() == "uint8");
+	BOOST_TEST(view.orientatiton() == "topLeft");
 }
 
 BOOST_AUTO_TEST_CASE(UnmanagedFrame)
@@ -67,6 +69,7 @@ BOOST_AUTO_TEST_CASE(UnmanagedFrame)
 	BOOST_TEST(view.colorSpace() == "RGB");
 	BOOST_TEST(view.layout() == "planar");
 	BOOST_TEST(view.datatype() == "uint8");
+	BOOST_TEST(view.orientatiton() == "topLeft");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
