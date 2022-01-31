@@ -40,7 +40,7 @@ IOServer::IOServer(const std::string_view ipAddress, const std::uint16_t port)
             [&](WebSocketStream& stream, const boost::json::object& request) {
 	            handleResult(stream, request);
             }}}},
-   m_metadata{800, 600, "RGB", "planar", "uint8", "topLeft"}
+   m_metadata{800, 600, "uint8", "RGB", "planar", "topLeft"}
 { }
 
 void
@@ -49,9 +49,9 @@ IOServer::handleMetadata(WebSocketStream& stream)
 	boost::json::object md;
 	md["width"] = m_metadata.width;
 	md["height"] = m_metadata.height;
+	md["dataType"] = m_metadata.dataType.data();
 	md["colorSpace"] = m_metadata.colorSpace.data();
 	md["layout"] = m_metadata.layout.data();
-	md["dataType"] = m_metadata.dataType.data();
 	md["orientation"] = m_metadata.orientation.data();
 	stream.write(net::buffer(serialize(md)));
 }
