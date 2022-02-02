@@ -37,9 +37,9 @@ BOOST_FIXTURE_TEST_SUITE(Client, ClientFixture)
 BOOST_AUTO_TEST_CASE(Metadata)
 {
 	const dto::ImageMetadata metadata{client.metadata()};
+	BOOST_TEST(metadata.datatype() == "uint8");
 	BOOST_TEST(metadata.width() == 800);
 	BOOST_TEST(metadata.height() == 600);
-	BOOST_TEST(metadata.datatype() == "uint8");
 	BOOST_TEST(metadata.colorSpace() == "RGB");
 	BOOST_TEST(metadata.layout() == "planar");
 	BOOST_TEST(metadata.orientation() == "topLeft");

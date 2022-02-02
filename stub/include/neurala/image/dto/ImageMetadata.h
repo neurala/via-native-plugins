@@ -43,16 +43,16 @@ public:
 	/**
 	 * @brief Constructs a new @ref ImageMetadata with the provided arguments.
 	 *
+	 * @param datatype    image data type
 	 * @param width       image widht
 	 * @param height      image height
-	 * @param datatype    image data type
 	 * @param colorSpace  image color space
 	 * @param layout      image data layout
 	 * @param orientation image orientation
 	 */
-	ImageMetadata(size_type width,
+	ImageMetadata(std::string datatype,
+	              size_type width,
 	              size_type height,
-	              std::string datatype,
 	              std::string colorSpace,
 	              std::string layout,
 	              std::string orientation) noexcept
@@ -146,7 +146,7 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const ImageMetadata& metadata)
 	{
-		return os << metadata.width() << 'x' << metadata.height() << ',' << metadata.datatype() << ','
+		return os << metadata.datatype() << ',' << metadata.width() << 'x' << metadata.height() << ','
 		          << metadata.colorSpace() << ',' << metadata.layout() << ',' << metadata.orientation();
 	}
 #endif // SWIG

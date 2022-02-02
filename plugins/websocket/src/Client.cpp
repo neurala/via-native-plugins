@@ -86,18 +86,18 @@ Client::metadata() noexcept
 			m_frameCache.format = std::string{s.data(), s.size()};
 			const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
 			const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
-			return {width, height, "uint8", "RGB", "interleaved", "topLeft"};
+			return {"uint8", width, height, "RGB", "interleaved", "topLeft"};
 		}
 
+		const string& dataType{jsonObject.at("dataType").as_string()};
 		const std::size_t width{static_cast<std::size_t>(jsonObject.at("width").as_int64())};
 		const std::size_t height{static_cast<std::size_t>(jsonObject.at("height").as_int64())};
-		const string& dataType{jsonObject.at("dataType").as_string()};
 		const string& colorSpace{jsonObject.at("colorSpace").as_string()};
 		const string& layout{jsonObject.at("layout").as_string()};
 		const string& orientation{jsonObject.at("orientation").as_string()};
-		return {width,
+		return {std::string{dataType.data(), dataType.size()},
+		        width,
 		        height,
-		        std::string{dataType.data(), dataType.size()},
 		        std::string{colorSpace.data(), colorSpace.size()},
 		        std::string{layout.data(), layout.size()},
 		        std::string{orientation.data(), orientation.size()}};

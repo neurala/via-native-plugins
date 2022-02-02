@@ -51,7 +51,7 @@ public:
 
 	[[nodiscard]] dto::ImageMetadata metadata() const noexcept override
 	{
-		return {200, 200, "uint8", "RGB", "planar", "topLeft"};
+		return {"uint8", 200, 200, "RGB", "planar", "topLeft"};
 	}
 
 	[[nodiscard]] std::error_code nextFrame() noexcept override
