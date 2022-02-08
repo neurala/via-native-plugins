@@ -30,11 +30,12 @@ BOOST_AUTO_TEST_SUITE(Input)
 BOOST_AUTO_TEST_CASE(Metadata)
 {
 	const dto::ImageMetadata metadata{plug::ws::Input{}.metadata()};
+	BOOST_TEST(metadata.datatype() == "uint8");
 	BOOST_TEST(metadata.width() == 800);
 	BOOST_TEST(metadata.height() == 600);
 	BOOST_TEST(metadata.colorSpace() == "RGB");
 	BOOST_TEST(metadata.layout() == "planar");
-	BOOST_TEST(metadata.datatype() == "uint8");
+	BOOST_TEST(metadata.orientation() == "topLeft");
 }
 
 BOOST_AUTO_TEST_CASE(NextFrame)
@@ -50,9 +51,10 @@ BOOST_AUTO_TEST_CASE(ManagedFrame)
 	BOOST_TEST(view.data() != nullptr);
 	BOOST_TEST(view.width() == 800);
 	BOOST_TEST(view.height() == 600);
+	BOOST_TEST(view.datatype() == "uint8");
 	BOOST_TEST(view.colorSpace() == "RGB");
 	BOOST_TEST(view.layout() == "planar");
-	BOOST_TEST(view.datatype() == "uint8");
+	BOOST_TEST(view.orientation() == "topLeft");
 }
 
 BOOST_AUTO_TEST_CASE(UnmanagedFrame)
@@ -64,9 +66,10 @@ BOOST_AUTO_TEST_CASE(UnmanagedFrame)
 	BOOST_TEST(view.data() == frameBuffer.data());
 	BOOST_TEST(view.width() == 800);
 	BOOST_TEST(view.height() == 600);
+	BOOST_TEST(view.datatype() == "uint8");
 	BOOST_TEST(view.colorSpace() == "RGB");
 	BOOST_TEST(view.layout() == "planar");
-	BOOST_TEST(view.datatype() == "uint8");
+	BOOST_TEST(view.orientation() == "topLeft");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

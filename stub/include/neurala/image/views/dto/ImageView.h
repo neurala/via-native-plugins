@@ -38,11 +38,6 @@ class ImageView
 public:
 	using size_type = ImageMetadata::size_type;
 
-private:
-	const void* m_data{};
-	ImageMetadata m_metadata;
-
-public:
 	ImageView() = default;
 
 	/**
@@ -57,7 +52,7 @@ public:
 	 * @param data     image data
 	 */
 	ImageView(const ImageMetadata& metadata, const void* data) noexcept
-	 : m_data{data}, m_metadata{metadata}
+	 : m_metadata{metadata}, m_data{data}
 	{ }
 
 	/// @copydoc ImageMetadata::empty() const
@@ -69,14 +64,17 @@ public:
 	/// @copydoc ImageMetadata::height() const
 	size_type height() const noexcept { return m_metadata.height(); }
 
+	/// @copydoc ImageMetadata::datatype() const
+	const std::string& datatype() const noexcept { return m_metadata.datatype(); }
+
 	/// @copydoc ImageMetadata::colorSpace() const
 	const std::string& colorSpace() const noexcept { return m_metadata.colorSpace(); }
 
 	/// @copydoc ImageMetadata::layout() const
 	const std::string& layout() const noexcept { return m_metadata.layout(); }
 
-	/// @copydoc ImageMetadata::datatype() const
-	const std::string& datatype() const noexcept { return m_metadata.datatype(); }
+	/// @copydoc ImageMetadata::orientation() const
+	const std::string& orientation() const noexcept { return m_metadata.orientation(); }
 
 	/**
 	 * @brief Returns the metadata associated with this view.
@@ -96,6 +94,10 @@ public:
 	{
 		return static_cast<const T*>(data());
 	}
+
+private:
+	ImageMetadata m_metadata;
+	const void* m_data{};
 };
 
 } // namespace dto
