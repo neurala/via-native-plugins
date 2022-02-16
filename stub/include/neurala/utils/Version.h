@@ -23,6 +23,8 @@
 #include <ostream>
 #include <string>
 
+#include "neurala/exports.h"
+
 #ifdef __GLIBCXX__
 // Undefine major and minor macros provided by glibc
 #undef major
@@ -37,7 +39,7 @@ namespace neurala
  * Major and minor numbers are required, but revision is optional.  If revision is not set (or is
  * set to a negative number) it will be ignored in comparisons and printing.
  */
-class Version
+class NEURALA_PUBLIC Version
 {
 	std::uint16_t m_major{};
 	std::uint16_t m_minor{};
@@ -105,9 +107,10 @@ public:
 	template<class Archive>
 	void serialize(Archive& archive);
 
-	friend std::ostream& operator<<(std::ostream&, const Version&);
+	friend NEURALA_PUBLIC std::ostream& operator<<(std::ostream&, const Version&);
 
-// NOTE:20210927:jgerity:SWIG does not support `friend constexpr` (https://github.com/swig/swig/issues/2079)
+// NOTE:20210927:jgerity:SWIG does not support `friend constexpr`
+// (https://github.com/swig/swig/issues/2079)
 #ifndef SWIG
 	/**
 	 * @brief Returns @c true if @p x and @p y major, minor, and revision match.
@@ -149,7 +152,7 @@ public:
 	friend constexpr bool operator>=(const Version& x, const Version& y) noexcept { return y <= x; }
 
 	/// @copydoc Version::operator+=(const Version&)
-	friend Version operator+(Version v1, const Version& v2) noexcept;
+	friend NEURALA_PUBLIC Version operator+(Version v1, const Version& v2) noexcept;
 #endif // SWIG
 };
 

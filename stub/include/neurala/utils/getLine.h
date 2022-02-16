@@ -22,6 +22,8 @@
 #include <istream>
 #include <string>
 
+#include "neurala/exports.h"
+
 namespace neurala
 {
 /**
@@ -34,7 +36,7 @@ namespace neurala
  *
  * @return the input @p source
  */
-std::istream& getLine(std::istream& source, std::string& line, char delim);
+NEURALA_PUBLIC std::istream& getLine(std::istream& source, std::string& line, char delim);
 
 /**
  * @brief Reads the contents of @p source until the next end of line character (<tt>"\n"</tt> or
@@ -45,7 +47,7 @@ std::istream& getLine(std::istream& source, std::string& line, char delim);
  *
  * @return the input @p source
  */
-std::istream& getLine(std::istream& source, std::string& line);
+NEURALA_PUBLIC std::istream& getLine(std::istream& source, std::string& line);
 
 } // namespace neurala
 
