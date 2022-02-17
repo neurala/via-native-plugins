@@ -113,6 +113,15 @@ Options::Options(const std::string& name, const std::string& value) : Options()
 	add(name, value);
 }
 
+Options::Options(const Options& other) : m_impl{new Impl{*other.m_impl}} { }
+
+Options&
+Options::operator=(const Options& other)
+{
+	*m_impl = *other.m_impl;
+	return *this;
+}
+
 bool
 Options::empty() const noexcept
 {
