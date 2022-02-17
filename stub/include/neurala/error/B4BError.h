@@ -25,10 +25,10 @@
 
 namespace neurala
 {
-struct B4BError
+struct NEURALA_PUBLIC B4BError
 // NOTE:20211227:jgerity:SWIG does not support the final keyword in class declarations, see SDK-6067
 #ifndef SWIG
-final
+ final
 #endif // SWIG
 {
 	static constexpr B4BError ok() { return {0}; }
@@ -60,7 +60,7 @@ NEURALA_PUBLIC std::error_condition make_error_condition(B4BError error) noexcep
 namespace std
 {
 template<>
-struct is_error_code_enum<neurala::B4BError> : public true_type
+struct NEURALA_PUBLIC is_error_code_enum<neurala::B4BError> : public true_type
 { };
 } // namespace std
 

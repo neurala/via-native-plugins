@@ -22,6 +22,7 @@
 #include <utility>
 #include <vector>
 
+#include "neurala/exports.h"
 #include "neurala/utils/detail/AnyRef.h"
 
 namespace neurala
@@ -32,7 +33,7 @@ namespace neurala
  * It type erases all arguments passed to it, but performs type checking at retrieval to avoid
  * incorrect casts.
  */
-class PluginArguments
+class NEURALA_PUBLIC PluginArguments
 {
 	std::vector<AnyRef> m_args;
 

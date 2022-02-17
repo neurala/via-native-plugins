@@ -23,6 +23,7 @@
 #include <type_traits>
 #include <typeindex>
 
+#include "neurala/exports.h"
 #include "neurala/meta/detail/demangle.h"
 #include "neurala/meta/detail/typeName.h"
 #include "neurala/utils/string.h"
@@ -35,7 +36,7 @@ namespace neurala
  * It type erases the argument that it stores, but performs type checking at retrieval to avoid
  * incorrect casts at run-time.
  */
-class AnyRef
+class NEURALA_PUBLIC AnyRef
 {
 	enum EQualifier
 	{

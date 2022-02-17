@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "neurala/cppcompat/typetraits.h" // For std17::is_invocable in CUDA code
+#include "neurala/exports.h"
 #include "neurala/utils/getLine.h"
 
 namespace neurala
@@ -40,7 +41,7 @@ namespace detail
 /**
  * @brief Wrapper to allow @c char to be used with @ref stringify().
  */
-class StringifyCharProxy
+class NEURALA_PUBLIC StringifyCharProxy
 {
 private:
 	char m_c;
@@ -56,7 +57,7 @@ public:
 /**
  * @brief Wrapper to allow <tt>const char*</tt> to be used with @ref stringify().
  */
-class StringifyCharPtrProxy
+class NEURALA_PUBLIC StringifyCharPtrProxy
 {
 private:
 	const char* m_s;
@@ -104,7 +105,7 @@ stringify(T&& t) -> decltype(std::forward<T>(t))
 /**
  * @brief Specialization of @ref stringify(T&&) for @c char.
  */
-constexpr StringifyCharProxy
+NEURALA_PUBLIC constexpr StringifyCharProxy
 stringify(char c) noexcept
 {
 	return StringifyCharProxy{c};
@@ -113,7 +114,7 @@ stringify(char c) noexcept
 /**
  * @brief Specialization of @ref stringify(T&&) for <tt>const char*</tt>.
  */
-inline StringifyCharPtrProxy
+NEURALA_PUBLIC inline StringifyCharPtrProxy
 stringify(const char* c) noexcept
 {
 	return StringifyCharPtrProxy{c};
@@ -122,7 +123,7 @@ stringify(const char* c) noexcept
 /**
  * @brief Specialization of @ref stringify(T&&) for <tt>std::istream</tt>.
  */
-inline std::string
+NEURALA_PUBLIC inline std::string
 stringify(std::istream& is) noexcept
 {
 	std::string s;
@@ -221,7 +222,7 @@ toStringWithPrecision(T val, int precision)
  * @brief Converts @p val to a string stripping any trailing zeros, thus "0.9000000" can be returned
  * as "0.9".
  */
-inline std::string
+NEURALA_PUBLIC inline std::string
 toStringRemoveTrailingZeroes(float val)
 {
 	auto str = toString(val);
@@ -236,7 +237,7 @@ toStringRemoveTrailingZeroes(float val)
  * @return 0 if lhs and rhs compare equal, -1 if lhs appears before rhs in lexicographical order,
  * and 1 if lhs appears after rhs in lexicographical order.
  */
-inline int
+NEURALA_PUBLIC inline int
 strcmpCaseInsensitive(const char* lhs, const char* rhs)
 {
 	while (*lhs | *rhs)

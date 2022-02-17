@@ -117,13 +117,16 @@ public:
 	 *
 	 * If both objects have negative revision values, revision number will not be compared.
 	 */
-	friend constexpr bool operator==(const Version& x, const Version& y) noexcept
+	friend NEURALA_PUBLIC constexpr bool operator==(const Version& x, const Version& y) noexcept
 	{
 		return x.major() == y.major() && x.minor() == y.minor()
 		       && (!x.hasRevision() && !y.hasRevision() ? true : x.revision() == y.revision());
 	}
 
-	friend constexpr bool operator!=(const Version& x, const Version& y) noexcept { return !(x == y); }
+	friend NEURALA_PUBLIC constexpr bool operator!=(const Version& x, const Version& y) noexcept
+	{
+		return !(x == y);
+	}
 
 	/**
 	 * @brief Returns @c true if major, minor, or revision of @p x is less than @p y.
@@ -135,21 +138,27 @@ public:
 	 * 1.1.-1 < 1.1.-5 = false
 	 * 1.1.-1 < 1.1.-5 = false
 	 */
-	friend constexpr bool operator<(const Version& x, const Version& y) noexcept
+	friend NEURALA_PUBLIC constexpr bool operator<(const Version& x, const Version& y) noexcept
 	{
 		return x.major() < y.major() || (x.major() == y.major() && x.minor() < y.minor())
 		       || (x.major() == y.major() && x.minor() == y.minor()
 		           && (!x.hasRevision() && !y.hasRevision() ? false : x.revision() < y.revision()));
 	}
 
-	friend constexpr bool operator<=(const Version& x, const Version& y) noexcept
+	friend NEURALA_PUBLIC constexpr bool operator<=(const Version& x, const Version& y) noexcept
 	{
 		return x == y || x < y;
 	}
 
-	friend constexpr bool operator>(const Version& x, const Version& y) noexcept { return y < x; }
+	friend NEURALA_PUBLIC constexpr bool operator>(const Version& x, const Version& y) noexcept
+	{
+		return y < x;
+	}
 
-	friend constexpr bool operator>=(const Version& x, const Version& y) noexcept { return y <= x; }
+	friend NEURALA_PUBLIC constexpr bool operator>=(const Version& x, const Version& y) noexcept
+	{
+		return y <= x;
+	}
 
 	/// @copydoc Version::operator+=(const Version&)
 	friend NEURALA_PUBLIC Version operator+(Version v1, const Version& v2) noexcept;

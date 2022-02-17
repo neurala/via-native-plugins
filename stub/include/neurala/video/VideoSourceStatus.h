@@ -30,7 +30,7 @@ namespace neurala
 /**
  * @brief Type that describes the status of a VideoSource
  */
-struct VideoSourceStatus final
+struct NEURALA_PUBLIC VideoSourceStatus final
 {
 	/// Operation was successful.
 	static constexpr VideoSourceStatus success() { return {0}; }
@@ -73,7 +73,7 @@ NEURALA_PUBLIC std::error_condition make_error_condition(VideoSourceStatus res) 
 namespace std
 {
 template<>
-struct is_error_condition_enum<neurala::VideoSourceStatus> : true_type
+struct NEURALA_PUBLIC is_error_condition_enum<neurala::VideoSourceStatus> : true_type
 { };
 } // namespace std
 

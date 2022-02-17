@@ -24,6 +24,8 @@
 #include <ostream>
 #include <stdexcept>
 
+#include "neurala/exports.h"
+
 namespace neurala
 {
 /**
@@ -32,7 +34,7 @@ namespace neurala
  * @warning This is not a null-terminated string, so @ref size() is the only function that
  *          can convey it's length properly.
  */
-class StaticString
+class NEURALA_PUBLIC StaticString
 {
 public:
 	using value_type = char;
@@ -103,7 +105,7 @@ public:
 	}
 };
 
-inline std::ostream&
+inline NEURALA_PUBLIC std::ostream&
 operator<<(std::ostream& os, const StaticString& s)
 {
 	return os.write(s.data(), s.size());

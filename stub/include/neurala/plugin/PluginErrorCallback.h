@@ -22,13 +22,14 @@
 #include <string>
 
 #include "neurala/error/B4BError.h"
+#include "neurala/exports.h"
 
 namespace neurala
 {
 /**
  * @brief Utility class to transport exception messages between @ref PluginManager and plugins.
  */
-class PluginErrorCallback
+class NEURALA_PUBLIC PluginErrorCallback
 {
 	std::error_code m_code{B4BError::ok()};
 	std::string m_exception;
