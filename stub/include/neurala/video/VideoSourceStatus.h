@@ -30,7 +30,7 @@ namespace neurala
 /**
  * @brief Type that describes the status of a VideoSource
  */
-struct VideoSourceStatus final
+struct NEURALA_PUBLIC VideoSourceStatus final
 {
 	/// Operation was successful.
 	static constexpr VideoSourceStatus success() { return {0}; }

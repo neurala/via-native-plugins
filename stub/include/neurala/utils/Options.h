@@ -40,8 +40,12 @@ public:
 
 private:
 	class Impl;
+	struct ImplDelete
+	{
+		void operator()(Impl*) const;
+	};
 
-	std::unique_ptr<Impl> m_impl;
+	std::unique_ptr<Impl, ImplDelete> m_impl;
 
 public:
 	Options();
@@ -74,14 +78,10 @@ public:
 	Options(const std::string& key, const std::string& value);
 
 	Options(const Options&);
-
-	Options(Options&&) noexcept;
-
-	~Options();
-
+	Options(Options&&) = default;
 	Options& operator=(const Options&);
-
-	Options& operator=(Options&&) noexcept;
+	Options& operator=(Options&&) = default;
+	~Options() = default;
 
 	/**
 	 * @brief Returns if there are no options stored.

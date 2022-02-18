@@ -17,6 +17,7 @@
  */
 
 #include <unordered_map>
+#include <utility>
 #include <variant>
 
 #include "neurala/utils/Options.h"
@@ -94,7 +95,13 @@ public:
 	}
 };
 
-Options::Options() : m_impl{std::make_unique<Impl>()} { }
+void
+Options::ImplDelete::operator()(Options::Impl* impl) const
+{
+	delete impl;
+}
+
+Options::Options() : m_impl{new Impl{}} { }
 
 Options::Options(const std::string& name, double value) : Options()
 {
@@ -106,20 +113,14 @@ Options::Options(const std::string& name, const std::string& value) : Options()
 	add(name, value);
 }
 
-Options::Options(const Options& other) : m_impl{std::make_unique<Impl>(*other.m_impl)} { }
-
-Options::Options(Options&&) noexcept = default;
-
-Options::~Options() = default;
+Options::Options(const Options& other) : m_impl{new Impl{*other.m_impl}} { }
 
 Options&
 Options::operator=(const Options& other)
 {
-	m_impl = std::make_unique<Impl>(*(other.m_impl));
+	*m_impl = *other.m_impl;
 	return *this;
 }
-
-Options& Options::operator=(Options&&) noexcept = default;
 
 bool
 Options::empty() const noexcept

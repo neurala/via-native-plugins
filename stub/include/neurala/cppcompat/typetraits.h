@@ -24,6 +24,8 @@
 #include <functional>
 #include <type_traits>
 
+#include "neurala/exports.h"
+
 namespace std17
 {
 namespace detail

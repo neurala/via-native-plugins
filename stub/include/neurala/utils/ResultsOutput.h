@@ -32,7 +32,7 @@ namespace neurala
 /**
  * @brief A type representing the status of a pipeline job upon stopping.
  */
-struct ResultsOutputStatus final
+struct NEURALA_PUBLIC ResultsOutputStatus final
 {
 	///< Indicates that the pipeline job has terminated normally.
 	static constexpr ResultsOutputStatus stopped() { return {0}; }

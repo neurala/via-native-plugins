@@ -21,6 +21,7 @@
 
 #include <vector>
 
+#include "neurala/exports.h"
 #include "neurala/video/dto/CameraInfo.h"
 
 namespace neurala
