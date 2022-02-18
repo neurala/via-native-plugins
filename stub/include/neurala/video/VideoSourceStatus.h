@@ -73,7 +73,7 @@ NEURALA_PUBLIC std::error_condition make_error_condition(VideoSourceStatus res) 
 namespace std
 {
 template<>
-struct NEURALA_PUBLIC is_error_condition_enum<neurala::VideoSourceStatus> : true_type
+struct is_error_condition_enum<neurala::VideoSourceStatus> : true_type
 { };
 } // namespace std
 

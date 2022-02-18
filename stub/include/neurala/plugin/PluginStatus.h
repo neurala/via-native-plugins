@@ -66,7 +66,7 @@ NEURALA_PUBLIC std::error_code make_error_code(PluginStatus status) noexcept; //
 namespace std
 {
 template<>
-struct NEURALA_PUBLIC is_error_condition_enum<neurala::PluginStatus> : true_type
+struct is_error_condition_enum<neurala::PluginStatus> : true_type
 { };
 } // namespace std
 

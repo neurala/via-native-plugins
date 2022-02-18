@@ -31,7 +31,7 @@ namespace std17
 namespace detail
 {
 template<class... Ts>
-struct NEURALA_PUBLIC makeVoid
+struct makeVoid
 {
 	using type = void;
 };
@@ -47,16 +47,15 @@ using void_t = typename detail::makeVoid<Ts...>::type;
  * Backported implementation from C++17.
  */
 template<class... Ts>
-struct NEURALA_PUBLIC conjunction : std::true_type
+struct conjunction : std::true_type
 { };
 
 template<class T>
-struct NEURALA_PUBLIC conjunction<T> : public T
+struct conjunction<T> : public T
 { };
 
 template<class T, class... Ts>
-struct NEURALA_PUBLIC conjunction<T, Ts...>
- : public std::conditional<bool(T::value), conjunction<Ts...>, T>::type
+struct conjunction<T, Ts...> : public std::conditional<bool(T::value), conjunction<Ts...>, T>::type
 { };
 
 /**
@@ -65,16 +64,15 @@ struct NEURALA_PUBLIC conjunction<T, Ts...>
  * Backported implementation from C++17.
  */
 template<class... Ts>
-struct NEURALA_PUBLIC disjunction : public std::false_type
+struct disjunction : public std::false_type
 { };
 
 template<class T>
-struct NEURALA_PUBLIC disjunction<T> : public T
+struct disjunction<T> : public T
 { };
 
 template<class T, class... Ts>
-struct NEURALA_PUBLIC disjunction<T, Ts...>
- : public std::conditional<bool(T::value), T, disjunction<Ts...>>::type
+struct disjunction<T, Ts...> : public std::conditional<bool(T::value), T, disjunction<Ts...>>::type
 { };
 
 /**
@@ -83,7 +81,7 @@ struct NEURALA_PUBLIC disjunction<T, Ts...>
  * Backported implementation from C++17.
  */
 template<class F, class... Args>
-struct NEURALA_PUBLIC is_invocable
+struct is_invocable
  : std::is_constructible<std::function<void(Args...)>,
                          std::reference_wrapper<typename std::remove_reference<F>::type>>
 { };
@@ -93,7 +91,7 @@ struct NEURALA_PUBLIC is_invocable
  * is convertible to @p R.
  */
 template<class R, class F, class... Args>
-struct NEURALA_PUBLIC is_invocable_r
+struct is_invocable_r
  : std::is_constructible<std::function<R(Args...)>,
                          std::reference_wrapper<typename std::remove_reference<F>::type>>
 { };

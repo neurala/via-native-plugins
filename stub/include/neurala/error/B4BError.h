@@ -60,7 +60,7 @@ NEURALA_PUBLIC std::error_condition make_error_condition(B4BError error) noexcep
 namespace std
 {
 template<>
-struct NEURALA_PUBLIC is_error_code_enum<neurala::B4BError> : public true_type
+struct is_error_code_enum<neurala::B4BError> : public true_type
 { };
 } // namespace std
 
