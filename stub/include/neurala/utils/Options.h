@@ -77,9 +77,9 @@ public:
 	/// @copydoc Options(const std::string&,const T&)
 	Options(const std::string& key, const std::string& value);
 
-	Options(const Options&) = delete;
+	Options(const Options&);
 	Options(Options&&) = default;
-	Options& operator=(const Options&) = delete;
+	Options& operator=(const Options&);
 	Options& operator=(Options&&) = default;
 	~Options() = default;
 
