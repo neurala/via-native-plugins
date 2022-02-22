@@ -29,7 +29,7 @@ namespace neurala
 /**
  * @brief Plugin status codes.
  */
-struct NEURALA_PUBLIC PluginStatus final
+struct PluginStatus final
 {
 	static constexpr PluginStatus success() { return {0}; }
 	static constexpr PluginStatus unknown() { return {1}; }
