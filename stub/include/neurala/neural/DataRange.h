@@ -39,10 +39,13 @@ enum class EDataRange
 	/// Scaled data range by 255 <tt>[0.0, 255.0]</tt>
 	normalizedScaled,
 	/// normalized rgb data based on COCO mean values: channel = (channel - channelMean)/channelStd
-	normalizedCOCO
+	normalizedCOCO,
+	/// Normalized data range around zero <tt>[-128, 127]</tt>
+	normalizedQuant
 };
 
-// NOTE:20210927:jgerity:SWIG does not support `auto` without a trailing return type declaration (http://www.swig.org/Doc4.0/SWIGDocumentation.html#CPlusPlus11_alternate_function_syntax)
+// NOTE:20210927:jgerity:SWIG does not support `auto` without a trailing return type declaration
+// (http://www.swig.org/Doc4.0/SWIGDocumentation.html#CPlusPlus11_alternate_function_syntax)
 #ifndef SWIG
 template<>
 class MetaEnum<EDataRange> : public MetaEnumRegister<EDataRange>
