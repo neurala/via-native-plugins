@@ -111,17 +111,15 @@ main(int, char**)
 
 	const hostfxr fxr(nethost);
 
-	const auto resultOutputLoadAssembly = fxr.getLoadAssembly(RESULT_OUTPUT_CONFIGURATION);
-	// const auto videoSourceLoadAssembly = fxr.getLoadAssembly(VIDEO_SOURCE_CONFIGURATION);
-
-	const auto invoker = fxr.loadMethod(resultOutputLoadAssembly, RESULT_OUTPUT_DLL, "Neurala.ResultOutput, Neurala", "Invoke");
-	// const auto metdataGetter = fxr.loadMethod(videoSourceLoadAssembly, VIDEO_SOURCE_DLL, "Neurala.VideoSource, Neurala", "GetMetadata");
-	// const auto nextFramer = fxr.loadMethod(videoSourceLoadAssembly, VIDEO_SOURCE_DLL, "Neurala.VideoSource, Neurala", "MoveNextFrame");
-	// const auto frameGetter = fxr.loadMethod(videoSourceLoadAssembly, VIDEO_SOURCE_DLL, "Neurala.VideoSource, Neurala", "GetFrame");
-	// const auto executor = fxr.loadMethod(videoSourceLoadAssembly, VIDEO_SOURCE_DLL, "Neurala.VideoSource, Neurala", "Execute");
+	const auto loadAssembly = fxr.getLoadAssembly(MANAGED_PLUGIN_CONFIGURATION);
+	const auto invoker = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, "Neurala.ResultOutput, Neurala", "Invoke");
+	const auto metdataGetter = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, "Neurala.VideoSource, Neurala", "GetMetadata");
+	const auto nextFramer = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, "Neurala.VideoSource, Neurala", "MoveNextFrame");
+	const auto frameGetter = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, "Neurala.VideoSource, Neurala", "GetFrame");
+	const auto executor = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, "Neurala.VideoSource, Neurala", "Execute");
 
 	neurala::CSharpResultOutput resultOutput(invoker);
-	// neurala::CSharpVideoSource videoSource(metdataGetter, nextFramer, frameGetter, executor);
+	neurala::CSharpVideoSource videoSource(metdataGetter, nextFramer, frameGetter, executor);
 
 	return 0;
 }
