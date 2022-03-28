@@ -26,8 +26,8 @@ dto::ImageMetadata
 CSharpVideoSource::metadata() const noexcept
 {
 	struct {
-		std::size_t width;
-		std::size_t height;
+		std::int32_t width;
+		std::int32_t height;
 	} arguments;
 
 	metadataGetter(&arguments, sizeof arguments);
