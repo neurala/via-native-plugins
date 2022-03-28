@@ -75,6 +75,8 @@ CSharpVideoSource::execute(const std::string& action) noexcept
 	arguments.action = action.c_str();
 
 	executor(&arguments, sizeof arguments);
+
+	return B4BError::ok();
 }
 } // namespace neurala
 

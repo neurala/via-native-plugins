@@ -10,40 +10,18 @@ add_library(csharp EXCLUDE_FROM_ALL
 add_executable(csharp_test EXCLUDE_FROM_ALL
     src/Main.cpp)
 
-set(NEURALA_DOTNET_PATH "" CACHE PATH "The path to a directory containing the .NET Core headers and libraries.")
-set(HOSTFXR_LIBRARY_PATH "" CACHE PATH "The path to the hostfxr library.")
-
-if("${NEURALA_DOTNET_PATH}" STREQUAL "")
-    message(SEND_ERROR "NEURALA_DOTNET_PATH not defined for C# sample plugin!")
-endif()
-
-add_library(nethost SHARED IMPORTED)
-add_library(hostfxr SHARED IMPORTED)
+set(NEURALA_DOTNET_PATH "C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Host.win-x64\\5.0.15\\runtimes\\win-x64\\native" CACHE PATH "The path to a directory containing the .NET Core headers and libraries.")
+set(HOSTFXR_LIBRARY_PATH "C:\\Program Files\\dotnet\\host\\fxr\\5.0.15\\hostfxr.dll" CACHE PATH "The path to the hostfxr library.")
 
 if(WIN32)
-    set(NETHOST_LIBRARY "nethost.dll")
-elseif(APPLE)
-    set(NETHOST_LIBRARY "libnethost.dylib")
-else()
-    set(NETHOST_LIBRARY "libnethost.so")
+    set(STRING_PREFIX "L")
 endif()
-
-set(NETHOST_LIBRARY_PATH "${NEURALA_DOTNET_PATH}/${NETHOST_LIBRARY}")
 
 target_compile_definitions(csharp_test
     PRIVATE
-        "NETHOST_LIBRARY_PATH=\"${NETHOST_LIBRARY_PATH}\""
         "HOSTFXR_LIBRARY_PATH=\"${HOSTFXR_LIBRARY_PATH}\""
-        "MANAGED_PLUGIN_DLL=\"${MANAGED_PLUGIN_DLL}\""
-        "MANAGED_PLUGIN_CONFIGURATION=\"${MANAGED_PLUGIN_CONFIGURATION}\"")
-
-set_target_properties(nethost
-    PROPERTIES
-        IMPORTED_LOCATION "${NETHOST_LIBRARY_PATH}")
-
-set_target_properties(hostfxr
-    PROPERTIES
-        IMPORTED_LOCATION "${NEURALA_HOSTFXR}")
+        "MANAGED_PLUGIN_DLL=${STRING_PREFIX}\"${MANAGED_PLUGIN_DLL}\""
+        "MANAGED_PLUGIN_CONFIGURATION=${STRING_PREFIX}\"${MANAGED_PLUGIN_CONFIGURATION}\"")
 
 target_include_directories(csharp
     PRIVATE
