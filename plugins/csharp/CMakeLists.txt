@@ -1,5 +1,5 @@
 add_custom_command(OUTPUT Managed.dll
-    COMMAND dotnet build "${CMAKE_CURRENT_SOURCE_DIR}/Managed" -c Release)
+    COMMAND dotnet build "${CMAKE_CURRENT_SOURCE_DIR}/Managed" --no-self-contained -c Release)
 
 add_library(csharp_assemblies INTERFACE Managed.dll)
 

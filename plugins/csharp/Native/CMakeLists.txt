@@ -10,8 +10,8 @@ add_library(csharp EXCLUDE_FROM_ALL
 add_executable(csharp_test EXCLUDE_FROM_ALL
     src/Main.cpp)
 
-set(NEURALA_DOTNET_PATH "C:\\Program Files\\dotnet\\packs\\Microsoft.NETCore.App.Host.win-x64\\5.0.15\\runtimes\\win-x64\\native" CACHE PATH "The path to a directory containing the .NET Core headers and libraries.")
-set(HOSTFXR_LIBRARY_PATH "C:\\Program Files\\dotnet\\host\\fxr\\5.0.15\\hostfxr.dll" CACHE PATH "The path to the hostfxr library.")
+set(NEURALA_DOTNET_PATH "" CACHE PATH "The path to a directory containing the .NET Core headers and libraries.")
+set(HOSTFXR_LIBRARY_PATH "" CACHE PATH "The path to the hostfxr library.")
 
 if(WIN32)
     set(STRING_PREFIX "L")
