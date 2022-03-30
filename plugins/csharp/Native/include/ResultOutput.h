@@ -23,7 +23,11 @@
 
 namespace neurala
 {
-class CSharpResultOutput : public ResultsOutput
+class
+#ifdef _WIN32
+__declspec(dllexport)
+#endif
+CSharpResultOutput : public ResultsOutput
 {
 public:
 	using Method = int (*)(void*, std::int32_t);

@@ -23,7 +23,11 @@
 
 namespace neurala
 {
-class CSharpVideoSource : public VideoSource
+class
+#ifdef _WIN32
+__declspec(dllexport)
+#endif
+CSharpVideoSource : public VideoSource
 {
 public:
 	using Method = int (*)(void*, std::int32_t);

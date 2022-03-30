@@ -59,6 +59,7 @@ public:
 	  runtimeDelegate(getSymbolAddress<hostfxr_get_runtime_delegate_fn>(nethost, "hostfxr_get_runtime_delegate")),
 	  closer(getSymbolAddress<hostfxr_close_fn>(nethost, "hostfxr_close"))
 	{
+		printf("Trying to get symbol addresses\n");
 		assert(initializer && runtimeDelegate && closer);
 	}
 
@@ -70,13 +71,13 @@ public:
 
 		auto status = initializer(path, nullptr, &handle);
 
-		printf("%08X\n", status);
+		printf("%08X\n", status), fflush(stdout);
 
 		assert(status == 0 && handle);
 
 		status = runtimeDelegate(handle, hdt_load_assembly_and_get_function_pointer, &assemblyLoader);
 
-		printf("%08X\n", status);
+		printf("%08X\n", status), fflush(stdout);
 
 		assert(status == 0 && assemblyLoader);
 
@@ -88,7 +89,7 @@ public:
 	auto
 	loadMethod(load_assembly_and_get_function_pointer_fn loader, cstring dll, cstring type, cstring method) const
 	{
-		printf("Loading method %s from DLL %s...", method, dll);
+		printf("Loading method %ls from DLL %ls...", method, dll);
 		void* delegate;
 		const auto status = loader(dll, type, method, nullptr, nullptr, &delegate);
 		printf("(%08X)\n", status);
@@ -109,20 +110,22 @@ dummy(void (*f)())
 int
 main(int, char**)
 {
+	printf("%s\n", HOSTFXR_LIBRARY_PATH);
+
 	const auto nethost = loadLibrary(HOSTFXR_LIBRARY_PATH);
 
 	assert(nethost);
 
 	const hostfxr fxr(nethost);
 
-	printf("MANAGED_PLUGIN_CONFIGURATION = %s\nMANAGED_PLUGIN_DLL = %s\n", MANAGED_PLUGIN_CONFIGURATION, MANAGED_PLUGIN_DLL);
+	printf("MANAGED_PLUGIN_CONFIGURATION = %ls\nMANAGED_PLUGIN_DLL = %ls\n", MANAGED_PLUGIN_CONFIGURATION, MANAGED_PLUGIN_DLL);
 
 	const auto loadAssembly = fxr.getLoadAssembly(MANAGED_PLUGIN_CONFIGURATION);
 	const auto invoker = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, STR("Neurala.ResultOutput, Managed"), STR("Invoke"));
-	const auto metdataGetter = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, STR("Neurala.VideoSource, Managed"), STR("GetMetadata"));
-	const auto nextFramer = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, STR("Neurala.VideoSource, Managed"), STR("MoveNextFrame"));
-	const auto frameGetter = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, STR("Neurala.VideoSource, Managed"), STR("GetFrame"));
-	const auto executor = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, STR("Neurala.VideoSource, Managed"), STR("Execute"));
+	const auto metdataGetter = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, STR("Neurala.NativeVideoSource, Managed"), STR("GetMetadata"));
+	const auto nextFramer = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, STR("Neurala.NativeVideoSource, Managed"), STR("MoveNextFrame"));
+	const auto frameGetter = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, STR("Neurala.NativeVideoSource, Managed"), STR("GetFrame"));
+	const auto executor = fxr.loadMethod(loadAssembly, MANAGED_PLUGIN_DLL, STR("Neurala.NativeVideoSource, Managed"), STR("Execute"));
 
 	neurala::CSharpResultOutput resultOutput(invoker);
 	neurala::CSharpVideoSource videoSource(metdataGetter, nextFramer, frameGetter, executor);
