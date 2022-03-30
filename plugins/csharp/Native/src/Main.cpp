@@ -3,13 +3,9 @@
 #include <thread>
 #include <type_traits>
 
-#include <coreclr_delegates.h>
-#include <hostfxr.h>
-#include <nethost.h>
-
 #ifdef _WIN32
 #include <windows.h>
-using cstring = const char_t*;
+using cstring = const wchar_t*;
 #define STR(string) L ## string
 #else
 #include <dlfcn.h>
@@ -21,6 +17,16 @@ using cstring = const char*;
 
 #include "ResultOutput.h"
 #include "VideoSource.h"
+
+void invokeResultOutput(const char * metadata, void * imageBytes, int width, int height);
+
+int main(int, char**)
+{
+	invokeResultOutput(nullptr, nullptr, 1, 1);
+	return 0;
+}
+
+#ifdef _
 
 namespace
 {
@@ -132,3 +138,5 @@ main(int, char**)
 
 	return 0;
 }
+
+#endif
