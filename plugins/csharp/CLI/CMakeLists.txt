@@ -1,8 +1,9 @@
-add_library(cppcli SHARED ResultOutput.cpp)
+add_library(cppcli SHARED Bridge.cpp)
 
 set_target_properties(cppcli
     PROPERTIES
         COMMON_LANGUAGE_RUNTIME ""
+        CXX_STANDARD 17
         VS_DOTNET_REFERENCES "System"
         WINDOWS_EXPORT_ALL_SYMBOLS ON)
 

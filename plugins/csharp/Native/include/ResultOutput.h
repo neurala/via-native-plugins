@@ -30,14 +30,6 @@ __declspec(dllexport)
 CSharpResultOutput : public ResultsOutput
 {
 public:
-	using Method = int (*)(void*, std::int32_t);
-
-private:
-	Method invoker;
-
-public:
-	explicit CSharpResultOutput(Method invoker) noexcept : invoker(invoker) {}
-
 	virtual void operator()(const std::string& metadata, const dto::ImageView* image) noexcept override;
 };
 } // namespace neurala

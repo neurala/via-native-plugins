@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 
 namespace Neurala {
-    public static class NativeVideoSource {
+    public static class VideoSource {
         public static void GetMetadata(out int width, out int height) {
             // Return (width, height) of current image.
             width = 1;

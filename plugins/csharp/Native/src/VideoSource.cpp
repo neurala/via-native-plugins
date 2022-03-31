@@ -18,6 +18,7 @@
 
 #include "neurala/error/B4BError.h"
 
+#include "Bridge.h"
 #include "VideoSource.h"
 
 namespace neurala
@@ -25,14 +26,12 @@ namespace neurala
 dto::ImageMetadata
 CSharpVideoSource::metadata() const noexcept
 {
-	struct {
-		std::int32_t width;
-		std::int32_t height;
-	} arguments;
+	int width;
+	int height;
 
-	metadataGetter(&arguments, sizeof arguments);
+	neurala::dotnet::video_source::getMetadata(width, height);
 
-	return dto::ImageMetadata(arguments.width, arguments.height, "", "", "");
+	return dto::ImageMetadata(width, height, "", "", "");
 }
 
 std::error_code
@@ -40,7 +39,7 @@ CSharpVideoSource::nextFrame() noexcept
 {
 	std::int32_t status;
 
-	nextFramer(&status, sizeof status);
+	neurala::dotnet::video_source::moveNextFrame(status);
 
 	const auto error = status ? B4BError::unknown() : B4BError::ok();
 
@@ -50,31 +49,37 @@ CSharpVideoSource::nextFrame() noexcept
 dto::ImageView
 CSharpVideoSource::frame() const noexcept
 {
-	struct {
-		void* data;
-	} arguments;
+	const auto imageMetadata = metadata();
+	const auto newSize = imageMetadata.width() * imageMetadata.height() * 3;
 
-	frameGetter(&arguments, sizeof arguments);
+	if (imageBytes.capacity() < newSize)
+	{
+		imageBytes.assign(newSize, std::byte(0));
+	}
 
-	return dto::ImageView(metadata(), arguments.data);
+	const auto buffer = imageBytes.data();
+
+	neurala::dotnet::video_source::getFrame(buffer);
+
+	return dto::ImageView(imageMetadata, buffer);
 }
 
 dto::ImageView
 CSharpVideoSource::frame(std::byte* data, std::size_t capacity) const noexcept
 {
-	std::abort();
+	imageBytes.assign(data, data + capacity);
+
+	const auto buffer = imageBytes.data();
+
+	return dto::ImageView(metadata(), buffer);
 }
 
 std::error_code
 CSharpVideoSource::execute(const std::string& action) noexcept
 {
-	struct {
-		const char* action;
-	} arguments;
+	const auto string = action.c_str();
 
-	arguments.action = action.c_str();
-
-	executor(&arguments, sizeof arguments);
+	neurala::dotnet::video_source::execute(string);
 
 	return B4BError::ok();
 }

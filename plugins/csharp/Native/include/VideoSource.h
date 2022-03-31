@@ -19,6 +19,8 @@
 #ifndef NEURALA_CSHARP_VIDEO_SOURCE_H
 #define NEURALA_CSHARP_VIDEO_SOURCE_H
 
+#include <vector>
+
 #include "neurala/video/VideoSource.h"
 
 namespace neurala
@@ -29,26 +31,10 @@ __declspec(dllexport)
 #endif
 CSharpVideoSource : public VideoSource
 {
-public:
-	using Method = int (*)(void*, std::int32_t);
-
 private:
-	Method metadataGetter;
-	Method nextFramer;
-	Method frameGetter;
-	Method executor;
+	mutable std::vector<std::byte> imageBytes;
 
 public:
-	explicit CSharpVideoSource(Method metadataGetter,
-	                           Method nextFramer,
-	                           Method frameGetter,
-	                           Method executor) noexcept
-	 : metadataGetter(metadataGetter),
-	   nextFramer(nextFramer),
-	   frameGetter(frameGetter),
-	   executor(executor)
-	{ }
-
 	[[nodiscard]] virtual dto::ImageMetadata metadata() const noexcept override;
 
 	[[nodiscard]] virtual std::error_code nextFrame() noexcept override;

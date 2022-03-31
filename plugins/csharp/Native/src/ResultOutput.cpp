@@ -16,6 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "Bridge.h"
 #include "ResultOutput.h"
 
 namespace neurala
@@ -23,18 +24,6 @@ namespace neurala
 void
 CSharpResultOutput::operator()(const std::string& metadata, const dto::ImageView* image) noexcept
 {
-	struct {
-		const char* metadata;
-		const void* image;
-		std::size_t width;
-		std::size_t height;
-	} arguments {
-		metadata.c_str(),
-		image->data(),
-		image->width(),
-		image->height()
-	};
-
-	invoker(&arguments, sizeof arguments);
+	neurala::dotnet::result_output::invokeResultOutput(metadata.c_str(), image->data(), image->width(), image->height());
 }
 } // namespace neurala

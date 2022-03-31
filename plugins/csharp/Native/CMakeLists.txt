@@ -19,20 +19,18 @@ if(WIN32)
 endif()
 
 target_include_directories(csharp
+    PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
     PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-target_include_directories(csharp_test
-    PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/include")
+        "${CMAKE_CURRENT_SOURCE_DIR}/../CLI")
 
 target_link_libraries(csharp
     PRIVATE
+        cppcli
+    PUBLIC
         stub)
 
 target_link_libraries(csharp_test
     PRIVATE
         ${CMAKE_DL_LIBS}
-        stub
-        cppcli
         csharp)
