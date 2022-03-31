@@ -57,7 +57,8 @@ public:
 	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedAroundZero),
 	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedAroundZeroSSD),
 	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedScaled),
-	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedCOCO));
+	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedCOCO),
+	 NEURALA_META_ENUM_ENTRY(EDataRange, normalizedQuant));
 
 	static constexpr const auto fallbackValue = values[0];
 };
