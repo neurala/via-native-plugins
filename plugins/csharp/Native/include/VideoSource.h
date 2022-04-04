@@ -21,10 +21,31 @@
 
 #include <vector>
 
+#include "neurala/plugin/PluginArguments.h"
+#include "neurala/plugin/PluginBindings.h"
+#include "neurala/plugin/PluginErrorCallback.h"
+#include "neurala/plugin/PluginManager.h"
+#include "neurala/plugin/PluginStatus.h"
+#include "neurala/utils/Version.h"
+#include "neurala/video/dto/CameraInfo.h"
+#include "neurala/video/CameraDiscoverer.h"
 #include "neurala/video/VideoSource.h"
 
 namespace neurala
 {
+class
+#ifdef _WIN32
+__declspec(dllexport)
+#endif
+CSharpCameraDiscoverer : public CameraDiscoverer
+{
+public:
+	[[nodiscard]] std::vector<dto::CameraInfo> operator()() const noexcept override;
+
+	static void* create(PluginArguments&, PluginErrorCallback&);
+	static void destroy(void* p);
+};
+
 class
 #ifdef _WIN32
 __declspec(dllexport)
@@ -44,6 +65,9 @@ public:
 	[[nodiscard]] virtual dto::ImageView frame(std::byte* data, std::size_t capacity) const noexcept override;
 
 	[[nodiscard]] virtual std::error_code execute(const std::string& action) noexcept override;
+
+	static void* create(PluginArguments&, PluginErrorCallback&);
+	static void destroy(void*);
 };
 } // namespace neurala
 

@@ -16,6 +16,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <vector>
+
 #include "neurala/error/B4BError.h"
 
 #include "Bridge.h"
@@ -23,6 +25,27 @@
 
 namespace neurala
 {
+std::vector<dto::CameraInfo>
+CSharpCameraDiscoverer::operator()() const noexcept
+{
+	return {{"DotnetNativePluginCameraId1",
+	         "dotnetVideoSource",
+	         "External Dotnet Camera #1",
+	         "DotnetNativePluginCameraConnection1"}};
+}
+
+void*
+CSharpCameraDiscoverer::create(PluginArguments&, PluginErrorCallback& error)
+{
+	return new CSharpCameraDiscoverer();
+}
+
+void
+CSharpCameraDiscoverer::destroy(void* p)
+{
+	delete static_cast<CSharpCameraDiscoverer*>(p);
+}
+
 dto::ImageMetadata
 CSharpVideoSource::metadata() const noexcept
 {
@@ -72,6 +95,18 @@ CSharpVideoSource::execute(const std::string& action) noexcept
 	neurala::dotnet::video_source::execute(string);
 
 	return B4BError::ok();
+}
+
+void*
+CSharpVideoSource::create(PluginArguments& arguments, PluginErrorCallback& error)
+{
+	return new CSharpVideoSource();
+}
+
+void
+CSharpVideoSource::destroy(void* p)
+{
+	delete static_cast<CSharpVideoSource*>(p);
 }
 } // namespace neurala
 
