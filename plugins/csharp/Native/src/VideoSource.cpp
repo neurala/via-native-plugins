@@ -49,19 +49,9 @@ CSharpVideoSource::nextFrame() noexcept
 dto::ImageView
 CSharpVideoSource::frame() const noexcept
 {
-	const auto imageMetadata = metadata();
-	const auto newSize = imageMetadata.width() * imageMetadata.height() * 3;
+	const auto buffer = neurala::dotnet::video_source::getFrame();
 
-	if (imageBytes.capacity() < newSize)
-	{
-		imageBytes.assign(newSize, std::byte(0));
-	}
-
-	const auto buffer = imageBytes.data();
-
-	neurala::dotnet::video_source::getFrame(buffer);
-
-	return dto::ImageView(imageMetadata, buffer);
+	return dto::ImageView(metadata(), buffer);
 }
 
 dto::ImageView

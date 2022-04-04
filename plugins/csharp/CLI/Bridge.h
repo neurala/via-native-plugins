@@ -7,7 +7,7 @@ namespace neurala::dotnet::video_source {
 
     void moveNextFrame(int& status);
 
-    void getFrame(void* buffer);
+    void* getFrame();
 
     void execute(const char* action);
 }

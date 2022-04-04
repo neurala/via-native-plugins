@@ -23,8 +23,8 @@ namespace neurala::dotnet::video_source {
         Neurala::VideoSource::MoveNextFrame(status);
     }
 
-    void getFrame(void* buffer) {
-        Neurala::VideoSource::GetFrame(msclr::interop::marshal_as<System::IntPtr>(buffer));
+    void* getFrame() {
+        return msclr::interop::marshal_as<HANDLE>(Neurala::VideoSource::GetFrame());
     }
 
     void execute(const char* action) {
