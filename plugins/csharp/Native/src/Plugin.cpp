@@ -41,7 +41,7 @@ exitHere()
 
 } // namespace
 
-extern "C" __declspec(dllexport) NeuralaPluginExitFunction
+extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
 	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
@@ -60,65 +60,3 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 
 	return exitHere;
 }
-
-#ifdef _
-
-namespace neurala::plug::dummy
-{
-
-Source::Source(const dto::CameraInfo& cameraInfo, const Options& options)
-{
-	std::cout << "Initiating VideoSource connection with " << cameraInfo << '\n';
-	std::cout << "With options: " << options << '\n';
-
-	const dto::ImageMetadata md{metadata()};
-	const auto frameBufferSize{md.width() * md.height() * 3};
-	m_frame = std::make_unique<std::uint8_t[]>(frameBufferSize);
-	std::iota(&(m_frame[0]), &(m_frame[frameBufferSize]), 0);
-}
-
-dto::ImageView
-Source::frame(std::byte* data, std::size_t size) const noexcept
-{
-	std::cout << "Copying frame to [" << data << "]\n";
-	dto::ImageMetadata md{metadata()};
-	std::copy_n(reinterpret_cast<const std::byte*>(m_frame.get()), md.width() * md.height() * 3, data);
-	return {std::move(metadata()), data};
-}
-
-std::error_code
-Source::execute(const std::string& action) noexcept
-{
-	std::cout << "Executing action: " << action << '\n';
-	return std::error_code{};
-}
-
-void*
-Source::create(PluginArguments& arguments, PluginErrorCallback& error)
-{
-	VideoSource* p = nullptr;
-
-	try
-	{
-		const auto& cameraInfo = arguments.get<0, const dto::CameraInfo>();
-		const auto& cameraOptions = arguments.get<1, const Options>();
-
-		p = new Source(cameraInfo, cameraOptions);
-	}
-	catch (const std::exception& e)
-	{
-		error(e.what());
-	}
-
-	return p;
-}
-
-void
-Source::destroy(void* p)
-{
-	delete static_cast<VideoSource*>(p);
-}
-
-} // namespace neurala::plug::dummy
-
-#endif

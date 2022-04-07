@@ -19,15 +19,12 @@
 #ifndef NEURALA_CSHARP_RESULTS_OUTPUT_H
 #define NEURALA_CSHARP_RESULTS_OUTPUT_H
 
+#include "neurala/plugin/PluginBindings.h"
 #include "neurala/utils/ResultsOutput.h"
 
 namespace neurala
 {
-class
-#ifdef _WIN32
-__declspec(dllexport)
-#endif
-CSharpResultOutput : public ResultsOutput
+class PLUGIN_API CSharpResultOutput : public ResultsOutput
 {
 public:
 	virtual void operator()(const std::string& metadata, const dto::ImageView* image) noexcept override;

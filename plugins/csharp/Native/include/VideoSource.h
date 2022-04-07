@@ -33,11 +33,7 @@
 
 namespace neurala
 {
-class
-#ifdef _WIN32
-__declspec(dllexport)
-#endif
-CSharpCameraDiscoverer : public CameraDiscoverer
+class PLUGIN_API CSharpCameraDiscoverer : public CameraDiscoverer
 {
 public:
 	[[nodiscard]] std::vector<dto::CameraInfo> operator()() const noexcept override;
@@ -46,11 +42,7 @@ public:
 	static void destroy(void* p);
 };
 
-class
-#ifdef _WIN32
-__declspec(dllexport)
-#endif
-CSharpVideoSource : public VideoSource
+class PLUGIN_API CSharpVideoSource : public VideoSource
 {
 private:
 	mutable std::vector<std::byte> imageBytes;
