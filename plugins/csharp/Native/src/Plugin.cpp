@@ -29,6 +29,7 @@
 #include "neurala/utils/Version.h"
 #include "neurala/video/dto/CameraInfo.h"
 
+#include "Bridge.h"
 #include "VideoSource.h"
 
 namespace
@@ -44,6 +45,8 @@ exitHere()
 extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
+	neurala::dotnet::initialize();
+
 	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
 	*status = pm.registerPlugin<neurala::CSharpVideoSource>("dotnetVideoSource", neurala::Version(1, 0));
 	if (*status != neurala::PluginStatus::success())

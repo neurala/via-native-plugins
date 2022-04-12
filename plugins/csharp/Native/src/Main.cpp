@@ -1,10 +1,13 @@
 #include <cstdio>
 
+#include "Bridge.h"
 #include "ResultOutput.h"
 #include "VideoSource.h"
 
 int main(int, char**)
 {
+	neurala::dotnet::initialize();
+
 	neurala::CSharpVideoSource videoSource;
 	neurala::CSharpResultOutput resultOutput;
 

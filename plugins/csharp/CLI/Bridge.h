@@ -1,3 +1,7 @@
+namespace neurala::dotnet {
+    void initialize();
+}
+
 namespace neurala::dotnet::result_output {
     void invokeResultOutput(const char* metadata, const void* imageBytes, int width, int height);
 }

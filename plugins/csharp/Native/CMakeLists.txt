@@ -22,13 +22,11 @@ endif()
 target_include_directories(dotnetCamera
     PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/../CLI")
 
 target_link_libraries(dotnetCamera
-    PRIVATE
-        cppcli
     PUBLIC
+        cppcli
         stub)
 
 target_link_libraries(dotnetCameraTest

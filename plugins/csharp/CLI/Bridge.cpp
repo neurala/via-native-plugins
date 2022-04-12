@@ -5,6 +5,17 @@
 
 #using MANAGED_PLUGIN_DLL
 
+namespace neurala::dotnet {
+    void initialize() {
+        const auto executingAssembly = System::Reflection::Assembly::GetExecutingAssembly()->Location;
+        const auto containingDirectory = System::IO::Directory::GetParent(executingAssembly)->ToString();
+        const auto pluginAssemblyName = System::IO::Path::GetFileName(MANAGED_PLUGIN_DLL);
+        const auto pluginAssembly = System::IO::Path::Combine(containingDirectory, pluginAssemblyName);
+
+        System::Reflection::Assembly::LoadFile(pluginAssembly);
+    }
+}
+
 namespace neurala::dotnet::result_output {
     void invokeResultOutput(const char* metadata, const void* imageBytes, int width, int height) {
         Neurala::ResultOutput::Invoke(msclr::interop::marshal_as<System::String^>(metadata),
