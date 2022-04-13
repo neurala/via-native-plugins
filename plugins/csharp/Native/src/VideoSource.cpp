@@ -54,7 +54,7 @@ CSharpVideoSource::metadata() const noexcept
 
 	neurala::dotnet::video_source::getMetadata(width, height);
 
-	return dto::ImageMetadata(width, height, "", "", "");
+	return dto::ImageMetadata(width, height, "BGR", "interleaved", "uint8");
 }
 
 std::error_code
@@ -72,9 +72,15 @@ CSharpVideoSource::nextFrame() noexcept
 dto::ImageView
 CSharpVideoSource::frame() const noexcept
 {
-	const auto buffer = neurala::dotnet::video_source::getFrame();
+	const auto frameMetadata = metadata();
 
-	return dto::ImageView(metadata(), buffer);
+	imageBytes.assign(frameMetadata.width() * frameMetadata.height() * 3, std::byte(0));
+
+	const auto buffer = imageBytes.data();
+
+	neurala::dotnet::video_source::getFrame(buffer);
+
+	return dto::ImageView(frameMetadata, buffer);
 }
 
 dto::ImageView

@@ -11,7 +11,7 @@ namespace neurala::dotnet::video_source {
 
     void moveNextFrame(int& status);
 
-    void* getFrame();
+    void getFrame(void* buffer);
 
     void execute(const char* action);
 }

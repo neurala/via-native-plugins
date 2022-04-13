@@ -20,6 +20,7 @@ namespace Neurala {
         public IEnumerable<Bitmap> EnumerateImages() {
             while (true) {
                 foreach (var imageFile in ImageFiles) {
+                    Console.WriteLine($"  Yielding file {imageFile}.");
                     yield return new Bitmap(imageFile);
                 }
             }
@@ -31,43 +32,59 @@ namespace Neurala {
 
         private static BitmapData CurrentBitmapData;
 
-        static VideoSource() {
-            Source.MoveNext();
-        }
-
+        // Return (width, height) of current image.
         public static void GetMetadata(out int width, out int height) {
-            // Return (width, height) of current image.
             var image = Source.Current;
 
             width = image.Width;
             height = image.Height;
 
-            Console.WriteLine(image.PixelFormat);
+            Console.WriteLine($"Got image metadata {width}x{height} {image.PixelFormat}.");
         }
 
+        // Iterate to next image and return status.
         public static void MoveNextFrame(out int status) {
-            // Iterate to next image and return status.
-            if (CurrentBitmapData != null) {
-                Source.Current.UnlockBits(CurrentBitmapData);
-                CurrentBitmapData = null;
-            }
+            Console.Write("Moving next frame...");
 
             status = Source.MoveNext() ? 0 : 1;
+
+            Console.WriteLine($"with status {status}.");
         }
 
-        public static IntPtr GetFrame() {
-            // Get current image frame data and copy to buffer.
+        // Get current image frame data and copy to buffer.
+        public static void GetFrame(IntPtr buffer) {
             var image = Source.Current;
+
+            Console.WriteLine("Locking new bitmap data.");
 
             CurrentBitmapData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
                                                ImageLockMode.ReadOnly,
                                                image.PixelFormat);
-            return CurrentBitmapData.Scan0;
+
+            Console.WriteLine("BEGIN SANITY CHECK");
+            Console.WriteLine("TOUCHING BEGINNING OF SOURCE");
+            Marshal.ReadByte(CurrentBitmapData.Scan0);
+            Console.WriteLine("TOUCHING END OF SOURCE");
+            Marshal.ReadByte(CurrentBitmapData.Scan0, image.Width * image.Height * 3 - 1);
+            Console.WriteLine("TOUCHING BEGINNING OF DESTINATION");
+            Marshal.ReadByte(buffer);
+            Console.WriteLine("TOUCHING END OF DESTINATION");
+            Marshal.ReadByte(buffer, image.Width * image.Height * 3 - 1);
+            Console.WriteLine("COPYING MEMORY");
+
+            CopyMemory(buffer, CurrentBitmapData.Scan0, image.Width * image.Height * 3);
+
+            image.UnlockBits(CurrentBitmapData);
+
+            Console.WriteLine("END SANITY CHECK");
         }
 
+        // Execute output action.
         public static void Execute(string action) {
-            // Execute output action.
             Console.WriteLine($"Execute(\"{action}\")");
         }
+
+        [DllImport("kernel32.dll")]
+        private static extern void CopyMemory(IntPtr destination, IntPtr source, int length);
     }
 }
