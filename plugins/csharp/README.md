@@ -42,5 +42,3 @@ public class FrameGrabber {
     }
 }
 ```
-
-Here is an example of a possible implementation for a frame grabber that 
