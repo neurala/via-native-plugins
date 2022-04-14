@@ -6,77 +6,37 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Neurala {
-    internal class DummyVideoSource {
-        private IEnumerable<string> ImageFiles;
-
-        public IEnumerable<Bitmap> Images {
-            get => EnumerateImages();
-        }
-
-        public DummyVideoSource(string directory) {
-            ImageFiles = Directory.EnumerateFiles(directory);
-        }
-
-        public IEnumerable<Bitmap> EnumerateImages() {
-            while (true) {
-                foreach (var imageFile in ImageFiles) {
-                    Console.WriteLine($"  Yielding file {imageFile}.");
-                    yield return new Bitmap(imageFile);
-                }
-            }
-        }
-    }
-
     public static class VideoSource {
-        private static IEnumerator<Bitmap> Source = new DummyVideoSource(@"C:\Images").Images.GetEnumerator();
-
-        private static BitmapData CurrentBitmapData;
+        private static FrameGrabber Source = new FrameGrabber();
+        private static Bitmap CurrentBitmap;
 
         // Return (width, height) of current image.
         public static void GetMetadata(out int width, out int height) {
-            var image = Source.Current;
+            width = CurrentBitmap.Width;
+            height = CurrentBitmap.Height;
 
-            width = image.Width;
-            height = image.Height;
-
-            Console.WriteLine($"Got image metadata {width}x{height} {image.PixelFormat}.");
+            Console.WriteLine($"Got image metadata {width}x{height} {CurrentBitmap.PixelFormat}.");
         }
 
         // Iterate to next image and return status.
         public static void MoveNextFrame(out int status) {
             Console.Write("Moving next frame...");
 
-            status = Source.MoveNext() ? 0 : 1;
-
-            Console.WriteLine($"with status {status}.");
+            CurrentBitmap = Source.GrabFrame();
+            status = 0;
         }
 
         // Get current image frame data and copy to buffer.
         public static void GetFrame(IntPtr buffer) {
-            var image = Source.Current;
-
             Console.WriteLine("Locking new bitmap data.");
 
-            CurrentBitmapData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
-                                               ImageLockMode.ReadOnly,
-                                               image.PixelFormat);
+            var bits = CurrentBitmap.LockBits(new Rectangle(0, 0, CurrentBitmap.Width, CurrentBitmap.Height),
+                                              ImageLockMode.ReadOnly,
+                                              CurrentBitmap.PixelFormat);
 
-            Console.WriteLine("BEGIN SANITY CHECK");
-            Console.WriteLine("TOUCHING BEGINNING OF SOURCE");
-            Marshal.ReadByte(CurrentBitmapData.Scan0);
-            Console.WriteLine("TOUCHING END OF SOURCE");
-            Marshal.ReadByte(CurrentBitmapData.Scan0, image.Width * image.Height * 3 - 1);
-            Console.WriteLine("TOUCHING BEGINNING OF DESTINATION");
-            Marshal.ReadByte(buffer);
-            Console.WriteLine("TOUCHING END OF DESTINATION");
-            Marshal.ReadByte(buffer, image.Width * image.Height * 3 - 1);
-            Console.WriteLine("COPYING MEMORY");
+            CopyMemory(buffer, bits.Scan0, CurrentBitmap.Width * CurrentBitmap.Height * 3);
 
-            CopyMemory(buffer, CurrentBitmapData.Scan0, image.Width * image.Height * 3);
-
-            image.UnlockBits(CurrentBitmapData);
-
-            Console.WriteLine("END SANITY CHECK");
+            CurrentBitmap.UnlockBits(bits);
         }
 
         // Execute output action.
