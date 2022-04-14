@@ -54,6 +54,8 @@ CSharpVideoSource::metadata() const noexcept
 
 	neurala::dotnet::video_source::getMetadata(width, height);
 
+	fprintf(stderr, "[width = %d, height = %d]\n", width, height);
+
 	return dto::ImageMetadata(width, height, "BGR", "interleaved", "uint8");
 }
 
@@ -62,9 +64,29 @@ CSharpVideoSource::nextFrame() noexcept
 {
 	std::int32_t status;
 
+	currentFrame = dto::ImageView();
+
+	fputs("[MOVING NEXT FRAME]", stderr);
+
 	neurala::dotnet::video_source::moveNextFrame(status);
 
+	{
+		const auto frameMetadata = metadata();
+
+		imageBytes.assign(frameMetadata.width() * frameMetadata.height() * 4, std::byte(0));
+
+		const auto buffer = imageBytes.data();
+
+		fputs("[GETTING NEXT FRAME]", stderr);
+
+		neurala::dotnet::video_source::getFrame(buffer);
+
+		currentFrame = dto::ImageView(frameMetadata, buffer);
+	}
+
 	const auto error = status ? B4BError::unknown() : B4BError::ok();
+
+	fprintf(stderr, "[GOT NEXT FRAME WITH STATUS %d]\n", status);
 
 	return make_error_code(error);
 }
@@ -72,15 +94,15 @@ CSharpVideoSource::nextFrame() noexcept
 dto::ImageView
 CSharpVideoSource::frame() const noexcept
 {
+	fputs("[FETCHING CACHED FRAME]", stderr);
+
 	const auto frameMetadata = metadata();
+	const auto begin = currentFrame.dataAs<unsigned char>();
+	const auto end = begin + frameMetadata.width() * frameMetadata.height() - 1;
 
-	imageBytes.assign(frameMetadata.width() * frameMetadata.height() * 3, std::byte(0));
+	fprintf(stderr, "[first = 0x%02X, last = 0x%02X]\n", (unsigned int) *begin, (unsigned int) *end);
 
-	const auto buffer = imageBytes.data();
-
-	neurala::dotnet::video_source::getFrame(buffer);
-
-	return dto::ImageView(frameMetadata, buffer);
+	return currentFrame;
 }
 
 dto::ImageView
@@ -90,7 +112,7 @@ CSharpVideoSource::frame(std::byte* data, std::size_t capacity) const noexcept
 
 	const auto buffer = imageBytes.data();
 
-	return dto::ImageView(metadata(), buffer);
+	return currentFrame = dto::ImageView(metadata(), buffer);
 }
 
 std::error_code
