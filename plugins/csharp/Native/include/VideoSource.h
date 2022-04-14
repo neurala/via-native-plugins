@@ -45,10 +45,12 @@ public:
 class PLUGIN_API CSharpVideoSource : public VideoSource
 {
 private:
-	mutable std::vector<std::byte> imageBytes;
-	mutable dto::ImageView currentFrame;
+	// mutable std::vector<std::byte> imageBytes;
+	// mutable dto::ImageView currentFrame;
 
 public:
+	virtual ~CSharpVideoSource() noexcept;
+
 	[[nodiscard]] virtual dto::ImageMetadata metadata() const noexcept override;
 
 	[[nodiscard]] virtual std::error_code nextFrame() noexcept override;
