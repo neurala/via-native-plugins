@@ -57,4 +57,4 @@ The metadata format is described in the header file [`ResultsOutput.h`](../../st
 
 ## Integrating
 
-The directory [Managed](Managed) represents the C# portion of this .NET project. For simplicity of the sample, it has no dependencies and is intentionally bare. It can be treated like any other .NET project (including via `dotnet` of .NET Core) if you want to make use of other libraries and add dependencies of your own.
+The directory [Managed](Managed) represents the C# portion of this .NET project. For simplicity of the sample, it has no dependencies and is intentionally bare. It can be treated like any other .NET project (including via `dotnet` of .NET Core) and can be integrated into an existing (or new) Visual Studio solution.
