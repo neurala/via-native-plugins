@@ -62,6 +62,7 @@ namespace Neurala {
 
         public static void MoveNextFrame(out int status) {
             // Do nothing.
+            status = 0;
         }
 
         // Get current image frame data and copy to buffer.
