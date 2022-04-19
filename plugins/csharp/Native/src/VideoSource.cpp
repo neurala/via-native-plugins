@@ -54,8 +54,6 @@ CSharpVideoSource::metadata() const noexcept
 
 	neurala::dotnet::video_source::getMetadata(width, height);
 
-	fprintf(stderr, "[width = %d, height = %d]\n", width, height);
-
 	return dto::ImageMetadata("uint8", width, height, "BGR", "interleaved", "unknown");
 }
 

@@ -16,8 +16,6 @@ int main(int, char**)
 
 	const auto frame = videoSource.frame();
 
-	printf("Got %dx%d image.\n", frame.width(), frame.height());
-
 	videoSource.execute("(some action)");
 
 	resultOutput("(image metadata goes here)", &frame);

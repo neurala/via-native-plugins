@@ -18,15 +18,11 @@ namespace Neurala {
 
         public static string SendImage(Bitmap bitmap) {
             lock (Lock) {
-                Console.WriteLine("Waiting to send next image...");
-
                 while (CurrentBitmap != null)
                     Monitor.Wait(Lock);
 
                 CurrentBitmap = bitmap;
                 Monitor.Pulse(Lock);
-
-                Console.WriteLine("Waiting for result...");
 
                 while (Result == null)
                     Monitor.Wait(Lock);
@@ -60,8 +56,6 @@ namespace Neurala {
 
             width = image.Width;
             height = image.Height;
-
-            Console.WriteLine($"Got image metadata {width}x{height} {image.PixelFormat}.");
         }
 
         public static void MoveNextFrame(out int status) {
@@ -71,8 +65,6 @@ namespace Neurala {
 
         // Get current image frame data and copy to buffer.
         public static void GetFrame(IntPtr buffer) {
-            Console.WriteLine("Locking new bitmap data.");
-
             var image = WaitForImage();
             var bits = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
                                       ImageLockMode.ReadOnly,
