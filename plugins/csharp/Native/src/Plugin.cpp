@@ -19,6 +19,7 @@
 #include <iostream>
 #include <numeric>
 #include <system_error>
+#include <thread>
 #include <utility>
 
 #include "neurala/plugin/PluginArguments.h"
@@ -45,8 +46,6 @@ exitHere()
 extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
-	neurala::dotnet::initialize();
-
 	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
 	*status = pm.registerPlugin<neurala::CSharpVideoSource>("dotnetVideoSource", neurala::Version(1, 0));
 	if (*status != neurala::PluginStatus::success())
@@ -60,6 +59,8 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 	{
 		return nullptr;
 	}
+
+	std::thread(neurala::dotnet::initialize).detach();
 
 	return exitHere;
 }
