@@ -11,49 +11,28 @@ Put the resulting `dotnetCamera.dll` file in the Neurala Plugins directory (repr
 
 ## Extending
 
-The provided sample plugin reads image files from `C:\Images`. To extend the plugin for your use cases, replace the sample implementation in `FrameGrabber.cs` with the template below, and put your frame grabbing logic in the `GrabFrame()` method. Each time a frame is required, `GrabFrame()` will be called by Neurala code. For simplicity, this (and optionally `ResultOutput.cs`) is the only file that needs to be edited.
+To extend the plugin for your use cases, replace the sample implementation in `Program.cs` with the template below, and put your frame grabbing logic in the `Main()` method. Whenever you have a frame ready, call `VideoSource.SendImage(...)` with your frame as a `Bitmap` object. Here is an example implementation, which repeatedly reads images from the `C:\Images` directory, sends them for processing, and then reads the result.
 
 ```csharp
-public class FrameGrabber {
-    public Bitmap GrabFrame() {
-        // YOUR CODE GOES HERE
+namespace Neurala {
+    public static class Program {
+        public static void Main() {
+            var imageFiles = Directory.EnumerateFiles(@"C:\Images");
+
+            while (true) {
+                foreach (var imageFile in imageFiles) {
+                    var bitmap = new Bitmap(imageFile);
+                    var result = VideoSource.SendImage(bitmap);
+
+                    Console.WriteLine(result);
+                }
+            }
+        }
     }
 }
 ```
 
-Here is an example of a possible implementation for a frame grabber that repeatedly reads from an already-populated array of images.
-
-```csharp
-public class FrameGrabber {
-    private Bitmap[] ImageArray;
-    private Int32 CurrentIndex;
-
-    public FrameGrabber() {
-        ImageArray = SomehowLoadSomeImages();
-        CurrentIndex = 0;
-    }
-
-    public Bitmap GrabFrame() {
-        var image = ImageArray[CurrentIndex];
-
-        CurrentIndex = (CurrentIndex + 1) % ImageArray.Length;
-
-        return image;
-    }
-}
-```
-
-To retrieve results, simply replace the sample output action in `ResultOutput.cs` (which just prints the results) with your own.
-
-```csharp
-public static class ResultOutput {
-    public static void Invoke(string metadata, IntPtr imageData, int width, int height) {
-        // YOUR CODE GOES HERE
-    }
-}
-```
-
-The metadata format is described in the header file [`ResultsOutput.h`](../../stub/include/neurala/utils/ResultsOutput.h).
+Please beware that the method signature may not be changed, as it is not an actual program entry point.
 
 ## Integrating
 
