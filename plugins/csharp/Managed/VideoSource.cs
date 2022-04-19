@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace Neurala {
     public static class VideoSource {
@@ -17,11 +18,15 @@ namespace Neurala {
 
         public static string SendImage(Bitmap bitmap) {
             lock (Lock) {
+                Console.WriteLine("Waiting to send next image...");
+
                 while (CurrentBitmap != null)
                     Monitor.Wait(Lock);
 
                 CurrentBitmap = bitmap;
                 Monitor.Pulse(Lock);
+
+                Console.WriteLine("Waiting for result...");
 
                 while (Result == null)
                     Monitor.Wait(Lock);
@@ -45,7 +50,6 @@ namespace Neurala {
             lock (Lock) {
                 while (CurrentBitmap == null)
                     Monitor.Wait(Lock);
-
                 return CurrentBitmap;
             }
         }

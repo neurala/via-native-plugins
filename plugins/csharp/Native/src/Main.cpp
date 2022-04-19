@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <thread>
 
 #include "Bridge.h"
 #include "ResultOutput.h"
@@ -6,7 +7,7 @@
 
 int main(int, char**)
 {
-	neurala::dotnet::initialize();
+	std::thread(neurala::dotnet::initialize).detach();
 
 	neurala::CSharpVideoSource videoSource;
 	neurala::CSharpResultOutput resultOutput;
