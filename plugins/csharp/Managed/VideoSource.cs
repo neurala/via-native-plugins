@@ -11,9 +11,20 @@ namespace Neurala {
         private static Object Lock;
         private static Bitmap CurrentBitmap;
         private static String Result;
+        private static Int32 Timeout;
+
+        public static int FPS {
+            get {
+                return 1000 / Timeout;
+            }
+            set {
+                Timeout = 1000 / value;
+            }
+        }
 
         static VideoSource() {
             Lock = typeof(VideoSource);
+            Timeout = 1000 / 60;
         }
 
         public static string SendImage(Bitmap bitmap) {
@@ -24,10 +35,10 @@ namespace Neurala {
                 CurrentBitmap = bitmap;
                 Monitor.Pulse(Lock);
 
-                while (Result == null)
-                    Monitor.Wait(Lock);
+                if (Result == null)
+                    Monitor.Wait(Lock, Timeout);
 
-                var result = Result;
+                var result = Result ?? "";
                 Result = null;
                 return result;
             }
