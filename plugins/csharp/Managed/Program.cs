@@ -10,10 +10,10 @@ namespace Neurala {
 
             while (true) {
                 foreach (var imageFile in imageFiles) {
+                    Console.WriteLine(imageFile);
+
                     var bitmap = new Bitmap(imageFile);
                     var result = VideoSource.SendImage(bitmap);
-
-                    Console.WriteLine(result);
                 }
             }
         }

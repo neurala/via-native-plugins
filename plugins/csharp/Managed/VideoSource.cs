@@ -28,7 +28,6 @@ namespace Neurala {
                     Monitor.Wait(Lock);
 
                 var result = Result;
-                CurrentBitmap = null;
                 Result = null;
                 return result;
             }
@@ -37,7 +36,6 @@ namespace Neurala {
         internal static void PushResult(string result) {
             lock (Lock) {
                 Result = result;
-
                 Monitor.Pulse(Lock);
             }
         }
@@ -59,7 +57,11 @@ namespace Neurala {
         }
 
         public static void MoveNextFrame(out int status) {
-            // Do nothing.
+            lock (Lock) {
+                CurrentBitmap = null;
+                Monitor.Pulse(Lock);
+            }
+
             status = 0;
         }
 

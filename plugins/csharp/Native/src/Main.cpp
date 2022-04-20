@@ -12,13 +12,15 @@ int main(int, char**)
 	neurala::CSharpVideoSource videoSource;
 	neurala::CSharpResultOutput resultOutput;
 
-	videoSource.nextFrame();
+	for (int i = 0; i < 5; ++i) {
+		videoSource.nextFrame();
 
-	const auto frame = videoSource.frame();
+		const auto frame = videoSource.frame();
 
-	videoSource.execute("(some action)");
+		videoSource.execute("(some action)");
 
-	resultOutput("(image metadata goes here)", &frame);
+		resultOutput("(image metadata goes here)", &frame);
+	}
 
 	return 0;
 }
