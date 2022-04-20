@@ -26,4 +26,16 @@ CSharpResultOutput::operator()(const std::string& metadata, const dto::ImageView
 {
 	neurala::dotnet::result_output::invokeResultOutput(metadata.c_str(), image->data(), image->width(), image->height());
 }
+
+void*
+CSharpResultOutput::create(PluginArguments&, PluginErrorCallback& error)
+{
+	return new CSharpResultOutput();
+}
+
+void
+CSharpResultOutput::destroy(void* p)
+{
+	delete static_cast<CSharpResultOutput*>(p);
+}
 } // namespace neurala

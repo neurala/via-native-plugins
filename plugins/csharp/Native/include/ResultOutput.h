@@ -19,7 +19,12 @@
 #ifndef NEURALA_CSHARP_RESULTS_OUTPUT_H
 #define NEURALA_CSHARP_RESULTS_OUTPUT_H
 
+#include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginBindings.h"
+#include "neurala/plugin/PluginErrorCallback.h"
+#include "neurala/plugin/PluginManager.h"
+#include "neurala/plugin/PluginStatus.h"
+#include "neurala/utils/Version.h"
 #include "neurala/utils/ResultsOutput.h"
 
 namespace neurala
@@ -28,6 +33,9 @@ class PLUGIN_API CSharpResultOutput : public ResultsOutput
 {
 public:
 	virtual void operator()(const std::string& metadata, const dto::ImageView* image) noexcept override;
+
+	static void* create(PluginArguments&, PluginErrorCallback&);
+	static void destroy(void* p);
 };
 } // namespace neurala
 

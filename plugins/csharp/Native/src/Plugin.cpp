@@ -31,6 +31,7 @@
 #include "neurala/video/dto/CameraInfo.h"
 
 #include "Bridge.h"
+#include "ResultOutput.h"
 #include "VideoSource.h"
 
 namespace
@@ -55,6 +56,13 @@ initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 
 	*status = pm.registerPlugin<neurala::CSharpCameraDiscoverer>("dotnetCameraDiscoverer",
 	                                                              neurala::Version(1, 0));
+	if (*status != neurala::PluginStatus::success())
+	{
+		return nullptr;
+	}
+
+	*status = pm.registerPlugin<neurala::CSharpResultOutput>("dotnetCameraOutput",
+	                                                         neurala::Version(1, 0));
 	if (*status != neurala::PluginStatus::success())
 	{
 		return nullptr;
