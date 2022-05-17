@@ -11,34 +11,27 @@ namespace Neurala {
         private static Object Lock;
         private static Bitmap CurrentBitmap;
         private static String Result;
-        private static Int32 Timeout;
-
-        public static int FPS {
-            get {
-                return 1000 / Timeout;
-            }
-            set {
-                Timeout = 1000 / value;
-            }
-        }
 
         static VideoSource() {
             Lock = typeof(VideoSource);
-            Timeout = 1000 / 60;
         }
 
         public static string SendImage(Bitmap bitmap) {
             lock (Lock) {
+                // Wait until the current frame has been consumed
+                // (like when MoveNextFrame is called).
                 while (CurrentBitmap != null)
                     Monitor.Wait(Lock);
 
                 CurrentBitmap = bitmap;
                 Monitor.Pulse(Lock);
 
-                if (Result == null)
-                    Monitor.Wait(Lock, Timeout);
+                // Wait until a result has been pushed
+                // (MoveNextFrame or PushResult).
+                while (Result == null)
+                    Monitor.Wait(Lock);
 
-                var result = Result ?? "";
+                var result = Result;
                 Result = null;
                 return result;
             }
@@ -46,8 +39,11 @@ namespace Neurala {
 
         internal static void PushResult(string result) {
             lock (Lock) {
-                Result = result;
-                Monitor.Pulse(Lock);
+                if (CurrentBitmap != null) {
+                    CurrentBitmap = null;
+                    Result = result;
+                    Monitor.Pulse(Lock);
+                }
             }
         }
 
@@ -68,10 +64,7 @@ namespace Neurala {
         }
 
         public static void MoveNextFrame(out int status) {
-            lock (Lock) {
-                CurrentBitmap = null;
-                Monitor.Pulse(Lock);
-            }
+            PushResult("");
 
             status = 0;
         }

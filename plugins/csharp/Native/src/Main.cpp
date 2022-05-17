@@ -19,7 +19,7 @@ int main(int, char**)
 
 		videoSource.execute("(some action)");
 
-		resultOutput("(image metadata goes here)", &frame);
+		// resultOutput("(image metadata goes here)", &frame);
 	}
 
 	return 0;
