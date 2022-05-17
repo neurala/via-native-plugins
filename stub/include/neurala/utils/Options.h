@@ -50,6 +50,8 @@ private:
 public:
 	Options();
 
+// NOTE:2022-05-16:jgerity:Type trait usage here is unsupported by SWIG
+#ifndef SWIG
 	/**
 	 * @brief Constructs an option that maps key @p key to value @p value.
 	 *
@@ -63,6 +65,7 @@ public:
 	{
 		add(key, std::int64_t(value));
 	}
+#endif // SWIG
 
 	/// @copydoc Options(const std::string&,const T&)
 	template<class T, std::enable_if_t<std::is_same<std::decay_t<T>, bool>::value, bool> = true>
