@@ -8,49 +8,49 @@ using System.Threading;
 
 namespace Neurala {
     public static class VideoSource {
-        private static Object Lock;
+        private static Object BitmapLock;
+        private static Object ResultLock;
         private static Bitmap CurrentBitmap;
         private static String Result;
 
+        private static uint IngestedImageCount;
+        private static uint AwaitedImageCount;
+        private static uint ResultCount;
+        private static uint StateFlag;
+
         static VideoSource() {
-            Lock = typeof(VideoSource);
+            BitmapLock = new object();
+            ResultLock = new object();
         }
 
         public static string SendImage(Bitmap bitmap) {
-            lock (Lock) {
-                // Wait until the current frame has been consumed
-                // (like when MoveNextFrame is called).
-                while (CurrentBitmap != null)
-                    Monitor.Wait(Lock);
-
+            lock (BitmapLock) {
                 CurrentBitmap = bitmap;
-                Monitor.Pulse(Lock);
+                IngestedImageCount++;
+                Monitor.Pulse(BitmapLock);
+            }
 
-                // Wait until a result has been pushed
-                // (MoveNextFrame or PushResult).
-                while (Result == null)
-                    Monitor.Wait(Lock);
-
-                var result = Result;
+            lock (ResultLock) {
+                var pulsed = Monitor.Wait(ResultLock, 10000);
+                Console.WriteLine($"pulsed = {pulsed}");
+                var result = Result ?? "null";
+                ResultCount++;
                 Result = null;
                 return result;
             }
         }
 
         internal static void PushResult(string result) {
-            lock (Lock) {
-                if (CurrentBitmap != null) {
-                    CurrentBitmap = null;
-                    Result = result;
-                    Monitor.Pulse(Lock);
-                }
+            lock (ResultLock) {
+                Result = result;
+                Monitor.Pulse(ResultLock);
             }
         }
 
         private static Bitmap WaitForImage() {
-            lock (Lock) {
+            lock (BitmapLock) {
                 while (CurrentBitmap == null)
-                    Monitor.Wait(Lock);
+                    Monitor.Wait(BitmapLock);
                 return CurrentBitmap;
             }
         }
@@ -64,7 +64,12 @@ namespace Neurala {
         }
 
         public static void MoveNextFrame(out int status) {
-            PushResult("");
+            lock (BitmapLock) {
+                CurrentBitmap = null;
+
+                while (CurrentBitmap == null)
+                    Monitor.Wait(BitmapLock);
+            }
 
             status = 0;
         }
