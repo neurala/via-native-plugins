@@ -13,10 +13,6 @@ namespace Neurala {
         private static Bitmap CurrentBitmap;
         private static String Result;
 
-        private static uint IngestedImageCount;
-        private static uint AwaitedImageCount;
-        private static uint ResultCount;
-        private static uint StateFlag;
         private static bool WaitingForResult;
 
         static VideoSource() {
@@ -26,14 +22,15 @@ namespace Neurala {
         public static string SendImage(Bitmap bitmap) {
             lock (Lock) {
                 PendingBitmap = bitmap;
-                IngestedImageCount++;
                 WaitingForResult = true;
-                Monitor.Pulse(Lock);
+                Console.WriteLine($"THREAD {Thread.CurrentThread.ManagedThreadId} SENT IMAGE");
+                Monitor.PulseAll(Lock);
 
+                Console.WriteLine($"THREAD {Thread.CurrentThread.ManagedThreadId} AWAITING RESULT");
                 while (Result == null)
                     Monitor.Wait(Lock);
+                Console.WriteLine($"THREAD {Thread.CurrentThread.ManagedThreadId} GOT RESULT");
                 var result = Result;
-                ResultCount++;
                 Result = null;
                 WaitingForResult = false;
                 return result;
@@ -43,7 +40,8 @@ namespace Neurala {
         internal static void PushResult(string result) {
             lock (Lock) {
                 Result = result;
-                Monitor.Pulse(Lock);
+                Console.WriteLine($"THREAD {Thread.CurrentThread.ManagedThreadId} PUSHING RESULT");
+                Monitor.PulseAll(Lock);
             }
         }
 
@@ -57,14 +55,12 @@ namespace Neurala {
 
         public static void MoveNextFrame(out int status) {
             lock (Lock) {
-                if (WaitingForResult && PendingBitmap == null)
-                    PushResult("NULL");
+                Console.WriteLine($"THREAD {Thread.CurrentThread.ManagedThreadId} ENTERING MoveNextFrame");
                 while (PendingBitmap == null)
                     Monitor.Wait(Lock);
                 CurrentBitmap = PendingBitmap;
                 PendingBitmap = null;
-                AwaitedImageCount++;
-                Console.WriteLine($"{AwaitedImageCount}, {IngestedImageCount}");
+                Console.WriteLine($"THREAD {Thread.CurrentThread.ManagedThreadId} EXITING MoveNextFrame");
             }
 
             status = 0;
