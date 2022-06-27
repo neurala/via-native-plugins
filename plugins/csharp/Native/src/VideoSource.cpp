@@ -18,7 +18,7 @@
 
 #include <vector>
 
-#include "neurala/error/B4BError.h"
+#include "neurala/video/VideoSourceStatus.h"
 
 #include "Bridge.h"
 #include "VideoSource.h"
@@ -64,6 +64,12 @@ CSharpVideoSource::nextFrame() noexcept
 
 	neurala::dotnet::video_source::moveNextFrame(status);
 
+	if (status)
+	{
+		const auto error = VideoSourceStatus::timeout();
+		return make_error_code(error);
+	}
+
 	{
 		const auto frameMetadata = metadata();
 
@@ -76,8 +82,7 @@ CSharpVideoSource::nextFrame() noexcept
 		currentFrame = dto::ImageView(frameMetadata, buffer);
 	}
 
-	const auto error = status ? B4BError::unknown() : B4BError::ok();
-
+	const auto error = VideoSourceStatus::success();
 	return make_error_code(error);
 }
 

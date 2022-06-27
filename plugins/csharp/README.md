@@ -2,16 +2,19 @@
 
 ## Building
 
-Same as building from the root of this repository, but add `--target dotnetCamera` if you want just the plugin DLL files.
-Build in Release Mode with `--config Release` for consistently portable results.
+Either add the C# project in the `Managed` directory to an existing (or new) solution, or build the DLL directly with the following command.
+
+```
+dotnet build Managed -c Release
+```
 
 ## Usage
 
-Put the resulting `dotnetCamera.dll` file in the Neurala Plugins directory (represented by the environment variable `NEURALA_EXTRA_PLUGINS_PATH`, which defaults to `C:\ProgramData\Neurala\SDKService\Plugins`), and put `cppcli.dll` and `Managed.dll` in the SDKService installation directory (`C:\Program Files\Neurala\SDKService\bin`).
+Put the resulting `Managed.dll` in the SDKService installation directory (`C:\Program Files\Neurala\SDKService\bin`). There are also two libraries in `Precompiled`. Put `Precompiled/cppcli.dll` in the SDKService installation directory alongside `Managed.dll`, and put `Precompiled/dotnetCamera.dll` in the Neurala plugins directory (`C:\ProgramData\Neurala\SDKService\Plugins`).
 
 ## Extending
 
-To extend the plugin for your use cases, replace the sample implementation in `Program.cs` with the template below, and put your frame grabbing logic in the `Main()` method. Whenever you have a frame ready, call `VideoSource.SendImage(...)` with your frame as a `Bitmap` object. Here is an example implementation, which repeatedly reads images from the `C:\Images` directory, sends them for processing, and then reads the result.
+To extend the plugin for your use cases, replace the sample implementation in `Program.cs` with the template below, and put your frame grabbing logic in the `Main()` method. Whenever you have a frame ready, call `VideoSource.SendImage(...)` with your frame as a `Bitmap` object. Here is an example implementation, which repeatedly reads images from the `C:\Images` directory, sends them for processing, and then reads the result. Please beware that the method signature may not be changed, as it is not an actual program entry point.
 
 ```csharp
 namespace Neurala {
@@ -31,8 +34,6 @@ namespace Neurala {
     }
 }
 ```
-
-Please beware that the method signature may not be changed, as it is not an actual program entry point.
 
 ## Integrating
 
