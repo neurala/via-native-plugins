@@ -43,6 +43,12 @@ struct B4BError
 	int m_value;
 };
 
+struct B4BErrorInfo
+{
+	B4BError error;
+	std::string msg;
+};
+
 NEURALA_PUBLIC const std::error_category& b4bCategory() noexcept;
 
 /**
