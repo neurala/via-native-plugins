@@ -21,6 +21,7 @@
 
 #include "neurala/plugin/PluginBindings.h"
 
+#include "neurala/utils/ResultsOutput.h"
 #include "neurala/video/CameraDiscoverer.h"
 #include "neurala/video/VideoSource.h"
 #include "neurala/video/VideoSourceStatus.h"
@@ -38,7 +39,7 @@ public:
 	[[nodiscard]] std::vector<dto::CameraInfo> operator()() const noexcept override;
 
 	static void* create(PluginArguments&, PluginErrorCallback&);
-	static void destroy(void* p);
+	static void destroy(void*);
 };
 
 /**
@@ -73,6 +74,15 @@ public:
 
 private:
 	std::unique_ptr<std::uint8_t[]> m_frame;
+};
+
+class PLUGIN_API Output : public ResultsOutput
+{
+public:
+	void operator()(const std::string& metadata, const dto::ImageView* image) noexcept override;
+
+	static void* create(PluginArguments&, PluginErrorCallback&);
+	static void destroy(void*);
 };
 
 } // namespace plug::dummy
