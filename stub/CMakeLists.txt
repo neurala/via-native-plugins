@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.17.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(NeuralaB4B SHARED
+add_library(NeuralaB4BStub SHARED
 	src/B4BError.cpp
 	src/demangle.cpp
 	src/PluginStatus.cpp
@@ -14,7 +14,7 @@ add_library(NeuralaB4B SHARED
 	src/VideoSourceStatus.cpp)
 
 include(GenerateExportHeader)
-generate_export_header(NeuralaB4B
+generate_export_header(NeuralaB4BStub
 	BASE_NAME ""
 	PREFIX_NAME NEURALA_
 	EXPORT_MACRO_NAME PUBLIC
@@ -24,9 +24,9 @@ generate_export_header(NeuralaB4B
 	STATIC_DEFINE STATIC_LIB
 	EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/include/neurala/exports.h)
 
-target_compile_definitions(NeuralaB4B PRIVATE NeuralaB4B_EXPORTS)
+target_compile_definitions(NeuralaB4BStub PRIVATE NeuralaB4BStub_EXPORTS)
 
-target_include_directories(NeuralaB4B SYSTEM PUBLIC include ${CMAKE_BINARY_DIR}/include)
+target_include_directories(NeuralaB4BStub SYSTEM PUBLIC include ${CMAKE_BINARY_DIR}/include)
 
 # The compiler options for this stub library are part of its public interface, so it will be propagated
 # to all targets that depends on this stub by CMake.
@@ -53,8 +53,8 @@ target_include_directories(NeuralaB4B SYSTEM PUBLIC include ${CMAKE_BINARY_DIR}/
 # https://developercommunity.visualstudio.com/t/1249671
 #
 if(MSVC)
-	target_compile_options(NeuralaB4B PUBLIC /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251 /wd5104 /wd5105)
+	target_compile_options(NeuralaB4BStub PUBLIC /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251 /wd5104 /wd5105)
 endif()
 
 # Add friendly alias
-add_library(stub ALIAS NeuralaB4B)
+add_library(stub ALIAS NeuralaB4BStub)
