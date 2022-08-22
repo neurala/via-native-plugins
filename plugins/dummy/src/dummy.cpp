@@ -18,6 +18,7 @@
 
 #include "dummy.h"
 
+#include <algorithm>
 #include <iostream>
 #include <numeric>
 #include <system_error>
