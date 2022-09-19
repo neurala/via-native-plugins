@@ -76,9 +76,9 @@ Client::metadata() noexcept
 	try
 	{
 		using namespace boost::json;
-		parser json_parser;
-		json_parser.write(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()});
-		value jsonValue = json_parser.release();
+		parser jsonParser;
+		jsonParser.write(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()});
+		value jsonValue = jsonParser.release();
 
 		const object& jsonObject{jsonValue.as_object()};
 
