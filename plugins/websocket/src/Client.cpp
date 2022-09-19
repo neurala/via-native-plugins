@@ -26,7 +26,6 @@
 
 #include "websocket/Client.h"
 #include "websocket/Environment.h"
-#include <boost/algorithm/string/replace.hpp>
 
 namespace neurala::plug::ws
 {
@@ -160,8 +159,7 @@ Client::response(const std::string_view requestType,
 		{
 			request.emplace("body", std::move(body));
 		}
-		auto str = serialize(request);
-		m_stream.write(boost::asio::buffer(str));
+		m_stream.write(boost::asio::buffer(serialize(request)));
 		m_stream.read(m_buffer);
 	}
 	catch (const boost::beast::system_error& se)

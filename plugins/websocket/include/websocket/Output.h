@@ -73,8 +73,9 @@ public:
 	void operator()(const std::string& metadata, const dto::ImageView*) noexcept final
 	{
 		using namespace boost::json;
-
-		m_client.sendResult(std::move(parse(string_view{metadata.data(), metadata.size()}).as_object()));
+		parser json_parser;
+		json_parser.write(reinterpret_cast<const char*>(metadata.data()), metadata.size());
+		m_client.sendResult(std::move(json_parser.release().as_object()));
 	}
 
 private:
