@@ -26,6 +26,7 @@
 
 #include "websocket/Client.h"
 #include "websocket/Environment.h"
+#include <boost/algorithm/string/replace.hpp>
 
 namespace neurala::plug::ws
 {
@@ -76,8 +77,10 @@ Client::metadata() noexcept
 	try
 	{
 		using namespace boost::json;
-		const value jsonValue{
-		 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
+		parser json_parser;
+		json_parser.write(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()});
+		value jsonValue = json_parser.release();
+
 		const object& jsonObject{jsonValue.as_object()};
 
 		if (jsonObject.contains("format"))
@@ -157,7 +160,8 @@ Client::response(const std::string_view requestType,
 		{
 			request.emplace("body", std::move(body));
 		}
-		m_stream.write(boost::asio::buffer(serialize(request)));
+		auto str = serialize(request);
+		m_stream.write(boost::asio::buffer(str));
 		m_stream.read(m_buffer);
 	}
 	catch (const boost::beast::system_error& se)

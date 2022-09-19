@@ -116,8 +116,10 @@ Server::handleRequest(WebSocketStream& stream)
 	stream.read(buffer);
 	const net::const_buffer readBuffer{buffer.cdata()};
 	using namespace boost::json;
-	value requestValue{
-	 parse(string_view{reinterpret_cast<const char*>(readBuffer.data()), readBuffer.size()})};
+	parser json_parser;
+	json_parser.write(reinterpret_cast<const char*>(readBuffer.data()), readBuffer.size());
+	value requestValue = json_parser.release();
+
 	object& requestObject{requestValue.as_object()};
 	const string& requestType{requestObject.at("request").as_string()};
 	const RequestHandler& handler{
