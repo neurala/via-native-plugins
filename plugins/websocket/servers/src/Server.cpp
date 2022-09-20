@@ -48,12 +48,12 @@ Server::Server(const std::string_view ipAddress,
 Server::~Server()
 {
 	m_running = false;
-	m_acceptor.close();
 	for (boost::thread& session : m_sessions)
 	{
 		session.join();
 	}
-	m_thread.join();
+	m_thread.detach();
+	m_acceptor.close();
 }
 
 void

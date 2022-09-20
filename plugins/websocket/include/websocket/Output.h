@@ -74,7 +74,7 @@ public:
 	{
 		using namespace boost::json;
 		parser jsonParser;
-		jsonParser.write(reinterpret_cast<const char*>(metadata.data()), metadata.size());
+		jsonParser.write(metadata.data(), metadata.size());
 		m_client.sendResult(std::move(jsonParser.release().as_object()));
 	}
 
