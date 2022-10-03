@@ -48,12 +48,12 @@ Server::Server(const std::string_view ipAddress,
 Server::~Server()
 {
 	m_running = false;
-	m_acceptor.close();
 	for (boost::thread& session : m_sessions)
 	{
 		session.join();
 	}
-	m_thread.join();
+	m_thread.detach();
+	m_acceptor.close();
 }
 
 void
@@ -116,8 +116,10 @@ Server::handleRequest(WebSocketStream& stream)
 	stream.read(buffer);
 	const net::const_buffer readBuffer{buffer.cdata()};
 	using namespace boost::json;
-	value requestValue{
-	 parse(string_view{reinterpret_cast<const char*>(readBuffer.data()), readBuffer.size()})};
+	parser jsonParser;
+	jsonParser.write(reinterpret_cast<const char*>(readBuffer.data()), readBuffer.size());
+	value requestValue = jsonParser.release();
+
 	object& requestObject{requestValue.as_object()};
 	const string& requestType{requestObject.at("request").as_string()};
 	const RequestHandler& handler{

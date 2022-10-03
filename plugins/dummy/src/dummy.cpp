@@ -33,34 +33,31 @@
 
 namespace
 {
-int
-exitHere()
-{
-	return 0;
-}
-
 constexpr auto kSourceTypeName = "dummyVideoSource";
-
-} // namespace
+}
 
 extern "C" PLUGIN_API NeuralaPluginExitFunction
 initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
 {
 	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
-	*status = pm.registerPlugin<neurala::plug::dummy::Source>(kSourceTypeName, neurala::Version(1, 0));
-	if (*status != neurala::PluginStatus::success())
-	{
-		return nullptr;
-	}
-
 	*status = pm.registerPlugin<neurala::plug::dummy::Discoverer>("dummyDiscoverer",
 	                                                              neurala::Version(1, 0));
 	if (*status != neurala::PluginStatus::success())
 	{
 		return nullptr;
 	}
+	*status = pm.registerPlugin<neurala::plug::dummy::Source>(kSourceTypeName, neurala::Version(1, 0));
+	if (*status != neurala::PluginStatus::success())
+	{
+		return nullptr;
+	}
+	*status = pm.registerPlugin<neurala::plug::dummy::Output>("dummyOutput", neurala::Version(1, 0));
+	if (*status != neurala::PluginStatus::success())
+	{
+		return nullptr;
+	}
 
-	return exitHere;
+	return [] { return 0; };
 }
 
 namespace neurala::plug::dummy
@@ -153,6 +150,35 @@ void
 Source::destroy(void* p)
 {
 	delete static_cast<VideoSource*>(p);
+}
+
+void
+Output::operator()(const std::string& metadata, const dto::ImageView*) noexcept
+{
+	std::cout << "Received result: " << metadata << '\n';
+}
+
+void*
+Output::create(PluginArguments&, PluginErrorCallback& error)
+{
+	Output* p = nullptr;
+
+	try
+	{
+		p = new Output();
+	}
+	catch (const std::exception& e)
+	{
+		error(e.what());
+	}
+
+	return p;
+}
+
+void
+Output::destroy(void* p)
+{
+	delete static_cast<Output*>(p);
 }
 
 } // namespace neurala::plug::dummy

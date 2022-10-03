@@ -76,8 +76,10 @@ Client::metadata() noexcept
 	try
 	{
 		using namespace boost::json;
-		const value jsonValue{
-		 parse(string_view{reinterpret_cast<const char*>(buffer.data()), buffer.size()})};
+		parser jsonParser;
+		jsonParser.write(reinterpret_cast<const char*>(buffer.data()), buffer.size());
+		value jsonValue = jsonParser.release();
+
 		const object& jsonObject{jsonValue.as_object()};
 
 		if (jsonObject.contains("format"))
