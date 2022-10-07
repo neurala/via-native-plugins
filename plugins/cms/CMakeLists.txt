@@ -41,6 +41,7 @@ if(WIN32)
             INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/external;${OPENCV_INCLUDES}"
             INTERFACE_LINK_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/external"
             INTERFACE_LINK_LIBRARIES "${CMAKE_CURRENT_LIST_DIR}/external/CMSMultispectralLink.lib;CONAN_PKG::opencv")
+    file(COPY "external/CMSMultispectralLink.dll" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 endif()
 
 add_library(cms SHARED src/cms.cpp)
