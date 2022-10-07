@@ -142,7 +142,7 @@ CMSDiscoverer::destroy(void* p)
 	delete static_cast<CMSDiscoverer*>(p);
 }
 
-CMSSource::CMSSource(const dto::CameraInfo& cameraInfo, const Options& options)
+CMSSource::CMSSource()
 {
 	
 }
@@ -209,10 +209,7 @@ CMSSource::create(PluginArguments& arguments, PluginErrorCallback& error)
 
 	try
 	{
-		const auto& cameraInfo = arguments.get<0, const dto::CameraInfo>();
-		const auto& cameraOptions = arguments.get<1, const Options>();
-
-		p = new CMSSource(cameraInfo, cameraOptions);
+		p = new CMSSource();
 	}
 	catch (const std::exception& e)
 	{

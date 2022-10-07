@@ -44,7 +44,7 @@ public:
 class PLUGIN_API CMSSource : public VideoSource
 {
 public:
-	explicit CMSSource(const dto::CameraInfo& cameraInfo, const Options& cameraOptions = {});
+	explicit CMSSource();
 
 	[[nodiscard]] dto::ImageMetadata metadata() const noexcept override;
 
