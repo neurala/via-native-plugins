@@ -105,7 +105,9 @@ CMSDiscoverer::operator()() const noexcept
 	if (!multiSpectralLink)
 	{
 		multiSpectralLink = std::make_unique<cmsMultiSpectralLink>();
-		multiSpectralLink->getCmsCamera()->setFrameRate(10.0); // Make this configurable.
+		multiSpectralLink->getCmsCamera()->setFrameRate(10.0);
+		multiSpectralLink->getCmsCamera()->setGain(31.0);
+		multiSpectralLink->getCmsCamera()->setBlackLevel(-35);
 		multiSpectralLink->getCmsCamera()->setEvent(cmsEventHandler);
 
 		if (multiSpectralLink->getCmsInfos()->getSNCMS() == "")
@@ -115,7 +117,7 @@ CMSDiscoverer::operator()() const noexcept
 		}
 	}
 
-	const auto id = multiSpectralLink->getCmsInfos()->getTypeCamera().c_str();
+	const auto id = multiSpectralLink->getCmsInfos()->getTypeCamera();
 
 	std::vector<dto::CameraInfo> cameraInformation;
 	cameraInformation.emplace_back(id, "cmsVideoSource", "TOUCAN Multispectral Camera", "0");
