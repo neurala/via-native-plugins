@@ -19,8 +19,12 @@
 #include "cms.h"
 #include "cmsMultispectralLink.h"
 
+#include <cereal/archives/json.hpp>
+#include <cereal/cereal.hpp>
+
 #include <chrono>
 #include <cstdio>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -75,6 +79,26 @@ cmsEventHandler()
 
 	cmsCV.notify_all();
 }
+
+template<class Type, class Archive>
+auto deserialize(Archive& archive, const char* property) {
+	Type value;
+	archive(cereal::make_nvp(property, value));
+	return value;
+}
+
+template<class Archive>
+void load(Archive& archive, cmsMultiSpectralLink& cms)
+{
+	// cms.getCmsCamera()->setBlackLevel(deserialize<int>(archive, "blackLevel"));
+	// cms.getCmsCamera()->setExposure(deserialize<double>(archive, "exposureTime"));
+	cms.getCmsCamera()->setFrameRate(deserialize<double>(archive, "frameRate"));
+	cms.getCmsCamera()->setGain(deserialize<double>(archive, "gain"));
+	// cms.getCmsCamera()->setManufacturerSensorCorrection(deserialize<bool>(archive, "manufacturerSensorCorrection"));
+	// cms.getCmsCamera()->setPixelClock(deserialize<int>(archive, "pixelClock"));
+	// cms.getCmsCamera()->setShutter(deserialize<int>(archive, "shutterMode"));
+	// cms.getCmsCamera()->setTrigger(deserialize<int>(archive, "triggerMode"));
+}
 } // namespace
 
 extern "C" PLUGIN_API NeuralaPluginExitFunction
@@ -105,10 +129,23 @@ CMSDiscoverer::operator()() const noexcept
 	if (!multiSpectralLink)
 	{
 		multiSpectralLink = std::make_unique<cmsMultiSpectralLink>();
-		multiSpectralLink->getCmsCamera()->setFrameRate(10.0);
-		multiSpectralLink->getCmsCamera()->setGain(31.0);
-		multiSpectralLink->getCmsCamera()->setBlackLevel(-35);
+		// multiSpectralLink->getCmsCamera()->setFrameRate(10.0);
+		// multiSpectralLink->getCmsCamera()->setGain(31.0);
+		// multiSpectralLink->getCmsCamera()->setBlackLevel(-35);
 		multiSpectralLink->getCmsCamera()->setEvent(cmsEventHandler);
+
+		try
+		{
+			std::ifstream file("NeuralaCMSOverrides.json");
+			cereal::JSONInputArchive archive(file);
+			load(archive, *multiSpectralLink);
+		}
+		catch (const std::exception& e)
+		{
+			const auto error = e.what();
+			puts(error);
+			return std::vector<dto::CameraInfo>();
+		}
 
 		if (multiSpectralLink->getCmsInfos()->getSNCMS() == "")
 		{
