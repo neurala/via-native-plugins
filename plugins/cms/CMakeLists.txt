@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.17.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# For pulling in third party dependencies.
 include(conan)
 
 # Default to Release, including the case of RelWithDebInfo.
@@ -11,6 +12,7 @@ else()
     set(CONAN_BUILD_TYPE "Release")
 endif()
 
+# Pull Cereal as a JSON deserializer.
 conan_cmake_configure(
     REQUIRES
         cereal/1.3.2@
@@ -39,6 +41,9 @@ conan_basic_setup(TARGETS KEEP_PATHS NO_OUTPUT_DIRS)
 
 add_library(external::cms INTERFACE IMPORTED GLOBAL)
 
+# This project links against CMS, which depends on a fixed set of libraries and headers provided by SILIOS.
+# In order to avoid breakage, these libraries are linked against verbatim, and are provided via Dropbox.
+# Linux is not yet supported.
 if(WIN32)
     set_target_properties(external::cms
         PROPERTIES
@@ -49,18 +54,12 @@ if(WIN32)
 endif()
 
 add_library(cms SHARED src/cms.cpp)
-add_executable(cms_test src/test.cpp)
 
 target_compile_definitions(cms PRIVATE NEURALA_EXPORT_PLUGIN)
 target_include_directories(cms PUBLIC include)
 target_link_libraries(cms
     PUBLIC
         stub
-    PRIVATE
-        external::cms
-        CONAN_PKG::cereal)
-
-target_link_libraries(cms_test
     PRIVATE
         external::cms
         CONAN_PKG::cereal)
