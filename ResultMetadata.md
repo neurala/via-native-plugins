@@ -1,4 +1,4 @@
-# Inspection Logs
+# Result Metadata
 
 ## Common Fields
 
