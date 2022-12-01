@@ -15,7 +15,7 @@
 {
     "brainIndex" : 0,
     "brain" : "My Big Brain",
-    "camera" : "USB Camera 5",
+    "camera" : "USB Camera 3",
     "framesSkipped" : 0,
     "cameraFrameRates" : {
         "0" : 59.0
@@ -41,7 +41,7 @@ In addition to the common fields above, inspection logs specific to Classificati
 
 ```json
 {
-    "brainIndex" : 0,
+    "brainIndex" : 1,
     "brain" : "Art Connoisseur",
     "camera" : "USB Camera 5",
     "framesSkipped" : 0,
@@ -75,7 +75,7 @@ In addition to the fields for Classification above, results with Explainability 
 
 ```json
 {
-    "brainIndex" : 0,
+    "brainIndex" : 1,
     "brain" : "Art Connoisseur",
     "camera" : "USB Camera 5",
     "framesSkipped" : 0,
@@ -114,9 +114,9 @@ Results for this type of inspection are similar to those for Classification, exc
 
 ```json
 {
-    "brainIndex" : 0,
-    "brain" : "Art Connoisseur",
-    "camera" : "USB Camera 5",
+    "brainIndex" : 2,
+    "brain" : "Foodie",
+    "camera" : "USB Camera 7",
     "framesSkipped" : 0,
     "cameraFrameRates" : {
         "0" : 59.0
