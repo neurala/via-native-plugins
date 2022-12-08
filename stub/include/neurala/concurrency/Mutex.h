@@ -33,7 +33,7 @@ class Mutex final
 public:
 	void lock() { m_impl.lock(); }
 
-	bool tryLock() { return m_impl.try_lock(); }
+	bool try_lock() { return m_impl.try_lock(); }
 
 	void unlock() { m_impl.unlock(); }
 
