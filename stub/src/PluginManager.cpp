@@ -17,10 +17,10 @@
  */
 
 #include <algorithm>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
-#include "neurala/concurrency/Mutex.h"
 #include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginErrorCallback.h"
 #include "neurala/plugin/PluginManager.h"
@@ -33,7 +33,7 @@ namespace neurala
 std::unordered_map<std::string, PluginRegistrar::ClassMetadata> m_classes;
 
 // Protects class registry (m_classes)
-Mutex m_classesMutex;
+std::mutex m_classesMutex;
 
 // Manager version.
 constexpr Version m_version{1, 0};
@@ -62,7 +62,7 @@ registerClass(const char* name,
 			return make_error_code(PluginStatus::wrongVersion());
 		}
 
-		std::lock_guard<Mutex> lock{m_classesMutex};
+		std::lock_guard<std::mutex> lock{m_classesMutex};
 		auto it = m_classes.emplace(className,
 		                            PluginRegistrar::ClassMetadata{classConstructor, classDestructor});
 		if (!it.second)
