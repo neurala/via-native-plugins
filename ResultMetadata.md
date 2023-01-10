@@ -14,7 +14,7 @@
 ```json
 {
     "brainIndex" : 0,
-    "brain" : "My Big Brain",
+    "brain" : "Metal Scratches",
     "camera" : "USB Camera 3",
     "framesSkipped" : 0,
     "cameraFrameRates" : {
@@ -42,7 +42,7 @@ In addition to the common fields above, inspection logs specific to Classificati
 ```json
 {
     "brainIndex" : 1,
-    "brain" : "Art Connoisseur",
+    "brain" : "Food Packaging",
     "camera" : "USB Camera 5",
     "framesSkipped" : 0,
     "cameraFrameRates" : {
@@ -52,12 +52,12 @@ In addition to the common fields above, inspection logs specific to Classificati
         "0" : 9.4
     },
     "inferenceResult" : {
-        "image" : "images/paintings/ugly/Marcelle Aron.png",
+        "image" : "images/packaging/corn-overflow-to-next-container.png",
         "results" : [
             {
                 "probability" : 1.0,
                 "confidence" : 0.625,
-                "label" : "ugly"
+                "label" : "anomaly"
             }
         ]
     }
@@ -76,7 +76,7 @@ In addition to the fields for Classification above, results with Explainability 
 ```json
 {
     "brainIndex" : 1,
-    "brain" : "Art Connoisseur",
+    "brain" : "Food Packaging",
     "camera" : "USB Camera 5",
     "framesSkipped" : 0,
     "cameraFrameRates" : {
@@ -86,7 +86,7 @@ In addition to the fields for Classification above, results with Explainability 
         "0" : 9.4
     },
     "inferenceResult" : {
-        "image" : "images/paintings/ai/random-garbage.png",
+        "image" : "images/objects/rock.png",
         "results" : [
             {
                 "probability" : 1.0,
@@ -115,7 +115,7 @@ Results for this type of inspection are similar to those for Classification, exc
 ```json
 {
     "brainIndex" : 2,
-    "brain" : "Foodie",
+    "brain" : "Skittles",
     "camera" : "USB Camera 7",
     "framesSkipped" : 0,
     "cameraFrameRates" : {
@@ -125,7 +125,7 @@ Results for this type of inspection are similar to those for Classification, exc
         "0" : 9.4
     },
     "inferenceResult" : {
-        "image" : "images/paintings/ai/skittles.png",
+        "image" : "images/candy/skittles.png",
         "results" : [
             {
                 "x1": 0.125,
@@ -133,6 +133,14 @@ Results for this type of inspection are similar to those for Classification, exc
                 "x2": 0.25,
                 "y2": 0.25,
                 "id": "green",
+                "confidence": 0.625,
+            },
+            {
+                "x1": 0.625,
+                "y1": 0.625,
+                "x2": 0.75,
+                "y2": 0.75,
+                "id": "turquoise",
                 "confidence": 0.625,
             }
         ]
