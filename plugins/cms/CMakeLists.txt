@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Skip this target if the prepackaged dependencies have not been unpacked.
 if(NOT EXISTS "external/CMSMultispectralLink.dll")
-    return()
+    message(WARNING "CMS files not present. Skipping CMS plugin.")
 endif()
 
 # For pulling in third party dependencies.
