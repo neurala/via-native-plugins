@@ -90,14 +90,8 @@ auto deserialize(Archive& archive, const char* property) {
 template<class Archive>
 void load(Archive& archive, cmsMultiSpectralLink& cms)
 {
-	// cms.getCmsCamera()->setBlackLevel(deserialize<int>(archive, "blackLevel"));
-	// cms.getCmsCamera()->setExposure(deserialize<double>(archive, "exposureTime"));
 	cms.getCmsCamera()->setFrameRate(deserialize<double>(archive, "frameRate"));
 	cms.getCmsCamera()->setGain(deserialize<double>(archive, "gain"));
-	// cms.getCmsCamera()->setManufacturerSensorCorrection(deserialize<bool>(archive, "manufacturerSensorCorrection"));
-	// cms.getCmsCamera()->setPixelClock(deserialize<int>(archive, "pixelClock"));
-	// cms.getCmsCamera()->setShutter(deserialize<int>(archive, "shutterMode"));
-	// cms.getCmsCamera()->setTrigger(deserialize<int>(archive, "triggerMode"));
 }
 } // namespace
 
