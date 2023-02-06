@@ -40,6 +40,8 @@ public:
 				return "invalidParameter";
 			case B4BError::unsupportedAction():
 				return "unsupportedAction";
+			case B4BError::notFound():
+				return "notFound";
 			case B4BError::unknown():
 			default:
 				return "unknown";
