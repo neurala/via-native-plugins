@@ -19,6 +19,12 @@
 #ifndef NEURALA_GSTREAMER_PLUGIN_H
 #define NEURALA_GSTREAMER_PLUGIN_H
 
+#include <atomic>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+
+#include "neurala/image/views/dto/ImageView.h"
 #include "neurala/plugin/PluginArguments.h"
 #include "neurala/plugin/PluginBindings.h"
 #include "neurala/plugin/PluginErrorCallback.h"
@@ -29,9 +35,35 @@ namespace neurala
 {
 class GStreamerVideoSource : public VideoSource
 {
+private:
+	struct Implementation;
+
+	std::unique_ptr<Implementation> m_implementation;
+	std::mutex m_mutex;
+	std::condition_variable m_bufferReadyCondition;
+	std::condition_variable m_frameReadyCondition;
+
+	dto::ImageView m_frame;
+
+	std::size_t m_width;
+	std::size_t m_height;
+
+	bool m_bufferReady;
+	bool m_frameReady;
+	bool m_endOfStream;
+
+	bool bufferReady() const noexcept { return m_bufferReady; }
+
+	static int preroll(void* sink, GStreamerVideoSource* self);
+	static int grabFrame(void* sink, GStreamerVideoSource* self);
+
 public:
 	static void* create(PluginArguments&, PluginErrorCallback&);
 	static void destroy(void* p);
+
+	explicit GStreamerVideoSource(const char* name);
+
+	~GStreamerVideoSource() noexcept;
 
 	// Image dimension information
 	[[nodiscard]] dto::ImageMetadata metadata() const noexcept;
