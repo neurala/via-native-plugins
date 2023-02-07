@@ -145,7 +145,7 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 
 	gst_app_sink_set_callbacks(GST_APP_SINK(m_implementation->sink), &callbacks, this, NULL);
 
-	gst_bin_add_many(GST_BIN(m_implementation->pipeline), m_implementation->userPipeline, m_implementation->sink);
+	gst_bin_add_many(GST_BIN(m_implementation->pipeline), m_implementation->userPipeline, m_implementation->sink, nullptr);
 	gst_element_set_state(GST_ELEMENT(m_implementation->pipeline), GST_STATE_PLAYING);
 }
 
@@ -157,6 +157,51 @@ GStreamerVideoSource::~GStreamerVideoSource() noexcept
 	gst_object_unref(m_implementation->pipeline);
 }
 
+dto::ImageMetadata
+GStreamerVideoSource::metadata() const noexcept
+{
+	return m_frame.metadata();
+}
+
+std::error_code
+GStreamerVideoSource::nextFrame() noexcept
+{
+	const auto predicate = [this]() {
+		return m_frameReady;
+	};
+
+	{
+		std::unique_lock<decltype(m_mutex)> lock(m_mutex);
+
+		m_frameReadyCondition.wait(lock, predicate);
+		m_frameReady = false;
+		m_bufferReady = true;
+	}
+
+	m_bufferReadyCondition.notify_all();
+
+	return B4BError::ok();
+}
+
+dto::ImageView
+GStreamerVideoSource::frame() const noexcept
+{
+	return m_frame;
+}
+
+dto::ImageView
+GStreamerVideoSource::frame(std::byte*, std::size_t) const noexcept
+{
+	// Not implemented
+	return dto::ImageView();
+}
+
+std::error_code
+GStreamerVideoSource::execute(const std::string&) noexcept
+{
+	return B4BError::ok();
+}
+
 int
 GStreamerVideoSource::preroll(void*, GStreamerVideoSource* self)
 {
@@ -164,7 +209,10 @@ GStreamerVideoSource::preroll(void*, GStreamerVideoSource* self)
 		std::unique_lock<decltype(self->m_mutex)> lock(self->m_mutex);
 		self->m_bufferReady = true;
 	}
+
 	self->m_bufferReadyCondition.notify_all();
+
+	return GST_FLOW_OK;
 }
 
 int
