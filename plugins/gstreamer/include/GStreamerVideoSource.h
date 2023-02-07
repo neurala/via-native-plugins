@@ -44,6 +44,7 @@ private:
 	std::condition_variable m_frameReadyCondition;
 
 	dto::ImageView m_frame;
+	B4BError m_lastError;
 
 	std::size_t m_width;
 	std::size_t m_height;
@@ -53,6 +54,7 @@ private:
 	bool m_endOfStream;
 
 	bool bufferReady() const noexcept { return m_bufferReady; }
+	bool frameReady() const noexcept { return m_frameReady || m_endOfStream; }
 
 	static int preroll(void* sink, GStreamerVideoSource* self);
 	static int grabFrame(void* sink, GStreamerVideoSource* self);

@@ -86,7 +86,10 @@ GStreamerVideoSource::destroy(void* p)
 }
 
 GStreamerVideoSource::GStreamerVideoSource(const char* name)
- : m_implementation(std::make_unique<Implementation>())
+ : m_implementation(std::make_unique<Implementation>()),
+   m_bufferReady(false),
+   m_frameReady(false),
+   m_endOfStream(false)
 {
 	m_implementation->pipeline = gst_pipeline_new(name);
 
@@ -96,7 +99,8 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 
 		if (!userPipeline)
 		{
-			// Error
+			m_lastError = B4BError::invalidParameter();
+			return;
 		}
 
 		m_implementation->userPipeline = gst_parse_launch(userPipeline, nullptr);
@@ -113,7 +117,8 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 
 		if (!widthOption || !heightOption)
 		{
-			// Error
+			m_lastError = B4BError::invalidParameter();
+			return;
 		}
 
 		static constexpr auto ok = std::errc();
@@ -121,7 +126,8 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 		if (std::from_chars(widthOption, widthOption + strlen(widthOption), width).ec != ok
 		    || std::from_chars(heightOption, heightOption + strlen(heightOption), height).ec != ok)
 		{
-			// Error
+			m_lastError = B4BError::invalidParameter();
+			return;
 		}
 
 		m_width = width;
@@ -131,7 +137,8 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 	m_implementation->sink = gst_element_factory_make("appsink", "sink");
 	if(!m_implementation->sink)
 	{
-		// Error
+		m_lastError = B4BError::genericError();
+		return;
 	}
 
 	gst_app_sink_set_emit_signals((GstAppSink*) m_implementation->sink, true);
@@ -147,6 +154,8 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 
 	gst_bin_add_many(GST_BIN(m_implementation->pipeline), m_implementation->userPipeline, m_implementation->sink, nullptr);
 	gst_element_set_state(GST_ELEMENT(m_implementation->pipeline), GST_STATE_PLAYING);
+
+	m_lastError = B4BError::ok();
 }
 
 GStreamerVideoSource::~GStreamerVideoSource() noexcept
@@ -166,14 +175,26 @@ GStreamerVideoSource::metadata() const noexcept
 std::error_code
 GStreamerVideoSource::nextFrame() noexcept
 {
+	if (B4BError::ok() != m_lastError)
+	{
+		return m_lastError;
+	}
+
 	const auto predicate = [this]() {
-		return m_frameReady;
+		return frameReady();
 	};
 
 	{
 		std::unique_lock<decltype(m_mutex)> lock(m_mutex);
 
 		m_frameReadyCondition.wait(lock, predicate);
+
+		if (!m_frameReady)
+		{
+			// Not exactly an error, but not sure what to return here
+			return B4BError::genericError();
+		}
+
 		m_frameReady = false;
 		m_bufferReady = true;
 	}
@@ -243,7 +264,8 @@ GStreamerVideoSource::grabFrame(void* sink, GStreamerVideoSource* self)
 		}
 		else
 		{
-			// Error
+			self->m_lastError = B4BError::genericError();
+			return GST_FLOW_ERROR;
 		}
 	}
 
