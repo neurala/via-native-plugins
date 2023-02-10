@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.17.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(gstreamer SHARED src/GStreamerVideoSource.cpp)
+add_library(gstreamer OBJECT src/GStreamerVideoSource.cpp)
 target_include_directories(gstreamer PUBLIC include ../../stub/include ${CMAKE_BINARY_DIR}/include)
 
 find_package(PkgConfig REQUIRED)
@@ -20,3 +20,6 @@ target_link_libraries(gstreamer
     PkgConfig::gstreamer-sdp
     PkgConfig::gstreamer-app
     PkgConfig::gstreamer-video)
+
+add_executable(gstreamer_test src/Test.cpp)
+target_link_libraries(gstreamer_test PRIVATE gstreamer)
