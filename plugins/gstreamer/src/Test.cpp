@@ -22,7 +22,7 @@
 
 int main()
 {
-	char pipelineVariable[] = "playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm";
+	char pipelineVariable[] = "NEURALA_GSTREAMER_PIPELINE=playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm";
 	char widthVariable[] = "NEURALA_GSTREAMER_WIDTH=1920";
 	char heightVariable[] = "NEURALA_GSTREAMER_HEIGHT=1080";
 

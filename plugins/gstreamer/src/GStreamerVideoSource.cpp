@@ -141,18 +141,24 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 		return;
 	}
 
+	gst_bin_add_many(GST_BIN(m_implementation->pipeline), m_implementation->userPipeline, m_implementation->sink, nullptr);
 	gst_app_sink_set_emit_signals((GstAppSink*) m_implementation->sink, true);
 	gst_app_sink_set_drop((GstAppSink*) m_implementation->sink, true);
 	gst_app_sink_set_max_buffers((GstAppSink*) m_implementation->sink, 1);
 	gst_base_sink_set_sync((GstBaseSink*) m_implementation->sink, false);
 
+	const auto prerollCallback = [](auto sink, auto data) { return (GstFlowReturn) preroll(sink, static_cast<GStreamerVideoSource*>(data)); };
 	const auto grabFrameCallback = [](auto sink, auto data) { return (GstFlowReturn) grabFrame(sink, static_cast<GStreamerVideoSource*>(data)); };
 
-	GstAppSinkCallbacks callbacks = {nullptr, nullptr, grabFrameCallback};
+	GstAppSinkCallbacks callbacks = {nullptr, prerollCallback, grabFrameCallback};
 
-	gst_app_sink_set_callbacks(GST_APP_SINK(m_implementation->sink), &callbacks, this, NULL);
+	if (!gst_element_link(m_implementation->userPipeline, m_implementation->sink))
+	{
+		m_lastError = B4BError::genericError();
+		return;
+	}
 
-	gst_bin_add_many(GST_BIN(m_implementation->pipeline), m_implementation->userPipeline, m_implementation->sink, nullptr);
+	gst_app_sink_set_callbacks(GST_APP_SINK(m_implementation->sink), &callbacks, this, nullptr);
 	gst_element_set_state(GST_ELEMENT(m_implementation->pipeline), GST_STATE_PLAYING);
 
 	m_lastError = B4BError::ok();
