@@ -149,14 +149,19 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 
 	const auto prerollCallback = [](auto sink, auto data) { return (GstFlowReturn) preroll(sink, static_cast<GStreamerVideoSource*>(data)); };
 	const auto grabFrameCallback = [](auto sink, auto data) { return (GstFlowReturn) grabFrame(sink, static_cast<GStreamerVideoSource*>(data)); };
+	const auto padCallback = [](GstElement* element,GstPad* sourcePad, gpointer sinkElement) {
+		GstPad* sinkPad = gst_element_get_static_pad((GstElement*) sinkElement, "sink");
+		gst_pad_link(sourcePad, sinkPad);
+		gst_object_unref(sinkPad);
+	};
 
-	GstAppSinkCallbacks callbacks = {nullptr, prerollCallback, grabFrameCallback};
-
-	if (!gst_element_link(m_implementation->userPipeline, m_implementation->sink))
+	if (g_signal_connect(m_implementation->userPipeline, "pad-added", G_CALLBACK(+padCallback), m_implementation->sink) == 0)
 	{
 		m_lastError = B4BError::genericError();
 		return;
 	}
+
+	GstAppSinkCallbacks callbacks = {nullptr, prerollCallback, grabFrameCallback};
 
 	gst_app_sink_set_callbacks(GST_APP_SINK(m_implementation->sink), &callbacks, this, nullptr);
 	gst_element_set_state(GST_ELEMENT(m_implementation->pipeline), GST_STATE_PLAYING);
