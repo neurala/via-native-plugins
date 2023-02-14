@@ -141,12 +141,16 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 		return;
 	}
 
+	const auto caps = gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "BGR", NULL);
+
 	gst_bin_add_many(GST_BIN(m_implementation->pipeline), m_implementation->userPipeline, m_implementation->sink, nullptr);
 	gst_app_sink_set_emit_signals((GstAppSink*) m_implementation->sink, true);
 	gst_app_sink_set_drop((GstAppSink*) m_implementation->sink, true);
 	gst_app_sink_set_max_buffers((GstAppSink*) m_implementation->sink, 1);
 	gst_base_sink_set_sync((GstBaseSink*) m_implementation->sink, false);
-
+	gst_app_sink_set_caps((GstAppSink*) m_implementation->sink, caps);
+	gst_caps_unref(caps);
+#if false
 	const auto userPipelinePad = gst_element_get_static_pad(m_implementation->userPipeline, "src");
 	const auto sinkPad = gst_element_get_static_pad(m_implementation->sink, "sink");
 	const auto padLinkResult = gst_pad_link(userPipelinePad, sinkPad);
@@ -157,7 +161,7 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 		m_lastError = B4BError::genericError();
 		return;
 	}
-
+#endif
 	const auto prerollCallback = [](auto sink, auto data) { return (GstFlowReturn) preroll(sink, static_cast<GStreamerVideoSource*>(data)); };
 	const auto grabFrameCallback = [](auto sink, auto data) { return (GstFlowReturn) grabFrame(sink, static_cast<GStreamerVideoSource*>(data)); };
 
