@@ -147,15 +147,21 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 	gst_app_sink_set_max_buffers((GstAppSink*) m_implementation->sink, 1);
 	gst_base_sink_set_sync((GstBaseSink*) m_implementation->sink, false);
 
+	const auto userPipelinePad = gst_element_get_static_pad(m_implementation->userPipeline, "src");
+	const auto sinkPad = gst_element_get_static_pad(m_implementation->sink, "sink");
+	const auto padLinkResult = gst_pad_link(userPipelinePad, sinkPad);
+
+	if (padLinkResult)
+	{
+		printf("%d\n", (int) - padLinkResult);
+		m_lastError = B4BError::genericError();
+		return;
+	}
+
 	const auto prerollCallback = [](auto sink, auto data) { return (GstFlowReturn) preroll(sink, static_cast<GStreamerVideoSource*>(data)); };
 	const auto grabFrameCallback = [](auto sink, auto data) { return (GstFlowReturn) grabFrame(sink, static_cast<GStreamerVideoSource*>(data)); };
-	const auto padCallback = [](GstElement* element,GstPad* sourcePad, gpointer sinkElement) {
-		GstPad* sinkPad = gst_element_get_static_pad((GstElement*) sinkElement, "sink");
-		gst_pad_link(sourcePad, sinkPad);
-		gst_object_unref(sinkPad);
-	};
 
-	if (g_signal_connect(m_implementation->userPipeline, "pad-added", G_CALLBACK(+padCallback), m_implementation->sink) == 0)
+	if (!gst_element_link(m_implementation->userPipeline, m_implementation->sink))
 	{
 		m_lastError = B4BError::genericError();
 		return;
