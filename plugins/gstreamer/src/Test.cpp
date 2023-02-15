@@ -22,11 +22,13 @@
 
 int main()
 {
-	char pipelineVariable[] = "NEURALA_GSTREAMER_PIPELINE=playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm";
+	char pipelineVariable[] = "NEURALA_GSTREAMER_PIPELINE=playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm ! video/x-raw,format=BGR ! videoconvert ! appsink name=mysink";
+	char sinkVariable[] = "NEURALA_GSTREAMER_SINK=mysink";
 	char widthVariable[] = "NEURALA_GSTREAMER_WIDTH=1920";
 	char heightVariable[] = "NEURALA_GSTREAMER_HEIGHT=1080";
 
 	putenv(pipelineVariable);
+	putenv(sinkVariable);
 	putenv(widthVariable);
 	putenv(heightVariable);
 	gst_init(0, nullptr);

@@ -134,13 +134,19 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 		m_height = height;
 	}
 
-	m_implementation->sink = gst_element_factory_make("appsink", "sink");
-	if(!m_implementation->sink)
 	{
-		m_lastError = B4BError::genericError();
-		return;
+		const auto sinkName = getenv("NEURALA_GSTREAMER_SINK");
+
+		m_implementation->sink = gst_bin_get_by_name(GST_BIN(m_implementation->userPipeline), sinkName);
+
+		if (!m_implementation->sink)
+		{
+			m_lastError = B4BError::genericError();
+			return;
+		}
 	}
 
+#ifdef false
 	const auto caps = gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "BGR", NULL);
 
 	gst_bin_add_many(GST_BIN(m_implementation->pipeline), m_implementation->userPipeline, m_implementation->sink, nullptr);
@@ -150,21 +156,7 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 	gst_base_sink_set_sync((GstBaseSink*) m_implementation->sink, false);
 	gst_app_sink_set_caps((GstAppSink*) m_implementation->sink, caps);
 	gst_caps_unref(caps);
-
-	const auto onNewPad = [](GstElement* source, GstPad* newPad, void* data) {
-		const auto sink = (GstElement*) data;
-		const auto sinkPad = gst_element_get_static_pad(sink, "sink");
-
-		if (gst_pad_is_linked(sinkPad))
-		{
-			return; // Somehow already linked
-		}
-
-		gst_pad_link(newPad, sinkPad);
-		gst_object_unref(newPad);
-	};
-
-	g_signal_connect(m_implementation->userPipeline, "pad-added", G_CALLBACK(+onNewPad), m_implementation->sink);
+#endif
 
 	const auto prerollCallback = [](auto sink, auto data) { return (GstFlowReturn) preroll(sink, static_cast<GStreamerVideoSource*>(data)); };
 	const auto grabFrameCallback = [](auto sink, auto data) { return (GstFlowReturn) grabFrame(sink, static_cast<GStreamerVideoSource*>(data)); };
