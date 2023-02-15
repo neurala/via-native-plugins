@@ -148,6 +148,8 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 			m_lastError = B4BError::genericError();
 			return;
 		}
+
+		gst_element_set_state(m_implementation->userPipeline, GST_STATE_PLAYING);
 	}
 
 	const auto prerollCallback = [](auto sink, auto data) { return (GstFlowReturn) preroll(sink, static_cast<GStreamerVideoSource*>(data)); };
@@ -156,7 +158,7 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 	GstAppSinkCallbacks callbacks = {nullptr, prerollCallback, grabFrameCallback};
 
 	gst_app_sink_set_callbacks(GST_APP_SINK(m_implementation->sink), &callbacks, this, nullptr);
-	gst_element_set_state(GST_ELEMENT(m_implementation->pipeline), GST_STATE_PLAYING);
+	gst_element_set_state(m_implementation->pipeline, GST_STATE_PLAYING);
 
 	m_lastError = B4BError::ok();
 }
