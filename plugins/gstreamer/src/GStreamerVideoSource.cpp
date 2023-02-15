@@ -150,18 +150,6 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 		}
 	}
 
-#ifdef false
-	const auto caps = gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "BGR", NULL);
-
-	gst_bin_add_many(GST_BIN(m_implementation->pipeline), m_implementation->userPipeline, m_implementation->sink, nullptr);
-	gst_app_sink_set_emit_signals((GstAppSink*) m_implementation->sink, true);
-	gst_app_sink_set_drop((GstAppSink*) m_implementation->sink, true);
-	gst_app_sink_set_max_buffers((GstAppSink*) m_implementation->sink, 1);
-	gst_base_sink_set_sync((GstBaseSink*) m_implementation->sink, false);
-	gst_app_sink_set_caps((GstAppSink*) m_implementation->sink, caps);
-	gst_caps_unref(caps);
-#endif
-
 	const auto prerollCallback = [](auto sink, auto data) { return (GstFlowReturn) preroll(sink, static_cast<GStreamerVideoSource*>(data)); };
 	const auto grabFrameCallback = [](auto sink, auto data) { return (GstFlowReturn) grabFrame(sink, static_cast<GStreamerVideoSource*>(data)); };
 
