@@ -137,7 +137,11 @@ GStreamerVideoSource::GStreamerVideoSource(const char* name)
 	{
 		const auto sinkName = getenv("NEURALA_GSTREAMER_SINK");
 
-		m_implementation->sink = gst_bin_get_by_name(GST_BIN(m_implementation->userPipeline), sinkName);
+		GstBin* bin;
+
+		g_object_get(m_implementation->userPipeline, "video-sink", &bin, nullptr);
+
+		m_implementation->sink = gst_bin_get_by_name(GST_BIN(bin), sinkName);
 
 		if (!m_implementation->sink)
 		{
