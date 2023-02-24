@@ -22,18 +22,16 @@
 
 int main()
 {
-	char pipelineVariable[] = "NEURALA_GSTREAMER_PIPELINE=playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm video-sink=\"videoconvert ! video/x-raw,format=RGB,width=320,height=240 ! appsink name=mysink\"";
-	char sinkVariable[] = "NEURALA_GSTREAMER_SINK=mysink";
+	char pipelineVariable[] = "NEURALA_GSTREAMER_PIPELINE=playbin uri=https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm video-sink=\"videoconvert ! video/x-raw,format=RGB,width=320,height=240 ! appsink name=neurala_appsink\"";
 	char widthVariable[] = "NEURALA_GSTREAMER_WIDTH=320";
 	char heightVariable[] = "NEURALA_GSTREAMER_HEIGHT=240";
 
 	putenv(pipelineVariable);
-	putenv(sinkVariable);
 	putenv(widthVariable);
 	putenv(heightVariable);
 	gst_init(0, nullptr);
 
-	neurala::GStreamerVideoSource videoSource("Test");
+	neurala::GStreamerVideoSource videoSource;
 
 	for (auto i = 0; i < 16; ++i)
 	{
