@@ -76,7 +76,7 @@ GStreamerVideoSource::create(PluginArguments&, PluginErrorCallback&)
 	{
 		gst_init(0, NULL);
 	}
-	return new GStreamerVideoSource("PLACEHOLDER");
+	return new GStreamerVideoSource();
 }
 
 void
@@ -85,13 +85,13 @@ GStreamerVideoSource::destroy(void* p)
 	delete static_cast<GStreamerVideoSource*>(p);
 }
 
-GStreamerVideoSource::GStreamerVideoSource(const char* name)
+GStreamerVideoSource::GStreamerVideoSource()
  : m_implementation(std::make_unique<Implementation>()),
    m_bufferReady(false),
    m_frameReady(false),
    m_endOfStream(false)
 {
-	m_implementation->pipeline = gst_pipeline_new(name);
+	m_implementation->pipeline = gst_pipeline_new("Neurala GStreamer Video Source");
 
 	{
 		const auto parser = gst_parse_context_new();

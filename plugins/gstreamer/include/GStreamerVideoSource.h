@@ -63,7 +63,7 @@ public:
 	static void* create(PluginArguments&, PluginErrorCallback&);
 	static void destroy(void* p);
 
-	explicit GStreamerVideoSource(const char* name);
+	explicit GStreamerVideoSource();
 
 	~GStreamerVideoSource() noexcept;
 
