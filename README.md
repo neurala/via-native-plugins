@@ -4,7 +4,7 @@
 
 ### Prerequisites :
 - [CMake](https://cmake.org/download/#latest) is required to configure the sample plugins and the stub library
-- [Conan](https://github.com/conan-io/conan/releases/latest/download/conan-win-64.exe) is used to download external dependencies for the plugin samples
+- [Conan < 2.0](https://github.com/conan-io/conan/releases/latest/download/conan-win-64.exe) is used to download external dependencies for some of the plugin samples (such as WebSocket). **Conan 2 is currently not supported, use the latest 1.xx**.
 - The compilation environment should be using the latest [Visual Studio 2019 Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019)
 
 ### Usage (Visual Studio):
