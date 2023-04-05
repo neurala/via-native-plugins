@@ -28,7 +28,7 @@ conan_cmake_install(
 	PATH_OR_REFERENCE .
 	UPDATE
 	REMOTE
-		conancenter
+		${CONAN_CENTER} # Parsed from conan remote list in parent scope
 	BUILD
 		missing
 	SETTINGS
