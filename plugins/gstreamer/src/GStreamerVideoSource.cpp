@@ -22,7 +22,24 @@
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
 
+#include <neurala/plugin/PluginBindings.h>
+#include <neurala/plugin/PluginManager.h>
+#include <neurala/plugin/PluginStatus.h>
+
 #include "GStreamerVideoSource.h"
+
+extern "C" PLUGIN_API NeuralaPluginExitFunction
+initMe(NeuralaPluginManager* pluginManager, std::error_code* status)
+{
+	auto& pm = *dynamic_cast<neurala::PluginRegistrar*>(pluginManager);
+	*status = pm.registerPlugin<neurala::GStreamerVideoSource>("GStreamerVideoSource",
+	                                                           neurala::Version(1, 0));
+	if (*status != neurala::PluginStatus::success())
+	{
+		return nullptr;
+	}
+	return [] { return 0; };
+}
 
 namespace neurala
 {
