@@ -137,9 +137,9 @@ GStreamerVideoSource::GStreamerVideoSource()
 	{
 		GstBin* bin;
 
-		g_object_get(m_implementation->userPipeline, "video-sink", &bin, nullptr);
+		// g_object_get(m_implementation->userPipeline, "video-sink", &bin, nullptr);
 
-		m_implementation->sink = gst_bin_get_by_name(GST_BIN(bin), "neurala_appsink");
+		m_implementation->sink = gst_bin_get_by_name(GST_BIN(m_implementation->userPipeline), "neurala_appsink");
 
 		if (!m_implementation->sink)
 		{
