@@ -36,6 +36,7 @@ To implement your own plugin, the following steps are recommended:
 
 1. Copy the `plugins/empty` plugin in a new folder inside `plugins`
 2. In `plugins/CMakeLists.txt` add a new entry for your directory
+   > If on Unix, where it is common to have the `lib` prefix, disable it with `set_target_properties(your_library PROPERTIES PREFIX "")`
 3. Rename the targets and files in your new directory
 4. Implement your business logic. We recommend adding your source files in the `src` folder, then edit the `CMakeLists.txt`
    to add the new files to the build system. Header files can go in the `include` directory, which is added to the compiler

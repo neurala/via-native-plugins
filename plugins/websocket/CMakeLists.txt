@@ -43,6 +43,8 @@ add_library(websocket SHARED
 	src/InitMe.cpp
 	src/Input.cpp)
 
+set_target_properties(websocket PROPERTIES PREFIX "")
+
 target_compile_definitions(websocket PRIVATE NEURALA_EXPORT_PLUGIN)
 
 target_include_directories(websocket PUBLIC include)
