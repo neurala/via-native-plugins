@@ -46,9 +46,6 @@ private:
 	dto::ImageView m_frame;
 	B4BError m_lastError;
 
-	std::size_t m_width;
-	std::size_t m_height;
-
 	bool m_bufferReady;
 	bool m_frameReady;
 	bool m_endOfStream;

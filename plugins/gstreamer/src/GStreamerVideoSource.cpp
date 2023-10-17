@@ -126,32 +126,6 @@ GStreamerVideoSource::GStreamerVideoSource()
 	}
 
 	{
-		long width;
-		long height;
-
-		const auto widthOption = getenv("NEURALA_GSTREAMER_WIDTH");
-		const auto heightOption = getenv("NEURALA_GSTREAMER_HEIGHT");
-
-		if (!widthOption || !heightOption)
-		{
-			m_lastError = B4BError::invalidParameter();
-			return;
-		}
-
-		static constexpr auto ok = std::errc();
-
-		if (std::from_chars(widthOption, widthOption + strlen(widthOption), width).ec != ok
-		    || std::from_chars(heightOption, heightOption + strlen(heightOption), height).ec != ok)
-		{
-			m_lastError = B4BError::invalidParameter();
-			return;
-		}
-
-		m_width = width;
-		m_height = height;
-	}
-
-	{
 		GstBin* bin;
 
 		// g_object_get(m_implementation->userPipeline, "video-sink", &bin, nullptr);
@@ -289,8 +263,19 @@ GStreamerVideoSource::grabFrame(void* sink, GStreamerVideoSource* self)
 		}
 	}
 
+	const auto caps = gst_sample_get_caps(sample);
+	const auto structure = gst_caps_get_structure(caps, 0);
+
+	auto width = 0U;
+	auto height = 0U;
+
+	// TODO
+	// Test that these actually succeed in various scenarios.
+	gst_structure_get_uint(structure, "width", &width);
+	gst_structure_get_uint(structure, "height", &height);
+
 	self->m_implementation->sample = std::make_unique<Sample>(sample);
-	self->m_frame = self->m_implementation->sample->imageView(self->m_width, self->m_height);
+	self->m_frame = self->m_implementation->sample->imageView(width, height);
 	self->m_frameReady = true;
 	self->m_bufferReady = false;
 	self->m_frameReadyCondition.notify_all();
