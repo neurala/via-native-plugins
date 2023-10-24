@@ -141,6 +141,38 @@ GStreamerVideoSource::GStreamerVideoSource()
 		gst_element_set_state(m_implementation->userPipeline, GST_STATE_PLAYING);
 	}
 
+	{
+		const auto probeStreamSize = [](GstPad* pad, GstPadProbeInfo* info, gpointer user_data) -> GstPadProbeReturn {
+			const auto event = GST_PAD_PROBE_INFO_EVENT(info);
+
+			if (GST_EVENT_TYPE(event) == GST_EVENT_CAPS) {
+				GstCaps* caps;
+
+				const auto self = static_cast<GStreamerVideoSource*>(user_data);
+
+				gst_event_parse_caps(event, &caps);
+
+				const auto s = gst_caps_get_structure(caps, 0);
+
+				int width;
+				int height;
+
+				gst_structure_get_int(s, "width", &width);
+				gst_structure_get_int(s, "height", &height);
+
+				self->m_width = static_cast<unsigned int>(width);
+				self->m_height = static_cast<unsigned int>(height);
+			}
+
+			return GST_PAD_PROBE_OK;
+		};
+
+		const auto pad = gst_element_get_static_pad(m_implementation->sink, "sink");
+
+		gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_EVENT_BOTH, probeStreamSize, this, nullptr);
+		gst_object_unref(pad);
+	}
+
 	const auto prerollCallback = [](auto sink, auto data) { return (GstFlowReturn) preroll(sink, static_cast<GStreamerVideoSource*>(data)); };
 	const auto grabFrameCallback = [](auto sink, auto data) { return (GstFlowReturn) grabFrame(sink, static_cast<GStreamerVideoSource*>(data)); };
 
@@ -266,16 +298,8 @@ GStreamerVideoSource::grabFrame(void* sink, GStreamerVideoSource* self)
 	const auto caps = gst_sample_get_caps(sample);
 	const auto structure = gst_caps_get_structure(caps, 0);
 
-	auto width = 0U;
-	auto height = 0U;
-
-	// TODO
-	// Test that these actually succeed in various scenarios.
-	gst_structure_get_uint(structure, "width", &width);
-	gst_structure_get_uint(structure, "height", &height);
-
 	self->m_implementation->sample = std::make_unique<Sample>(sample);
-	self->m_frame = self->m_implementation->sample->imageView(width, height);
+	self->m_frame = self->m_implementation->sample->imageView(self->m_width, self->m_height);
 	self->m_frameReady = true;
 	self->m_bufferReady = false;
 	self->m_frameReadyCondition.notify_all();
