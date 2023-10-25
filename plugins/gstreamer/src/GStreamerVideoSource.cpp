@@ -105,8 +105,7 @@ GStreamerVideoSource::destroy(void* p)
 GStreamerVideoSource::GStreamerVideoSource()
  : m_implementation(std::make_unique<Implementation>()),
    m_bufferReady(false),
-   m_frameReady(false),
-   m_endOfStream(false)
+   m_streamState(EStreamState::waitingForFrame)
 {
 	m_implementation->pipeline = gst_pipeline_new("Neurala GStreamer Video Source");
 
@@ -215,13 +214,13 @@ GStreamerVideoSource::nextFrame() noexcept
 
 		m_frameReadyCondition.wait(lock, predicate);
 
-		if (!m_frameReady)
+		if (m_streamState != EStreamState::frameReady)
 		{
 			// Not exactly an error, but not sure what to return here
 			return B4BError::genericError();
 		}
 
-		m_frameReady = false;
+		m_streamState = EStreamState::waitingForFrame;
 		m_bufferReady = true;
 	}
 
@@ -286,7 +285,7 @@ GStreamerVideoSource::grabFrame(void* sink, GStreamerVideoSource* self)
 		{
 			{
 				std::unique_lock<decltype(self->m_mutex)> lock(self->m_mutex);
-				self->m_endOfStream = true;
+				self->m_streamState = EStreamState::endOfStream;
 			}
 			self->m_frameReadyCondition.notify_all();
 			return GST_FLOW_OK;
@@ -301,10 +300,15 @@ GStreamerVideoSource::grabFrame(void* sink, GStreamerVideoSource* self)
 	const auto caps = gst_sample_get_caps(sample);
 	const auto structure = gst_caps_get_structure(caps, 0);
 
-	self->m_implementation->sample = std::make_unique<Sample>(sample);
-	self->m_frame = self->m_implementation->sample->imageView(self->m_width, self->m_height);
-	self->m_frameReady = true;
-	self->m_bufferReady = false;
+	{
+		std::unique_lock<decltype(m_mutex)> lock(self->m_mutex);
+
+		self->m_implementation->sample = std::make_unique<Sample>(sample);
+		self->m_frame = self->m_implementation->sample->imageView(self->m_width, self->m_height);
+		self->m_streamState = EStreamState::frameReady;
+		self->m_bufferReady = false;
+	}
+
 	self->m_frameReadyCondition.notify_all();
 
 	return GST_FLOW_OK;

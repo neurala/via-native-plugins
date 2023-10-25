@@ -36,6 +36,13 @@ namespace neurala
 class GStreamerVideoSource : public VideoSource
 {
 private:
+	enum class EStreamState : unsigned char
+	{
+		waitingForFrame,
+		frameReady,
+		endOfStream
+	};
+
 	struct Implementation;
 
 	std::unique_ptr<Implementation> m_implementation;
@@ -49,12 +56,12 @@ private:
 	unsigned int m_width;
 	unsigned int m_height;
 
+	EStreamState m_streamState;
+
 	bool m_bufferReady;
-	bool m_frameReady;
-	bool m_endOfStream;
 
 	bool bufferReady() const noexcept { return m_bufferReady; }
-	bool frameReady() const noexcept { return m_frameReady || m_endOfStream; }
+	bool frameReady() const noexcept { return static_cast<int>(m_streamState) != 0; }
 
 	static int preroll(void* sink, GStreamerVideoSource* self);
 	static int grabFrame(void* sink, GStreamerVideoSource* self);
