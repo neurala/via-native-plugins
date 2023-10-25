@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Build the plugin
 add_library(dummy SHARED src/dummy.cpp)
+set_target_properties(dummy PROPERTIES PREFIX "")
 target_compile_definitions(dummy PRIVATE NEURALA_EXPORT_PLUGIN)
 target_include_directories(dummy PUBLIC include)
 target_link_libraries(dummy stub)

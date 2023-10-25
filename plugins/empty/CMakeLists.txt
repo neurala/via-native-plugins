@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Build the plugin
 add_library(empty SHARED src/initme.cpp)
+set_target_properties(empty PROPERTIES PREFIX "")
 target_compile_definitions(empty PRIVATE NEURALA_EXPORT_PLUGIN)
 target_include_directories(empty PUBLIC include)
 target_link_libraries(empty stub)

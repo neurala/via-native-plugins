@@ -59,7 +59,7 @@ if(WIN32)
 endif()
 
 add_library(cms SHARED src/cms.cpp)
-
+set_target_properties(cms PROPERTIES PREFIX "")
 target_compile_definitions(cms PRIVATE NEURALA_EXPORT_PLUGIN)
 target_include_directories(cms PUBLIC include)
 target_link_libraries(cms
