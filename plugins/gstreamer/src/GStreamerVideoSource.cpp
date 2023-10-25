@@ -237,10 +237,13 @@ GStreamerVideoSource::frame() const noexcept
 }
 
 dto::ImageView
-GStreamerVideoSource::frame(std::byte*, std::size_t) const noexcept
+GStreamerVideoSource::frame(std::byte* bytes, std::size_t size) const noexcept
 {
-	// Not implemented
-	return dto::ImageView();
+	const auto width = m_frame.width();
+	const auto height = m_frame.height();
+	size = std::min(width * height, size);
+	memcpy(bytes, m_frame.data(), size);
+	return dto::ImageView(m_frame.metadata(), bytes);
 }
 
 std::error_code
