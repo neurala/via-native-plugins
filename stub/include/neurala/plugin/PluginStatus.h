@@ -23,6 +23,7 @@
 
 #include "neurala/exports.h"
 #include "neurala/plugin/PluginBindings.h"
+#include "neurala/plugin/PluginStatus.h"
 
 namespace neurala
 {
@@ -36,6 +37,8 @@ struct PluginStatus final
 	static constexpr PluginStatus wrongVersion() { return {2}; }
 	static constexpr PluginStatus invalidName() { return {3}; }
 	static constexpr PluginStatus alreadyRegistered() { return {4}; }
+	static constexpr PluginStatus notFound() { return {5}; }
+	static constexpr PluginStatus initializationFailed() { return {6}; }
 
 	constexpr operator int() const noexcept { return m_value; }
 
