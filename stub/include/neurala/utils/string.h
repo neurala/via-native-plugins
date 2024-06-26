@@ -19,6 +19,7 @@
 #ifndef NEURALA_UTILS_STRING_H
 #define NEURALA_UTILS_STRING_H
 
+#include <algorithm>
 #include <cstring>
 #include <iomanip>
 #include <istream>
@@ -304,6 +305,37 @@ void
 split(const std::string& word, const char sep, Output&& output)
 {
 	detail::split(word, sep, std::forward<Output>(output));
+}
+
+namespace detail
+{
+char
+toLower(char ch)
+{
+	return static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+}
+
+char
+toUpper(char ch)
+{
+	return static_cast<char>(std::toupper(static_cast<unsigned char>(ch)));
+}
+} // namespace detail
+
+std::string
+toLowerCase(const std::string& str)
+{
+	std::string result{str};
+	std::transform(result.begin(), result.end(), result.begin(), detail::toLower);
+	return result;
+}
+
+std::string
+toUpperCase(const std::string& str)
+{
+	std::string result{str};
+	std::transform(result.begin(), result.end(), result.begin(), detail::toUpper);
+	return result;
 }
 
 } // namespace neurala
