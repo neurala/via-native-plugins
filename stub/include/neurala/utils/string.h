@@ -309,20 +309,20 @@ split(const std::string& word, const char sep, Output&& output)
 
 namespace detail
 {
-char
+inline char
 toLower(char ch)
 {
 	return static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
 }
 
-char
+inline char
 toUpper(char ch)
 {
 	return static_cast<char>(std::toupper(static_cast<unsigned char>(ch)));
 }
 } // namespace detail
 
-std::string
+NEURALA_PUBLIC inline std::string
 toLowerCase(const std::string& str)
 {
 	std::string result{str};
@@ -330,7 +330,7 @@ toLowerCase(const std::string& str)
 	return result;
 }
 
-std::string
+NEURALA_PUBLIC inline std::string
 toUpperCase(const std::string& str)
 {
 	std::string result{str};
