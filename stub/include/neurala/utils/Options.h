@@ -115,6 +115,9 @@ public:
 	/// @copydoc add(const std::string&,bool)
 	Options& add(const std::string& key, const std::string& value);
 
+	/// @copydoc add(const std::string&,bool)
+	Options& add(const std::string& key, const char* value);
+
 	/**
 	 * @brief Returns the option associated with key @p key as a @c bool.
 	 */
