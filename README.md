@@ -2,28 +2,29 @@
 
 ## Building
 
-### Prerequisites :
-- [CMake](https://cmake.org/download/#latest) is required to configure the sample plugins and the stub library
-- [Conan < 2.0](https://github.com/conan-io/conan/releases/latest/download/conan-win-64.exe) is used to download external dependencies for some of the plugin samples (such as WebSocket). **Conan 2 is currently not supported, use the latest 1.xx**.
-- The compilation environment should be using the latest [Visual Studio 2019 Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019)
+### Prerequisites
+- [CMake](https://cmake.org/download/#latest) is required to configure the sample plugins and the stub library.
+- Conan < 2.0 is used to download external dependencies for some of the plugin samples (such as WebSocket). **Conan 2 is currently not supported, use the latest 1.xx.**
+  - On Windows, either use [the installer](https://github.com/conan-io/conan/releases/latest/download/conan-win-64.exe) or install using `pip install conan==1.xx` (where `xx` is the latest available version of Conan 1).
+  - On Linux, either install [a package](https://github.com/conan-io/conan/releases/download/1.64.1/conan-ubuntu-64.deb) (this one is specific to Ubuntu) or install using `pip` as shown above.
+- The compilation environment should be using the latest [Visual Studio 2019 Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019) (if using Windows) or GCC 10 (if using Linux).
 
-### Usage (Visual Studio):
-
+### Usage (Visual Studio)
 Visual Studio [supports CMake projects by default](https://docs.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-160), you should just have to open the directory as a new project, and configure it as you see fit.
-### Usage (command line):
 
-From a developer shell, navigate to this project directory then type:
+### Usage (command line)
+From a developer shell (Windows) or a regular terminal (Linux), navigate to this project directory then type:
 
 ```
-cmake -S"." -B"build" -GNinja ..
+cmake -S"." -B"build" -GNinja
 cmake --build build
 ```
 
-> Note: `ninja` is only one of CMake generator options, it is installed along with CMake tool by Visual Studio Installer. We recommend it, but you may choose to use
-  The visual studio generator instead (based on MSBuild, run `cmake --help` for a full list).
+> Note: `Ninja` is only one of the possible CMake generator options. It is installed along with CMake tool by the Visual Studio installer. We recommend it, but you may choose to use
+  The Visual Studio generator instead (based on MSBuild, run `cmake --help` for a full list).
 
 ## Testing
-Basic functional tests in the example plugins are implemented using Boost.Test. The test executables can be run using `bin/<plugin>_tests.exe`.
+Basic functional tests in the example plugins are implemented using Boost.Test. The test executables can be run using `build\bin\<plugin>_tests.exe` (Windows) or `build/bin/<plugin>_tests` (Linux).
 All generated DLLs and executables (such as the SDK stub library and plugins) are generated in the same directory.
 
 ## Writing a plugin
@@ -42,9 +43,11 @@ To implement your own plugin, the following steps are recommended:
    to add the new files to the build system. Header files can go in the `include` directory, which is added to the compiler
    include directories path.
 5. Test your plugin by adding the appropriate files in the `test` directory then adding the source files in the `CMakeLists.txt`.
-6. Deploy your plugin by copying the newly compiled DLL in your VIA installation custom plugin folder
-   (environment variable `NEURALA_EXTRA_PLUGINS_PATH`, defaulted to `C:\ProgramData\Neurala\SDKService\Plugins`)
-   > If your plugin is not detected by Inspector, restart the Neurala SDKService from Windows' Services panel.
+6. Deploy your plugin by copying the newly compiled DLL in your VIA installation custom plugin folder, which you should specify with the envirionment variable `NEURALA_EXTRA_PLUGINS_PATH`.
+  - On Windows, this defaults to `C:\ProgramData\Neurala\SDKService\Plugins`.
+  - On Linux there is no default location for extra plugins (plugins are still loaded at SDKService's own library path at `/opt/Neurala/SDKService/lib`).
+
+> If your plugin is not detected by Inspector, restart the Neurala SDKService from Windows' Services panel.
 
 More information on the interfaces can be found in the headers of the stub library. The interface headers are:
 - [`VideoSource`](https://github.com/neurala/via-native-plugins/blob/main/stub/include/neurala/video/VideoSource.h)
