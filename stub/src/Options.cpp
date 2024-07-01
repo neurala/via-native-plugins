@@ -162,6 +162,13 @@ Options::add(const std::string& name, const std::string& value)
 	return *this;
 }
 
+Options&
+Options::add(const std::string& name, const char* value)
+{
+	m_impl->add(name, std::string{value});
+	return *this;
+}
+
 bool
 Options::asBool(const std::string& name) const
 {
