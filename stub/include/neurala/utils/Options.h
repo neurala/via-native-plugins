@@ -47,6 +47,9 @@ private:
 
 	std::unique_ptr<Impl, ImplDelete> m_impl;
 
+	template<typename T>
+	T as(const std::string& key, const T& defaultValue) const;
+
 public:
 	Options();
 
@@ -122,6 +125,21 @@ public:
 	 * @brief Returns the option associated with key @p key as a @c bool.
 	 */
 	bool asBool(const std::string& key) const;
+
+	/**
+	 * @brief Returns the option associated with key @p key.
+	 * if it does not exist returns @p defaultValue
+	 */
+	bool asBool(const std::string& key, bool defaultValue) const;
+
+	/// @copydoc asBool(const std::string&, bool)
+	std::int64_t asInt(const std::string& key, std::int64_t defaultValue) const;
+
+	/// @copydoc asBool(const std::string&, bool)
+	double asDouble(const std::string& key, double defaultValue) const;
+
+	/// @copydoc asBool(const std::string&, bool)
+	std::string asString(const std::string& key, const std::string& defaultValue) const;
 
 	/**
 	 * @brief Returns the option associated with key @p key as a @c std::int64_t.
