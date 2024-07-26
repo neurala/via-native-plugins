@@ -25,7 +25,8 @@ cmake --build build
 
 ## Testing
 Basic functional tests in the example plugins are implemented using Boost.Test. The test executables can be run using `build\bin\<plugin>_tests.exe` (Windows) or `build/bin/<plugin>_tests` (Linux).
-All generated DLLs and executables (such as the SDK stub library and plugins) are generated in the same directory.
+On Windows, all generated DLLs and executables (such as the SDK stub library and plugins) are generated in the same directory.
+On Linux, executables will be generated in `build/bin`, and libraries (the SDK stub and plugins) will be generated in `build/lib`.
 
 ## Writing a plugin
 
@@ -88,7 +89,7 @@ This is intentional. The call to `metadata()` should return the expected informa
 - `ImageView frame()` must return a pointer to a buffer that remains managed by the plugin until the next call to `nextFrame()`.
 - `ImageView frame(std::byte*, std::size_t)` specifies the address to which frame data must be copied and the capacity of the memory block expressed in bytes. Lifetime is afterwards handled by the SDK.
 
-### What is the `stub` library ? Why do I need to link against it ?
+### What is the `stub` library? Why do I need to link against it?
 
 The stub library in `/stub` is automatically generated from the current production libraries to provide the subset of symbols required to build a plugin, link and test it without having a complete VIA installation during development.
 
