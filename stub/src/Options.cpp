@@ -193,6 +193,38 @@ Options::asString(const std::string& name) const
 	return m_impl->as<std::string>(name);
 }
 
+template<typename T>
+T
+Options::as(const std::string& key, const T& defaultValue) const
+{
+	const T* ptr = m_impl->tryAs<T>(key);
+	return ptr == nullptr ? defaultValue : *ptr;
+}
+
+bool
+Options::asBool(const std::string& key, bool defaultValue) const
+{
+	return as(key, defaultValue);
+}
+
+std::int64_t
+Options::asInt(const std::string& key, std::int64_t defaultValue) const
+{
+	return as(key, defaultValue);
+}
+
+double
+Options::asDouble(const std::string& key, double defaultValue) const
+{
+	return as(key, defaultValue);
+}
+
+std::string
+Options::asString(const std::string& key, const std::string& defaultValue) const
+{
+	return as(key, defaultValue);
+}
+
 const bool*
 Options::tryAsBool(const std::string& name) const
 {
