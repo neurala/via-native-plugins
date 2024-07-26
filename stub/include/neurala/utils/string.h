@@ -338,6 +338,22 @@ toUpperCase(const std::string& str)
 	return result;
 }
 
+NEURALA_PUBLIC inline bool
+endsWith(std::string_view str, std::string_view suffix)
+{
+	return str.size() >= suffix.size()
+	       && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+template<typename Container>
+bool
+endsWithAnyOf(std::string_view str, const Container& suffixes)
+{
+	return std::any_of(std::begin(suffixes), std::end(suffixes), [&str](std::string_view suffix) {
+		return endsWith(str, suffix);
+	});
+}
+
 } // namespace neurala
 
 #endif // NEURALA_UTILS_STRING_H
