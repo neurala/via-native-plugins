@@ -21,7 +21,7 @@
 #include <cxxabi.h>
 #endif
 
-#include "neurala/meta/detail/demangle.h"
+#include "neurala/utils/demangle.h"
 
 namespace neurala
 {
