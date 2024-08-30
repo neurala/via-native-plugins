@@ -16,8 +16,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef NEURALA_META_DETAIL_DEMANGLE_H
-#define NEURALA_META_DETAIL_DEMANGLE_H
+#ifndef NEURALA_UTILS_DETAIL_DEMANGLE_H
+#define NEURALA_UTILS_DETAIL_DEMANGLE_H
 
 #include <memory>
 #include <string>
@@ -37,4 +37,4 @@ NEURALA_PUBLIC std::unique_ptr<char, void (*)(void*)> demangle(const char* name)
 
 } // namespace neurala
 
-#endif // NEURALA_META_DETAIL_DEMANGLE_H
+#endif // NEURALA_UTILS_DETAIL_DEMANGLE_H
