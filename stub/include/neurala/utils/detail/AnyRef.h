@@ -59,6 +59,11 @@ public:
 	    | (std::is_volatile<std::remove_reference_t<T>>::value ? volatileQualified : notQualified)))
 	{ }
 
+	const char* name() const noexcept
+	{
+		return m_type.name();
+	}
+
 	/**
 	 * @brief Returns if the argument is of type @p T.
 	 */

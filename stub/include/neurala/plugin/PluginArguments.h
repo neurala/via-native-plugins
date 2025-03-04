@@ -72,6 +72,11 @@ public:
 	{
 		return m_args.at(I).get<T>();
 	}
+
+	auto nameAt(std::size_t index) const noexcept
+	{
+		return m_args.at(index).name();
+	}
 };
 
 } // namespace neurala
