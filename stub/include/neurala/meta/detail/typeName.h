@@ -24,7 +24,7 @@
 #include <ostream>
 #include <stdexcept>
 
-#include "neurala/exports.h"
+#include "neurala/utils/demangle.h"
 
 namespace neurala
 {
@@ -138,6 +138,15 @@ typeName() noexcept
 #endif
 
 	return StaticString(p.data() + prefix.size(), p.size() - (prefix.size() + suffix.size()));
+}
+
+/**
+ * @brief Returns the demangled type name of @p typeInfo as a @c std::string
+ */
+inline std::string
+typeName(const std::type_info& typeInfo)
+{
+	return demangle(typeInfo.name());
 }
 
 } // namespace neurala

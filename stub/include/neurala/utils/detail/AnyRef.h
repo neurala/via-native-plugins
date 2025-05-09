@@ -24,7 +24,6 @@
 #include <typeindex>
 
 #include "neurala/exports.h"
-#include "neurala/utils/demangle.h"
 #include "neurala/meta/detail/typeName.h"
 #include "neurala/utils/string.h"
 
@@ -96,11 +95,7 @@ public:
 		if (!isOfType<T>())
 		{
 			throw std::logic_error(
-			 neurala::toString("Stored object type \"",
-			                   demangle(m_type.name()) ? demangle(m_type.name()).get() : m_type.name(),
-			                   " != \"",
-			                   typeName<T>(),
-			                   '\"'));
+			 neurala::toString("Stored object type \"", demangle(m_type.name()), " != \"", typeName<T>(), '\"'));
 		}
 
 		return unsafeGet<T>();

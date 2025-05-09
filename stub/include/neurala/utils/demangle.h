@@ -19,21 +19,20 @@
 #ifndef NEURALA_UTILS_DETAIL_DEMANGLE_H
 #define NEURALA_UTILS_DETAIL_DEMANGLE_H
 
-#include <memory>
 #include <string>
+#include <string_view>
 
 #include "neurala/exports.h"
 
 namespace neurala
 {
 /**
- * @brief Returns the demangled name of @p name as a managed pointer to a null-terminated
- *        string.
+ * @brief Returns the demangled name of @p name as @c std::string
  *
- * @returns demangled name or an empty @c std::unique_ptr if demangling is not required or an error
- *          has occured
+ * @note If @p name cannot be demangled (e.g. already demangled), it is returned as is
+ * @note If an allocation error occurs, @c std::bad_alloc is thrown
  */
-NEURALA_PUBLIC std::unique_ptr<char, void (*)(void*)> demangle(const char* name) noexcept;
+NEURALA_PUBLIC std::string demangle(std::string_view name);
 
 } // namespace neurala
 
