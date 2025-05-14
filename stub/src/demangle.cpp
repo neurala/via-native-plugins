@@ -16,24 +16,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <cstdlib>
-#if !defined(_MSC_VER)
+#ifndef _MSC_VER
 #include <cxxabi.h>
-#endif
+#include <memory>
+#endif // !_MSC_VER
 
 #include "neurala/utils/demangle.h"
 
 namespace neurala
 {
-std::unique_ptr<char, void (*)(void*)>
-demangle(const char* name) noexcept
+std::string
+demangle(std::string_view name)
 {
-#ifndef _MSC_VER
-	return std::unique_ptr<char, void (*)(void*)>(abi::__cxa_demangle(name, nullptr, nullptr, nullptr),
-	                                              std::free);
+#ifdef _MSC_VER
+	// MSVC returns human-readable names by default
+	return std::string{name};
 #else
-	return std::unique_ptr<char, void (*)(void*)>(nullptr, std::free);
-#endif
+	int status = 0;
+	std::unique_ptr<char> result{abi::__cxa_demangle(name.data(), nullptr, nullptr, &status)};
+
+	switch (status)
+	{
+		// The demangling operation succeeded
+		case 0:
+			return std::string{result.get()};
+
+		// A memory allocation failure occurred
+		case -1:
+			throw std::bad_alloc{};
+
+		// `name` is not a valid name under the C++ ABI mangling rules
+		case -2:
+			return std::string{name};
+
+		// One of the arguments is invalid
+		case -3:
+		default:
+			return {};
+	}
+#endif // _MSC_VER
 }
 
 } // namespace neurala
