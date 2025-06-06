@@ -35,7 +35,14 @@ target_include_directories(NeuralaB4B SYSTEM PUBLIC include ${CMAKE_BINARY_DIR}/
 # /permissive- :  disables permissive behaviors, and sets the /Zc compiler options for strict conformance.
 # /Zc:preprocessor : Use the new conforming preprocessor (off by default, except in C11/C17).
 # /Zc:__cplusplus : Enable the __cplusplus macro to report the supported standard (off by default).
+# /Zc:lambda : Use the new conforming lambda processor
+# /Zc:inline : Do not emit code for unused functions or data (off by default)
+# /await : Enable coroutine support
+#
 # /MP : Build with multiple processes
+# /arch:AVX2 : Enables the use of Intel Advanced Vector Extensions 2 instructions
+# /bigobj : Enable support for object files with many template instances
+# /utf-8 : Tell MSVC that source files are encoded in UTF-8, and report warnings if incompatible characters are present.
 #
 # Some of our classes with dll-interface inherit from STL classes that are not specified as such
 # This is not an issue as long as the same compiler version is used for building the dll.
@@ -53,7 +60,7 @@ target_include_directories(NeuralaB4B SYSTEM PUBLIC include ${CMAKE_BINARY_DIR}/
 # https://developercommunity.visualstudio.com/t/1249671
 #
 if(MSVC)
-	target_compile_options(NeuralaB4B PUBLIC /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /wd4251 /wd5104 /wd5105)
+	target_compile_options(NeuralaB4B PUBLIC /permissive- /Zc:preprocessor /Zc:__cplusplus /MP /Zc:lambda /Zc:inline /arch:AVX2 /wd4251 /wd5104 /wd5105 /await /bigobj /utf-8)
 endif()
 
 # Add friendly alias
