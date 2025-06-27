@@ -19,6 +19,7 @@
 #ifndef NEURALA_PLUG_WS_ENVIRONMENT_H
 #define NEURALA_PLUG_WS_ENVIRONMENT_H
 
+#include <cstdint>
 #include <cstdlib>
 
 namespace neurala::plug::ws
