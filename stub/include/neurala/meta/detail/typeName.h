@@ -1,5 +1,5 @@
 /*
- * Copyright Neurala Inc. 2013-2024
+ * Copyright Neurala Inc. 2013-2025
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,7 +24,7 @@
 #include <ostream>
 #include <stdexcept>
 
-#include "neurala/exports.h"
+#include "neurala/utils/demangle.h"
 
 namespace neurala
 {
@@ -138,6 +138,15 @@ typeName() noexcept
 #endif
 
 	return StaticString(p.data() + prefix.size(), p.size() - (prefix.size() + suffix.size()));
+}
+
+/**
+ * @brief Returns the demangled type name of @p typeInfo as a @c std::string
+ */
+inline std::string
+typeName(const std::type_info& typeInfo)
+{
+	return demangle(typeInfo.name());
 }
 
 } // namespace neurala
