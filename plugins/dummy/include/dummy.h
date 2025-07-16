@@ -19,6 +19,8 @@
 #ifndef NEURALA_DUMMY_PLUGIN_H
 #define NEURALA_DUMMY_PLUGIN_H
 
+#include <cstdint>
+
 #include "neurala/plugin/PluginBindings.h"
 
 #include "neurala/utils/ResultsOutput.h"
