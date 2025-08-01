@@ -39,6 +39,7 @@ struct B4BError
 	static constexpr B4BError unsupportedAction() { return {5}; }
 	static constexpr B4BError unsupportedBrainVersion() { return {6}; }
 	static constexpr B4BError notFound() { return {7}; }
+	static constexpr B4BError unsupportedQuantizationBackbone() { return {8}; }
 
 	constexpr operator int() const noexcept { return m_value; }
 
