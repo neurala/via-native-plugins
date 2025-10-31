@@ -40,6 +40,7 @@ struct B4BError
 	static constexpr B4BError unsupportedBrainVersion() { return {6}; }
 	static constexpr B4BError notFound() { return {7}; }
 	static constexpr B4BError unsupportedQuantizationBackbone() { return {8}; }
+	static constexpr B4BError invalidZipArchive() { return {9}; }
 
 	constexpr operator int() const noexcept { return m_value; }
 
