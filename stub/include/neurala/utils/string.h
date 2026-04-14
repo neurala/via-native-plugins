@@ -307,6 +307,29 @@ split(const std::string& word, const char sep, Output&& output)
 	detail::split(word, sep, std::forward<Output>(output));
 }
 
+/**
+ * @copydoc split(const std::string&,const char,Output&&)
+ *
+ * @return Vector of tokens.
+ */
+std::vector<std::string>
+split(const std::string& word, const char sep)
+{
+	std::vector<std::string> tokens;
+	split(word, sep, std::back_inserter(tokens));
+	return tokens;
+}
+
+/**
+ * @brief Concatenate arguments into a string with @p sep in between them
+ */
+template<typename Front, typename... Tail>
+std::string
+join(const char sep, Front&& arg, Tail&&... args)
+{
+	return (toString(std::forward<Front>(arg)) + ... + toString(sep, std::forward<Tail>(args)));
+}
+
 namespace detail
 {
 inline char
@@ -320,6 +343,7 @@ toUpper(char ch)
 {
 	return static_cast<char>(std::toupper(static_cast<unsigned char>(ch)));
 }
+
 } // namespace detail
 
 NEURALA_PUBLIC inline std::string
@@ -339,10 +363,26 @@ toUpperCase(const std::string& str)
 }
 
 NEURALA_PUBLIC inline bool
+startsWith(std::string_view str, std::string_view prefix)
+{
+	return str.size() >= prefix.size()
+		&& str.compare(0, prefix.size(), prefix) == 0;
+}
+
+template<typename Container>
+bool
+startsWithAnyOf(std::string_view str, const Container& prefixes)
+{
+	return std::any_of(std::begin(prefixes), std::end(prefixes), [&str](std::string_view prefix) {
+		return startsWith(str, prefix);
+	});
+}
+
+NEURALA_PUBLIC inline bool
 endsWith(std::string_view str, std::string_view suffix)
 {
 	return str.size() >= suffix.size()
-	       && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+		&& str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
 template<typename Container>
