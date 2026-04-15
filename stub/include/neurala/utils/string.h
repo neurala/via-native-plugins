@@ -30,9 +30,9 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "neurala/cppcompat/typetraits.h" // For std17::is_invocable in CUDA code
-#include "neurala/exports.h"
 #include "neurala/utils/getLine.h"
 
 namespace neurala
@@ -106,7 +106,7 @@ stringify(T&& t) -> decltype(std::forward<T>(t))
 /**
  * @brief Specialization of @ref stringify(T&&) for @c char.
  */
-NEURALA_PUBLIC constexpr StringifyCharProxy
+constexpr inline StringifyCharProxy
 stringify(char c) noexcept
 {
 	return StringifyCharProxy{c};
@@ -115,7 +115,7 @@ stringify(char c) noexcept
 /**
  * @brief Specialization of @ref stringify(T&&) for <tt>const char*</tt>.
  */
-NEURALA_PUBLIC inline StringifyCharPtrProxy
+inline StringifyCharPtrProxy
 stringify(const char* c) noexcept
 {
 	return StringifyCharPtrProxy{c};
@@ -124,7 +124,7 @@ stringify(const char* c) noexcept
 /**
  * @brief Specialization of @ref stringify(T&&) for <tt>std::istream</tt>.
  */
-NEURALA_PUBLIC inline std::string
+inline std::string
 stringify(std::istream& is) noexcept
 {
 	std::string s;
@@ -223,7 +223,7 @@ toStringWithPrecision(T val, int precision)
  * @brief Converts @p val to a string stripping any trailing zeros, thus "0.9000000" can be returned
  * as "0.9".
  */
-NEURALA_PUBLIC inline std::string
+inline std::string
 toStringRemoveTrailingZeroes(float val)
 {
 	auto str = toString(val);
@@ -238,7 +238,7 @@ toStringRemoveTrailingZeroes(float val)
  * @return 0 if lhs and rhs compare equal, -1 if lhs appears before rhs in lexicographical order,
  * and 1 if lhs appears after rhs in lexicographical order.
  */
-NEURALA_PUBLIC inline int
+inline int
 strcmpCaseInsensitive(const char* lhs, const char* rhs)
 {
 	while (*lhs | *rhs)
@@ -312,7 +312,7 @@ split(const std::string& word, const char sep, Output&& output)
  *
  * @return Vector of tokens.
  */
-std::vector<std::string>
+inline std::vector<std::string>
 split(const std::string& word, const char sep)
 {
 	std::vector<std::string> tokens;
@@ -346,7 +346,7 @@ toUpper(char ch)
 
 } // namespace detail
 
-NEURALA_PUBLIC inline std::string
+inline std::string
 toLowerCase(const std::string& str)
 {
 	std::string result{str};
@@ -354,7 +354,7 @@ toLowerCase(const std::string& str)
 	return result;
 }
 
-NEURALA_PUBLIC inline std::string
+inline std::string
 toUpperCase(const std::string& str)
 {
 	std::string result{str};
@@ -362,7 +362,7 @@ toUpperCase(const std::string& str)
 	return result;
 }
 
-NEURALA_PUBLIC inline bool
+inline bool
 startsWith(std::string_view str, std::string_view prefix)
 {
 	return str.size() >= prefix.size()
@@ -378,7 +378,7 @@ startsWithAnyOf(std::string_view str, const Container& prefixes)
 	});
 }
 
-NEURALA_PUBLIC inline bool
+inline bool
 endsWith(std::string_view str, std::string_view suffix)
 {
 	return str.size() >= suffix.size()
