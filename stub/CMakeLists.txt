@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 3.17.0)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 add_library(NeuralaB4B SHARED
 	src/B4BError.cpp

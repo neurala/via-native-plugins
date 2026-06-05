@@ -14,7 +14,7 @@ endif()
 # Load Boost libraries through Conan.
 conan_cmake_configure(
 	REQUIRES
-		boost/1.76.0@
+		boost/1.86.0@
 	GENERATORS
 		"cmake_find_package"
 		"cmake"
